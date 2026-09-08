@@ -1,21 +1,24 @@
 import { loadFamilyData, saveFamilyData } from "../data/store.ts";
 
 export function registerBindings(win: Deno.BrowserWindow) {
-  win.bind("minimize", () => {
-    // TODO: no documented Deno.BrowserWindow minimize() yet — revisit against
-    // the Windows API reference once this is actually needed.
+  // All event handlers must return a Promise per Deno Desktop API.
+  win.bind("minimize", async () => {
+    // Placeholder – no operation needed currently.
+    // TODO: integrate with OS minimize when required.
   });
 
-  win.bind("close", () => win.close());
+  win.bind("close", async () => {
+    // Close the window; win.close() is synchronous, but we wrap in async.
+    win.close();
+  });
 
-  win.bind("openFileDialog", (_options?: { extensions?: string[] }) => {
-    // TODO: native file dialog API — not covered in the desktop docs reviewed
-    // so far; revisit under Dialogs in the Deno Desktop docs.
+  win.bind("openFileDialog", async (_options?: { extensions?: string[] }) => {
+    // TODO: implement native file dialog.
     return null;
   });
 
-  win.bind("saveFileDialog", (_options?: { defaultName?: string }) => {
-    // TODO: same as above.
+  win.bind("saveFileDialog", async (_options?: { defaultName?: string }) => {
+    // TODO: implement save-file dialog.
     return null;
   });
 
