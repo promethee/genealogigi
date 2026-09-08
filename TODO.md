@@ -50,3 +50,5 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - **2026-09-08** — Ground-work scaffold drafted: deno.json, LICENSE, .gitignore, README, Deno Desktop entrypoint, `PlatformAPI` + stub impl, SQLite connection/migrations, Vue/Tailwind/Vite configs, App.vue skeleton, Pinia skeleton, Deno.test placeholder, Playwright config, GitHub Actions CI (Windows runner). Open items: Deno version pin, storage approach decision, local checkpoint verification.
 
 - **2026-09-08 (cont.)** — Storage decision reversed: SQLite dropped in favor of JSON-only (file/folder as source of truth), per git-sync UX goal. Reworked `PlatformAPI`, `deno-desktop.ts`, added `src/data/store.ts` (atomic load/save), removed `src/db/`. Deno version pinned to 2.9.6 (exact patch, agent-maintained) in CI. Updated `.gitignore` accordingly.
+
+- **2026-09-08 (cont.)** — Fixed stale comment in `PlatformAPI.ts` (`data` block previously referenced "SQLite layer" from before the JSON rewrite). Cleaned up two stale TODO.md lines left over from prior merges (Deno pin line, unit test runner line referencing deleted `src/db/connection.test.ts`).
