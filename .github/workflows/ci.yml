@@ -10,7 +10,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v1
+      - name: Normalize line endings
+        run: git add --renormalize .
         with:
           deno-version: v2.9.6
       - run: deno fmt --check
