@@ -1,4 +1,4 @@
-import type { FamilyData } from '../data/types.ts';
+import type { FamilyData } from "../data/types.ts";
 
 export interface PlatformAPI {
   minimize(): void;

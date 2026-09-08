@@ -1,8 +1,8 @@
-import type { FamilyData } from './types.ts';
+import type { FamilyData } from "./types.ts";
 
 // TODO (Phase 2): resolve a proper per-OS user data directory instead of a
 // repo-relative path once the app is actually packaged/distributed.
-const DATA_DIR = './data';
+const DATA_DIR = "./data";
 const DATA_FILE = `${DATA_DIR}/family.json`;
 
 export async function loadFamilyData(): Promise<FamilyData> {
