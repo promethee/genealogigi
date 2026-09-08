@@ -1,0 +1,34 @@
+#!/bin/sh
+# Pre‑commit hook – abort commit if any Deno quality check fails
+
+# Normalize line endings according to .gitattributes
+if ! git add --renormalize .; then
+  echo "❌ git add --renormalize failed"
+  exit 1
+fi
+
+# Deno format check
+if ! deno fmt --check; then
+  echo "❌ deno fmt --check failed"
+  exit 1
+fi
+
+# Deno lint
+if ! deno lint; then
+  echo "❌ deno lint failed"
+  exit 1
+fi
+
+# Type checking
+if ! deno check src/**/*.ts; then
+  echo "❌ deno check failed"
+  exit 1
+fi
+
+# Test suite (allowing all permissions)
+if ! deno test -A; then
+  echo "❌ deno test -A failed"
+  exit 1
+fi
+
+exit 0
