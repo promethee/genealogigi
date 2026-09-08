@@ -1,0 +1,28 @@
+# Deno
+.deno/
+
+# Build output
+dist/
+out/
+.out/
+
+# Node compat (if any npm deps get pulled in)
+node_modules/
+
+# Env / secrets
+.env
+.env.local
+
+# SQLite local data (dev/test databases)
+*.sqlite
+*.sqlite3
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
