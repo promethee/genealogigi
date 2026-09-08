@@ -1,28 +1,26 @@
-import type { PlatformAPI } from './PlatformAPI.ts';
 import { loadFamilyData, saveFamilyData } from '../data/store.ts';
 
-export function createPlatformAPI(): PlatformAPI {
-  return {
-    minimize() {
-      // TODO: wire to Deno.BrowserWindow instance once window ref is threaded in
-    },
-    close() {
-      // TODO: wire to Deno.BrowserWindow instance
-    },
-    async openFileDialog(_options) {
-      // TODO: Deno Desktop native file dialog API
-      return null;
-    },
-    async saveFileDialog(_options) {
-      // TODO: Deno Desktop native file dialog API
-      return null;
-    },
-    data: {
-      load: loadFamilyData,
-      save: saveFamilyData,
-    },
-    exit(code = 0) {
-      Deno.exit(code);
-    },
-  };
+export function registerBindings(win: Deno.BrowserWindow) {
+  win.bind('minimize', () => {
+    // TODO: no documented Deno.BrowserWindow minimize() yet — revisit against
+    // the Windows API reference once this is actually needed.
+  });
+
+  win.bind('close', () => win.close());
+
+  win.bind('openFileDialog', (_options?: { extensions?: string[] }) => {
+    // TODO: native file dialog API — not covered in the desktop docs reviewed
+    // so far; revisit under Dialogs in the Deno Desktop docs.
+    return null;
+  });
+
+  win.bind('saveFileDialog', (_options?: { defaultName?: string }) => {
+    // TODO: same as above.
+    return null;
+  });
+
+  win.bind('dataLoad', loadFamilyData);
+  win.bind('dataSave', saveFamilyData);
+
+  win.bind('exit', (code?: number) => Deno.exit(code ?? 0));
 }

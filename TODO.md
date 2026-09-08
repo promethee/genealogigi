@@ -44,6 +44,7 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 
 - [ ] Additional chart types (descendant, fan, hourglass)
 - [ ] Git-based sync (GitHub) via JSON export
+- [ ] Investigate true Vite HMR under `deno desktop` (current dev task rebuilds Vue then relaunches; `--hmr` / per-framework dev-server integration not yet verified for a plain Vite/Vue SPA)
 
 ## Checkpoint log
 
@@ -52,3 +53,5 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - **2026-09-08 (cont.)** — Storage decision reversed: SQLite dropped in favor of JSON-only (file/folder as source of truth), per git-sync UX goal. Reworked `PlatformAPI`, `deno-desktop.ts`, added `src/data/store.ts` (atomic load/save), removed `src/db/`. Deno version pinned to 2.9.6 (exact patch, agent-maintained) in CI. Updated `.gitignore` accordingly.
 
 - **2026-09-08 (cont.)** — Fixed stale comment in `PlatformAPI.ts` (`data` block previously referenced "SQLite layer" from before the JSON rewrite). Cleaned up two stale TODO.md lines left over from prior merges (Deno pin line, unit test runner line referencing deleted `src/db/connection.test.ts`).
+
+- **2026-09-08 (cont.)** — Corrected the Deno Desktop scaffold: the original `src/main.ts` was based on a fabricated `@deno/desktop` import and a nonexistent `--unstable-desktop` flag. Replaced with the real API: `Deno.serve()` + `Deno.BrowserWindow` in `main.ts`, `win.bind()`/`bindings.*` for the Deno↔webview bridge (`deno-desktop.ts` now only registers bindings; `PlatformAPI.ts` wraps the `bindings` proxy on the webview side), `FamilyData` moved to a shared `src/data/types.ts`. Fixed `deno.json`: dropped `name`/`version`/`license` (spurious "exports" warning), dropped `singleQuote` override (use default double quotes), excluded `AGENTS.md`/`DECISIONS.md`/`TODO.md`/`README.md` from `deno fmt`. Added `.gitattributes` (`eol=lf`) to fix line-ending diff noise. Fixed `require-await` lint errors in binding stubs. `dev`/`build` tasks now use the real `deno desktop` command. Open: confirm `src/data/store.ts` actually exists in the checkout (was missing when verification ran), then re-run clean-checkout verification.

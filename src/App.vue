@@ -1,5 +1,7 @@
 <script setup lang="ts">
-declare const platformAPI: import('./platform/PlatformAPI.ts').PlatformAPI;
+import { createPlatformAPI } from './platform/PlatformAPI.ts';
+
+const platformAPI = createPlatformAPI();
 </script>
 
 <template>

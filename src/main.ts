@@ -1,19 +1,36 @@
-import { BrowserWindow } from "@deno/desktop";
-import { createPlatformAPI } from "./platform/deno-desktop.ts";
+import { registerBindings } from './platform/deno-desktop.ts';
 
-const platform = createPlatformAPI();
+const DIST_DIR = new URL('../dist/', import.meta.url);
 
-const win = new BrowserWindow({
-  title: "Genealogigi",
-  frameless: true,
-  width: 1200,
-  height: 800,
-  url: import.meta.resolve("../dist/index.html"),
+Deno.serve(async (req) => {
+  const url = new URL(req.url);
+  const path = url.pathname === '/' ? '/index.html' : url.pathname;
+  try {
+    const file = await Deno.readFile(new URL(`.${path}`, DIST_DIR));
+    return new Response(file, {
+      headers: { 'content-type': contentType(path) },
+    });
+  } catch {
+    return new Response('Not found', { status: 404 });
+  }
 });
 
-// Expose PlatformAPI to the renderer via IPC bridge (Deno Desktop specific).
-win.exposeFunction("platformAPI", platform);
+function contentType(path: string): string {
+  if (path.endsWith('.js')) return 'application/javascript';
+  if (path.endsWith('.css')) return 'text/css';
+  if (path.endsWith('.html')) return 'text/html';
+  return 'application/octet-stream';
+}
 
-win.on("close", () => {
+// The first `new Deno.BrowserWindow()` adopts the window the runtime already
+// opened at startup, pointed at the server above.
+const win = new Deno.BrowserWindow({
+  title: 'Genealogigi',
+  frameless: true,
+});
+
+registerBindings(win);
+
+win.addEventListener('close', () => {
   Deno.exit(0);
 });
