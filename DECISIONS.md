@@ -35,14 +35,14 @@ Considered: Electron, Tauri, Deno Desktop.
       "boring," low-edge-case usage surface of the framework.
     - The shell is architected as a thin, swappable wrapper (see below), so
       a pre-stable API shift is a shell-only fix, not a rewrite.
-  - Frameless window + custom exit button confirmed supported natively via
-    `Deno.BrowserWindow`'s `frameless` option — not a workaround.
+  - (Frameless window was attempted but abandoned — see "Window chrome:
+    native, not frameless" below.)
 
 ## Shell portability
 
 The desktop shell is explicitly treated as disposable. All shell-specific
 calls are isolated behind a `PlatformAPI` interface so the Vue app, Pinia
-stores, and SQLite/data logic never call Deno Desktop APIs directly. If Deno
+stores, and data-access logic never call Deno Desktop APIs directly. If Deno
 Desktop turns out to be a dead end, only the `PlatformAPI` implementation
 needs to be swapped for another shell (e.g. Electron or Tauri).
 
@@ -60,7 +60,7 @@ Considered: React + Redux, Vue + Pinia.
 - Also chosen for portfolio diversification (a Vue project alongside two
   React projects).
 
-## Storage
+## Storage (superseded — see "Storage: JSON-only" below)
 
 - Not fully decided yet. Leaning: SQLite as the in-app working store (query
   performance for ancestor/descendant lookups), with a JSON export as the
@@ -127,3 +127,14 @@ Decision: JSON file(s)/folder is the source of truth. No SQLite for now.
 - SQLite is not ruled out permanently: if a real performance need shows up
   later (large trees, slow lookups), it can be reintroduced as a rebuildable
   cache/index over the JSON files, keeping JSON as the source of truth.
+
+## Window chrome: native, not frameless
+
+Attempted a frameless window (custom exit button) but hit multiple Deno
+Desktop pre-stable bugs: `frameless` is silently ignored on the adopted
+startup window, and the documented double-window workaround introduced
+further bugs (secondary window mispositioned off-screen, close binding not
+reaching the right window). Given the Windows-only target and that this is
+purely cosmetic, decided to use the native Windows title bar/chrome instead.
+No custom close button. Revisit if/when denoland/deno#35635 / #35969 land a
+fix upstream.

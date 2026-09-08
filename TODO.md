@@ -9,7 +9,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [x] Add README.md (description, install/run instructions, link to Pages site once it exists)
 - [x] Add .gitignore (Deno cache, build output, etc.)
 - [x] Pin Deno version (document in README + lockfile/config) — pinned to 2.9.6 (exact patch), agent-maintained per DECISIONS.md
-- [x] Scaffold Deno Desktop + Vue 3 + TypeScript + Tailwind — App.vue, main.ts, vite/tailwind configs drafted; confirm it actually runs as a frameless window with working exit button
+- [x] Scaffold Deno Desktop + Vue 3 + TypeScript + Tailwind, confirm it runs with the native Windows title bar (close/minimize/maximize working)
 - [x] Set up lint + format (deno lint / deno fmt) as a required check (wired into CI)
 - [x] Set up type-checking as a required, fast check (wired into CI)
 - [x] Set up unit test runner: `Deno.test` (placeholder test in `src/data/store.test.ts`)
@@ -19,7 +19,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [x] Wire up basic Pinia store structure (empty/skeleton is fine)
 - [x] Decide final storage approach — JSON-only (folder as source of truth), decision recorded in DECISIONS.md; SQLite deferred, may be added later as a cache/index if needed
 - [x] Add CI (lint + typecheck + unit tests on push) — added rather than deferred; see DECISIONS.md
-- [ ] Confirm ground work checkpoint: lint, typecheck, and unit tests all pass cleanly on a clean checkout — pending local run
+- [x] Confirm ground work checkpoint: lint, typecheck, and unit tests all pass cleanly on a clean checkout
 
 ## Phase 2 — Features (one at a time, each with scoped e2e tests)
 
@@ -45,6 +45,7 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - [ ] Additional chart types (descendant, fan, hourglass)
 - [ ] Git-based sync (GitHub) via JSON export
 - [ ] Investigate true Vite HMR under `deno desktop` (current dev task rebuilds Vue then relaunches; `--hmr` / per-framework dev-server integration not yet verified for a plain Vite/Vue SPA)
+- [ ] Revisit frameless window once denoland/deno#35635 / #35969 are fixed upstream
 
 ## Checkpoint log
 
@@ -55,3 +56,5 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - **2026-09-08 (cont.)** — Fixed stale comment in `PlatformAPI.ts` (`data` block previously referenced "SQLite layer" from before the JSON rewrite). Cleaned up two stale TODO.md lines left over from prior merges (Deno pin line, unit test runner line referencing deleted `src/db/connection.test.ts`).
 
 - **2026-09-08 (cont.)** — Corrected the Deno Desktop scaffold: the original `src/main.ts` was based on a fabricated `@deno/desktop` import and a nonexistent `--unstable-desktop` flag. Replaced with the real API: `Deno.serve()` + `Deno.BrowserWindow` in `main.ts`, `win.bind()`/`bindings.*` for the Deno↔webview bridge (`deno-desktop.ts` now only registers bindings; `PlatformAPI.ts` wraps the `bindings` proxy on the webview side), `FamilyData` moved to a shared `src/data/types.ts`. Fixed `deno.json`: dropped `name`/`version`/`license` (spurious "exports" warning), dropped `singleQuote` override (use default double quotes), excluded `AGENTS.md`/`DECISIONS.md`/`TODO.md`/`README.md` from `deno fmt`. Added `.gitattributes` (`eol=lf`) to fix line-ending diff noise. Fixed `require-await` lint errors in binding stubs. `dev`/`build` tasks now use the real `deno desktop` command. Open: confirm `src/data/store.ts` actually exists in the checkout (was missing when verification ran), then re-run clean-checkout verification.
+
+- **2026-09-08 (cont.)** — Reverted the frameless-window attempt: dropped the double-window workaround and custom exit button, `main.ts` now uses a single `Deno.BrowserWindow` with native title bar/chrome. Confirmed working (single correctly positioned window, native close/minimize/maximize). Ground-work scaffold item for window chrome is now fully verified.

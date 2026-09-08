@@ -5,10 +5,10 @@ and visualizing one family's ancestry data.
 
 ## Stack
 
-- Shell: Deno Desktop (frameless window, custom exit control, Windows-primary target)
+- Shell: Deno Desktop (native Windows title bar, Windows-primary target)
 - Frontend: Vue 3 (`<script setup>`) + Pinia + Tailwind CSS
 - Language: TypeScript throughout
-- Storage: SQLite (working store); JSON export planned (future git-sync target)
+- Storage: JSON (file/folder as source of truth); SQLite may be added later as a cache/index if needed
 - Data model: custom, single-family scope — no GEDCOM/interoperability layer
 
 Full rationale for every choice above lives in `DECISIONS.md` — read it before
@@ -34,7 +34,7 @@ writing feature code:
 - Type-checking as a required, fast check
 - Unit test runner configured (even with zero tests yet)
 - The `PlatformAPI` interface + a Deno Desktop implementation stub
-- SQLite connection layer + migration mechanism
+- JSON storage layer (read/write, schema versioning for migrations) behind `PlatformAPI`
 - CI (if/when added) running lint + typecheck + unit tests
 
 Do not start on any user-facing feature until this phase is checked off in

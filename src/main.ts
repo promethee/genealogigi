@@ -26,7 +26,6 @@ function contentType(path: string): string {
 // opened at startup, pointed at the server above.
 const win = new Deno.BrowserWindow({
   title: "Genealogigi",
-  frameless: true,
 });
 
 registerBindings(win);

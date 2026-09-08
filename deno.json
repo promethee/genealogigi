@@ -1,7 +1,7 @@
 {
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
-    "dev": "deno task build:vue && deno desktop -A src/main.ts",
+    "dev": "deno task build:vue && deno desktop --hmr --include dist -A src/main.ts",
     "build": "deno task build:vue && deno desktop -A -o dist-app/genealogigi src/main.ts",
     "build:vue": "deno run -A npm:vite build",
     "lint": "deno lint",
@@ -10,6 +10,7 @@
     "check": "deno check src/**/*.ts",
     "test": "deno test -A"
   },
+  "nodeModulesDir": "auto",
   "compilerOptions": {
     "strict": true,
     "jsx": "precompile",
@@ -17,6 +18,7 @@
     "lib": ["deno.window", "deno.desktop"]
   },
   "imports": {
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@^2.0.3",
     "@vitejs/plugin-vue": "npm:@vitejs/plugin-vue@^6.0.8",
     "vite": "npm:vite@^8.2.2",
     "vue": "npm:vue@^3.4.0",
