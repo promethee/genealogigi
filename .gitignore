@@ -9,8 +9,7 @@ dist/
 node_modules/
 .vite/
 
-# Local app data (dev) — anchored to repo root only, so it doesn't also
-# match src/data/ (source code, not runtime data)
+# Local app data (dev) — anchored to repo root only, so it doesn't also match src/data/ (source code, not runtime data)
 /data/
 
 # OS/editor
