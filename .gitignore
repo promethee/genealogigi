@@ -3,26 +3,16 @@
 
 # Build output
 dist/
-out/
-.out/
+*.exe
 
-# Node compat (if any npm deps get pulled in)
+# Vite/node interop
 node_modules/
+.vite/
 
-# Env / secrets
-.env
-.env.local
+# Local app data (dev)
+data/
 
-# SQLite local data (dev/test databases)
-*.sqlite
-*.sqlite3
-*.db
-
-# OS
+# OS/editor
 .DS_Store
-Thumbs.db
-
-# Editor
-.vscode/
-.idea/
-*.swp
+.vscode/*
+!.vscode/extensions.json

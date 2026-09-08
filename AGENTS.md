@@ -56,10 +56,23 @@ For each feature:
 At natural stopping points (end of ground work, end of each feature, or when
 asked), you:
 
-1. Update `TODO.md` — check off what's done, add/adjust upcoming items.
+1. Update `TODO.md` — check off what's done, add/adjust upcoming items, and
+   append a dated entry to the Checkpoint log.
 2. Propose a git commit message (conventional-commits style preferred:
    `feat:`, `chore:`, `test:`, etc.) for the user to review and run themselves.
    Do not run `git commit` yourself unless explicitly told to.
+
+When presenting a checkpoint, clearly separate the two: label the Checkpoint
+log text and the proposed commit message as distinct items, don't blend them
+into one block.
+
+### Decision points
+
+Whenever a situation requires the user's input or a decision from them
+(a fork in approach, a tradeoff, an ambiguous requirement), present the
+options as honest pros & cons for each — don't just pick one silently or
+ask an open-ended question. Be direct about downsides, including for the
+option you'd lean toward.
 
 ## General conventions
 

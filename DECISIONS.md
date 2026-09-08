@@ -89,3 +89,41 @@ Considered: React + Redux, Vue + Pinia.
 
 - Unit tests: `Deno.test` (built-in, no extra dependency, fits Deno Desktop choice).
 - E2E tests: Playwright (consistency with fountain-editor, which already uses it).
+
+## CI: added now, not deferred
+
+Ground-work phase includes a GitHub Actions workflow (lint + typecheck +
+unit tests) on a Windows runner, matching the Windows-primary target
+audience. Not deferred, since the checks are cheap to wire up alongside the
+rest of the ground-work tooling and catch regressions from the start.
+
+## Deno version pinning
+
+Decision: pin to an exact patch version, not a minor/range pin.
+
+- Version bumps are an agent-maintained task, not something the user handles
+  directly.
+- An exact pin gives the agent a well-defined, verifiable job each time
+  (bump to a specific version, run full CI, report pass/fail) instead of an
+  open-ended "stay within range" responsibility with no natural trigger.
+- Current stable as of this decision: Deno 2.9.6 (released Aug 27, 2026).
+  Pinned in `deno.json`/CI as `2.9.6`; bumps happen only as an explicit,
+  agent-run task (not automatic), triggered periodically or on new Deno
+  releases.
+
+## Storage: JSON-only (supersedes earlier "SQLite working store, JSON export" note)
+
+Decision: JSON file(s)/folder is the source of truth. No SQLite for now.
+
+- The planned git-sync feature needs a diffable, folder-based format as its
+  ongoing source of truth, not an occasional export snapshot — JSON already
+  is that format, so there's no translation layer to build or keep in sync.
+- End-user UX goal is that the user "owns" their data folder (backup, sync,
+  portability) without ever hand-editing it or managing a DB file — a single
+  JSON-backed folder is the simplest mental model for that.
+- Scope is one family's data — realistically hundreds, not millions, of
+  records — so in-memory load + indexing for ancestor/descendant lookups is
+  expected to be fine without a query engine.
+- SQLite is not ruled out permanently: if a real performance need shows up
+  later (large trees, slow lookups), it can be reintroduced as a rebuildable
+  cache/index over the JSON files, keeping JSON as the source of truth.
