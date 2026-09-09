@@ -6,8 +6,8 @@ export interface PlatformAPI {
   openFileDialog(options?: { extensions?: string[] }): Promise<string | null>;
   saveFileDialog(options?: { defaultName?: string }): Promise<string | null>;
   data: {
-    load(): Promise<FamilyData>;
-    save(data: FamilyData): Promise<void>;
+    load(filePath: string): Promise<FamilyData>;
+    save(filePath: string, data: FamilyData): Promise<void>;
   };
   exit(code?: number): void;
 }
@@ -20,8 +20,8 @@ declare global {
     close(): Promise<void>;
     openFileDialog(options?: { extensions?: string[] }): Promise<string | null>;
     saveFileDialog(options?: { defaultName?: string }): Promise<string | null>;
-    dataLoad(): Promise<FamilyData>;
-    dataSave(data: FamilyData): Promise<void>;
+    dataLoad(filePath: string): Promise<FamilyData>;
+    dataSave(filePath: string, data: FamilyData): Promise<void>;
     exit(code?: number): Promise<void>;
   };
 }
@@ -37,8 +37,8 @@ export function createPlatformAPI(): PlatformAPI {
     openFileDialog: (options) => bindings.openFileDialog(options),
     saveFileDialog: (options) => bindings.saveFileDialog(options),
     data: {
-      load: () => bindings.dataLoad(),
-      save: (data) => bindings.dataSave(data),
+      load: (filePath) => bindings.dataLoad(filePath),
+      save: (filePath, data) => bindings.dataSave(filePath, data),
     },
     exit: (code) => {
       bindings.exit(code);

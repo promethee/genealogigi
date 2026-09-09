@@ -178,6 +178,7 @@ export type RelationshipSocial =
 export type Relationship = RelationshipFamilial | RelationshipSocial;
 
 export interface FamilyData {
-  people: unknown[]; // shape defined in Phase 2's "person record" feature
-  relationships: unknown[]; // shape defined in Phase 2's "relationship" feature
+  schemaVersion: 1;
+  people: Person[];
+  relationships: Relationship[];
 }
