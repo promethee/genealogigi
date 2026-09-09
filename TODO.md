@@ -23,7 +23,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 
 ## Phase 2 — Features (one at a time, each with scoped e2e tests)
 
-- [ ] Feature: define + persist a person record (core entity)
+- [~] Feature: define + persist a person record (core entity)
 - [ ] Feature: define + persist a relationship (parent/child, spouse)
 - [ ] Feature: basic family tree visualization (single chart type, e.g. pedigree)
 - [ ] Feature: data export (JSON)
@@ -58,3 +58,5 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - **2026-09-08 (cont.)** — Corrected the Deno Desktop scaffold: the original `src/main.ts` was based on a fabricated `@deno/desktop` import and a nonexistent `--unstable-desktop` flag. Replaced with the real API: `Deno.serve()` + `Deno.BrowserWindow` in `main.ts`, `win.bind()`/`bindings.*` for the Deno↔webview bridge (`deno-desktop.ts` now only registers bindings; `PlatformAPI.ts` wraps the `bindings` proxy on the webview side), `FamilyData` moved to a shared `src/data/types.ts`. Fixed `deno.json`: dropped `name`/`version`/`license` (spurious "exports" warning), dropped `singleQuote` override (use default double quotes), excluded `AGENTS.md`/`DECISIONS.md`/`TODO.md`/`README.md` from `deno fmt`. Added `.gitattributes` (`eol=lf`) to fix line-ending diff noise. Fixed `require-await` lint errors in binding stubs. `dev`/`build` tasks now use the real `deno desktop` command. Open: confirm `src/data/store.ts` actually exists in the checkout (was missing when verification ran), then re-run clean-checkout verification.
 
 - **2026-09-08 (cont.)** — Reverted the frameless-window attempt: dropped the double-window workaround and custom exit button, `main.ts` now uses a single `Deno.BrowserWindow` with native title bar/chrome. Confirmed working (single correctly positioned window, native close/minimize/maximize). Ground-work scaffold item for window chrome is now fully verified.
+
+- **2026-09-09** — Worked through the full data model in `src/data/types.ts`: branded `UuidId<Brand>` (generic, replacing per-entity id types), `Person` built from optional facets (`NamedPerson` — first/last names as arrays with kind + `VariablePrecisionDate`, non-empty-array-enforced; `PersonBorn`; `PersonLiving`/`PersonDeceased` for life status).  `VariablePrecisionDate` models partial-precision dates (raw + known-flags, year-unknown sentinel 9999). `Relationship` split into `RelationshipFamilial` (permanent: biological/adoptive; temporary: step/foster/guardian, each with ongoing/ended/unknown status) and `RelationshipSocial` (same three-way status pattern). No relationship type hardcodes parent role/count or partner gender. Derived relationships (sibling, grandparent, etc.) are explicitly out of scope for storage — to be computed, not stored, when built. Fixed a duplicate `UnknownRelationship` declaration bug during review. Person/relationship persistence (the actual store/CRUD layer) is still to come — types only so far.
