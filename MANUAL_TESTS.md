@@ -155,13 +155,3 @@ Start from an open family with at least one person.
 | 2   | Look at the links                                                   | Lines join the facing sides of the boxes; none cross boxes. |
 | 3   | Click Mum                                                           | Mum becomes root; still hourglass.                          |
 | 4   | Generations 2 on Gran                                               | Kid (3 generations down) is not shown.                      |
-
-## Fan chart
-
-| #   | Action                                                                       | Expected                                                           |
-| --- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| 1   | Family Me <- Mum <- Gran, Me <- Dad (adoptive). Tree tab, Show: Fan, root Me | Root circle at the bottom centre; Mum and Dad ring 1; Gran ring 2. |
-| 2   | Look at Dad's wedge                                                          | Dashed outline.                                                    |
-| 3   | Names                                                                        | Readable, never upside down; long names end with "…".              |
-| 4   | Hover a wedge                                                                | Tooltip with the full name and lifespan.                           |
-| 5   | Click Mum                                                                    | Mum becomes root; still fan.                                       |

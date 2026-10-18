@@ -57,7 +57,7 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - [x] Descendant chart (OpenSpec `descendant-chart`, archived 2026-10-18)
 - [x] Hourglass chart (OpenSpec `hourglass-chart`, archived 2026-10-18)
-- [x] Fan chart (OpenSpec `fan-chart`, archived 2026-10-18)
+- [ ] Additional chart types (fan)
 - [ ] Git-based sync (GitHub) via JSON export
 - [ ] Verify `npm run tauri:dev` HMR in the real window
 - [ ] Frameless/custom window chrome (Tauri supports it; not needed now)
@@ -107,5 +107,3 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (cont.)** — Implemented change `descendant-chart`: Tree tab "Show" select (Ancestors/Descendants); `buildPedigree` gained a `direction` parameter reusing the same layout. 131 unit tests, 48 e2e. Manual steps added.
 
 - **2026-10-18 (cont.)** — Implemented change `hourglass-chart`: nodes gain `column`; hourglass layout composes the ancestors and descendants layouts around one root; links drawn in either direction. 135 unit tests, 51 e2e. Manual steps added.
-
-- **2026-10-18 (cont.)** — Implemented change `fan-chart`: pure geometry in `src/data/fan.ts`, `FanChart.vue`, "Fan (ancestors)" in the Show select; half-circle, wedge angles from leaf rows, dashed outline for non-confirmed links. 143 unit tests, 55 e2e. Visually checked with a screenshot. Manual steps added.
