@@ -33,7 +33,7 @@ test.beforeEach(async ({ page }) => {
           if (failure) throw new Error(failure);
           const pulled = read("fake:gitPull");
           if (pulled) localStorage.setItem(`fake:file:${p}`, pulled);
-          return "Synced with git: committed your changes and pushed.";
+          return "committed";
         },
       },
       exit: async () => {},

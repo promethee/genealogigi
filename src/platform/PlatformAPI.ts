@@ -1,4 +1,5 @@
 import type { FamilyData } from "../data/types.ts";
+import type { GitSyncResult } from "./gitSync.ts";
 
 /** Whether the folder of a family file can be synced through git, and if not why. */
 export type GitStatus = "no-git" | "not-repo" | "no-remote" | "ready";
@@ -20,11 +21,14 @@ export interface PlatformAPI {
   settings: {
     getLastFilePath(): Promise<string | null>;
     setLastFilePath(filePath: string | null): Promise<void>;
+    /** The saved UI language ("en" / "fr"), or null when never chosen. */
+    getLanguage(): Promise<string | null>;
+    setLanguage(language: string): Promise<void>;
   };
   git: {
     status(filePath: string): Promise<GitStatus>;
-    /** Commits the file, pulls (rebase) and pushes; resolves to a message, rejects with a reason. */
-    sync(filePath: string): Promise<string>;
+    /** Commits the file, pulls (rebase) and pushes. Rejects with a `GitSyncError`. */
+    sync(filePath: string): Promise<GitSyncResult>;
   };
   exit(code?: number): Promise<void>;
 }

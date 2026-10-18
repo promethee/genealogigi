@@ -15,7 +15,7 @@ interface FakeOptions {
   confirmResult?: boolean;
   saveError?: Error;
   gitStatus?: "no-git" | "not-repo" | "no-remote" | "ready";
-  gitSync?: () => Promise<string>;
+  gitSync?: () => Promise<"committed" | "no-changes">;
 }
 
 function fakePlatform(options: FakeOptions = {}) {
@@ -44,11 +44,13 @@ function fakePlatform(options: FakeOptions = {}) {
       setLastFilePath: async (path) => {
         lastPath = path;
       },
+      getLanguage: async () => null,
+      setLanguage: async () => {},
     },
     confirm: async () => options.confirmResult ?? true,
     git: {
       status: async () => options.gitStatus ?? "not-repo",
-      sync: options.gitSync ?? (async () => "Synced"),
+      sync: options.gitSync ?? (async () => "committed"),
     },
     exit: async () => {},
   };
@@ -471,7 +473,7 @@ describe("family store: git sync", () => {
   it("syncs, shows the message and reloads the file from disk", async () => {
     const { store, files, path } = await opened({
       gitStatus: "ready",
-      gitSync: async () => "Synced with git.",
+      gitSync: async () => "no-changes",
     });
     files.set(path, {
       schemaVersion: 1,
@@ -479,7 +481,7 @@ describe("family store: git sync", () => {
       relationships: [],
     });
     expect(await store.syncGit()).toBe(true);
-    expect(store.notice).toBe("Synced with git.");
+    expect(store.notice).toBe("Synced with git: no local changes to commit.");
     expect(store.data?.people).toHaveLength(1);
     expect(store.syncing).toBe(false);
   });
@@ -499,7 +501,7 @@ describe("family store: git sync", () => {
   });
 
   it("does nothing unless git is ready", async () => {
-    const sync = vi.fn(async () => "x");
+    const sync = vi.fn(async () => "committed" as const);
     const { store } = await opened({ gitStatus: "no-remote", gitSync: sync });
     expect(await store.syncGit()).toBe(false);
     expect(sync).not.toHaveBeenCalled();
@@ -512,7 +514,7 @@ describe("family store: git sync", () => {
       gitStatus: "ready",
       gitSync: async () => {
         order.push("sync");
-        return "ok";
+        return "committed" as const;
       },
     });
     await made.store.createNew();

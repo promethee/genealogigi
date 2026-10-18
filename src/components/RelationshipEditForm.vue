@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { t } from "../i18n/index.ts";
 import {
   editValuesOf,
   isParentChild,
   natureLabel,
+  statusLabel,
   PARENT_CHILD_NATURES,
   PARTNER_STATUSES,
   TEMPORARY_NATURES,
@@ -74,23 +76,23 @@ const selectClass = "rounded border border-gray-300 px-2 py-1";
     @submit.prevent="save"
   >
     <label v-if="parentChild" class="flex flex-col text-sm">
-      Nature
+      {{ t("rel.nature") }}
       <select v-model="nature" data-testid="edit-nature" :class="selectClass">
         <option v-for="n in allNatures" :key="n" :value="n">{{ natureLabel(n) }}</option>
       </select>
     </label>
     <label v-if="showDates" class="flex flex-col text-sm">
-      Status
+      {{ t("rel.status") }}
       <select v-model="status" data-testid="edit-status" :class="selectClass">
-        <option v-for="s in statuses" :key="s" :value="s">{{ s }}</option>
+        <option v-for="s in statuses" :key="s" :value="s">{{ statusLabel(s) }}</option>
       </select>
     </label>
     <template v-if="showDates">
-      <DateFields v-model="start" label="Start (optional)" test-prefix="edit-start" />
+      <DateFields v-model="start" :label="t('rel.start')" test-prefix="edit-start" />
       <DateFields
         v-if="status === 'ended'"
         v-model="end"
-        label="End (optional)"
+        :label="t('rel.end')"
         test-prefix="edit-end"
       />
     </template>
@@ -99,7 +101,7 @@ const selectClass = "rounded border border-gray-300 px-2 py-1";
       data-testid="edit-save"
       class="rounded bg-emerald-700 px-4 py-1.5 text-white"
     >
-      Save
+      {{ t("common.save") }}
     </button>
     <button
       type="button"
@@ -107,7 +109,7 @@ const selectClass = "rounded border border-gray-300 px-2 py-1";
       class="rounded border border-gray-300 px-4 py-1.5"
       @click="emit('done')"
     >
-      Cancel
+      {{ t("common.cancel") }}
     </button>
   </form>
 </template>

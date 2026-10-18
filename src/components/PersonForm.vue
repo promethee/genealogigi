@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
-import { MONTH_NAMES } from "../data/dates.ts";
+import { monthNames } from "../data/dates.ts";
+import { t } from "../i18n/index.ts";
 import { FIRST_NAME_KINDS, LAST_NAME_KINDS, type PersonFormValues } from "../data/people.ts";
 import NameEntriesEditor from "./NameEntriesEditor.vue";
 
@@ -25,44 +26,44 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
   <form class="mb-4 flex flex-col gap-3" @submit.prevent="submit">
     <NameEntriesEditor
       v-model="form.firstNames"
-      title="First names"
-      noun="first name"
+      :title="t('form.firstNames')"
+      :noun="t('form.firstName').toLowerCase()"
       :kinds="FIRST_NAME_KINDS"
       test-prefix="first-name"
-      add-label="First name changed"
+      :add-label="t('form.firstChanged')"
       add-kind="current"
       :new-becomes-main="false"
     />
     <NameEntriesEditor
       v-model="form.lastNames"
-      title="Last names"
-      noun="last name"
+      :title="t('form.lastNames')"
+      :noun="t('form.lastName').toLowerCase()"
       :kinds="LAST_NAME_KINDS"
       test-prefix="last-name"
-      add-label="Last name changed (e.g. marriage)"
+      :add-label="t('form.lastChanged')"
       add-kind="married"
       :new-becomes-main="true"
     />
 
     <fieldset class="flex flex-wrap items-end gap-3">
-      <legend class="mb-1 text-sm text-gray-600">Birth date (any part may be left empty)</legend>
+      <legend class="mb-1 text-sm text-gray-600">{{ t("form.birthDate") }}</legend>
       <input
         v-model="form.birth.year"
         data-testid="birth-year"
-        placeholder="Year"
+        :placeholder="t('form.year')"
         inputmode="numeric"
         :class="[inputClass, 'w-24']"
       />
       <select v-model="form.birth.month" data-testid="birth-month" :class="inputClass">
-        <option value="">Month</option>
-        <option v-for="(name, index) in MONTH_NAMES" :key="name" :value="String(index + 1)">
+        <option value="">{{ t("form.month") }}</option>
+        <option v-for="(name, index) in monthNames()" :key="name" :value="String(index + 1)">
           {{ name }}
         </option>
       </select>
       <input
         v-model="form.birth.day"
         data-testid="birth-day"
-        placeholder="Day"
+        :placeholder="t('form.day')"
         inputmode="numeric"
         :class="[inputClass, 'w-20']"
       />
@@ -70,32 +71,32 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
 
     <div class="flex flex-wrap items-end gap-3">
       <label class="flex flex-col text-sm">
-        Life status
+        {{ t("form.lifeStatus") }}
         <select v-model="form.status" data-testid="life-status" :class="inputClass">
-          <option value="unknown">Unknown</option>
-          <option value="living">Living</option>
-          <option value="deceased">Deceased</option>
+          <option value="unknown">{{ t("form.status.unknown") }}</option>
+          <option value="living">{{ t("form.status.living") }}</option>
+          <option value="deceased">{{ t("form.status.deceased") }}</option>
         </select>
       </label>
       <fieldset v-if="form.status === 'deceased'" class="flex flex-wrap items-end gap-3">
-        <legend class="mb-1 text-sm text-gray-600">Death date (may be left empty)</legend>
+        <legend class="mb-1 text-sm text-gray-600">{{ t("form.deathDate") }}</legend>
         <input
           v-model="form.death.year"
           data-testid="death-year"
-          placeholder="Year"
+          :placeholder="t('form.year')"
           inputmode="numeric"
           :class="[inputClass, 'w-24']"
         />
         <select v-model="form.death.month" data-testid="death-month" :class="inputClass">
-          <option value="">Month</option>
-          <option v-for="(name, index) in MONTH_NAMES" :key="name" :value="String(index + 1)">
+          <option value="">{{ t("form.month") }}</option>
+          <option v-for="(name, index) in monthNames()" :key="name" :value="String(index + 1)">
             {{ name }}
           </option>
         </select>
         <input
           v-model="form.death.day"
           data-testid="death-day"
-          placeholder="Day"
+          :placeholder="t('form.day')"
           inputmode="numeric"
           :class="[inputClass, 'w-20']"
         />
@@ -108,7 +109,7 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
         data-testid="submit-person"
         class="rounded bg-emerald-700 px-4 py-1.5 text-white"
       >
-        Save
+        {{ t("common.save") }}
       </button>
       <button
         type="button"
@@ -116,7 +117,7 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
         class="rounded border border-gray-300 px-4 py-1.5"
         @click="emit('cancel')"
       >
-        Cancel
+        {{ t("common.cancel") }}
       </button>
     </div>
   </form>

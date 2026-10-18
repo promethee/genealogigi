@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { t, tn } from "../i18n/index.ts";
 import { addPerson, removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
 import {
   addParentChild,
@@ -31,7 +32,7 @@ function samePath(a: string, b: string): boolean {
 }
 
 function describe(err: unknown): string {
-  if (err instanceof SyntaxError) return "The file is not valid JSON.";
+  if (err instanceof SyntaxError) return t("store.invalidJson");
   return err instanceof Error ? err.message : String(err);
 }
 
@@ -90,7 +91,7 @@ export function defineFamilyStore(platform: PlatformAPI) {
         if (await platform.data.exists(remembered)) {
           resumePath.value = remembered;
         } else {
-          error.value = `Last family file not found: ${remembered}`;
+          error.value = t("store.lastNotFound", { path: remembered });
         }
       });
     }
@@ -158,14 +159,14 @@ export function defineFamilyStore(platform: PlatformAPI) {
           const target = await platform.saveFileDialog({ defaultName: COPY_FILE_NAME });
           if (!target) return false;
           if (samePath(target, openPath)) {
-            error.value = "Choose a different file: that one is the file currently open.";
+            error.value = t("store.chooseDifferent");
             return false;
           }
           // Read after the dialog so the copy matches the file as it is now.
           if (!data.value) return false;
           await platform.data.save(target, data.value);
           error.value = null;
-          notice.value = `Copy saved to ${target}`;
+          notice.value = t("store.copySaved", { path: target });
           return true;
         } catch (err) {
           error.value = describe(err);
@@ -185,10 +186,10 @@ export function defineFamilyStore(platform: PlatformAPI) {
         notice.value = null;
         syncing.value = true;
         try {
-          const message = await platform.git.sync(path);
+          const result = await platform.git.sync(path);
           data.value = await platform.data.load(path);
           error.value = null;
-          notice.value = message;
+          notice.value = t(`git.result.${result}`);
           return true;
         } catch (err) {
           error.value = describe(err);
@@ -212,9 +213,8 @@ export function defineFamilyStore(platform: PlatformAPI) {
     /** Asks for confirmation first; returns true only if the person was deleted. */
     async function deletePerson(id: PersonId, label: string): Promise<boolean> {
       const count = data.value ? relationshipsOf(data.value, id).length : 0;
-      const also =
-        count > 0 ? ` and ${count} ${count === 1 ? "relationship" : "relationships"}` : "";
-      if (!(await platform.confirm(`Delete ${label}${also}? This cannot be undone.`))) return false;
+      const also = count > 0 ? tn("store.alsoRelationships", count) : "";
+      if (!(await platform.confirm(t("store.confirmDeletePerson", { label, also })))) return false;
       return mutate((current) => removePerson(current, id));
     }
 
@@ -229,7 +229,7 @@ export function defineFamilyStore(platform: PlatformAPI) {
 
     /** Asks for confirmation first; returns true only if the relationship was deleted. */
     async function deleteRelationship(id: RelationshipId, label: string): Promise<boolean> {
-      if (!(await platform.confirm(`Delete "${label}"? This cannot be undone.`))) return false;
+      if (!(await platform.confirm(t("store.confirmDeleteRel", { label })))) return false;
       return mutate((current) => removeRelationship(current, id));
     }
 

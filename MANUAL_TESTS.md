@@ -190,3 +190,18 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 5   | Edit Marie, mark the Martin row as **Main name**, save                                       | "Marie Martin" with no "née".                                                |
 | 6   | Add a person, click **+ First name changed**, enter Mia                                      | Saved as "Marie Martin": the new first name is not main until you choose it. |
 | 7   | Click into a year box in the form                                                            | No stray autofill suggestion (e.g. "1981") appears.                          |
+
+## Language (English / French)
+
+| #   | Action                                                                    | Expected                                                                        |
+| --- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | Launch the app                                                            | **EN / FR** switch at the top right, visible on the welcome screen.             |
+| 2   | Click FR                                                                  | All welcome buttons switch to French.                                           |
+| 3   | Open a family; check the switch                                           | Still at the top right, still visible after scrolling a long list.              |
+| 4   | Start adding a person, type a name, click EN then FR                      | The typed name is still there; labels switch each time.                         |
+| 5   | Month list in the birth date                                              | "Janvier … Décembre" in French, "January … December" in English.                |
+| 6   | Trigger an error (a parent link of a person to themself), switch language | The new error appears in the chosen language.                                   |
+| 7   | Delete a person with relationships                                        | The native confirmation text is in the chosen language (buttons follow the OS). |
+| 8   | Quit and relaunch                                                         | The last chosen language is used.                                               |
+| 9   | Delete the app's saved settings and set the OS language to French         | First launch is in French.                                                      |
+| 10  | Open the family file in a text editor after using French                  | Same JSON structure as before: no French text added by the app.                 |

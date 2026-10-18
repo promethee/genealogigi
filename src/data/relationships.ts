@@ -7,6 +7,7 @@ import {
   UNKNOWN_DATE,
 } from "./dates.ts";
 import type { PartialDateInput } from "./dates.ts";
+import { t } from "../i18n/index.ts";
 import { PersonNotFoundError } from "./errors.ts";
 import {
   createUuidId,
@@ -45,7 +46,7 @@ export class RelationshipError extends Error {
 
 export class RelationshipNotFoundError extends Error {
   constructor(id: RelationshipId) {
-    super(`Relationship not found: ${id}`);
+    super(t("err.relNotFound", { id }));
     this.name = "RelationshipNotFoundError";
   }
 }
@@ -121,7 +122,7 @@ function buildParentChild(
   requirePerson(data, input.parentId);
   requirePerson(data, input.childId);
   if (input.parentId === input.childId) {
-    throw new RelationshipError("A person cannot be their own parent.");
+    throw new RelationshipError(t("err.relSelf"));
   }
   // Permanent links: one per pair. Temporary links: one per pair and nature.
   const exists = data.relationships.some(
@@ -132,19 +133,17 @@ function buildParentChild(
       r.childId === input.childId &&
       (isTemporaryInput(input) ? r.nature === input.nature : !isTemporary(r)),
   );
-  if (exists) throw new RelationshipError("This parent-child relationship already exists.");
+  if (exists) throw new RelationshipError(t("err.relExists"));
   if (isDescendant(data, input.childId, input.parentId)) {
-    throw new RelationshipError(
-      "This would create a cycle: the parent is a descendant of the child.",
-    );
+    throw new RelationshipError(t("err.relCycle"));
   }
   const base = { id, parentId: input.parentId, childId: input.childId };
   if (!isTemporaryInput(input)) return { ...base, nature: input.nature };
-  const startDate = dateFromInput(input.start, "Start date") ?? UNKNOWN_DATE;
+  const startDate = dateFromInput(input.start, t("date.start")) ?? UNKNOWN_DATE;
   if (input.status === "ended") {
-    const endDate = dateFromInput(input.end, "End date") ?? UNKNOWN_DATE;
+    const endDate = dateFromInput(input.end, t("date.end")) ?? UNKNOWN_DATE;
     if (isCertainlyBefore(endDate, startDate)) {
-      throw new RelationshipError("The end date cannot be before the start date.");
+      throw new RelationshipError(t("err.endBeforeStart"));
     }
     return { ...base, nature: input.nature, status: "ended", startDate, endDate };
   }
@@ -175,7 +174,7 @@ function buildPartners(
   requirePerson(data, input.personAId);
   requirePerson(data, input.personBId);
   if (input.personAId === input.personBId) {
-    throw new RelationshipError("A person cannot be their own partner.");
+    throw new RelationshipError(t("err.partnerSelf"));
   }
   const duplicate = data.relationships.some(
     (r) =>
@@ -185,14 +184,14 @@ function buildPartners(
       ((r.personAId === input.personAId && r.personBId === input.personBId) ||
         (r.personAId === input.personBId && r.personBId === input.personAId)),
   );
-  if (duplicate) throw new RelationshipError("This partnership already exists.");
-  const startDate = (input.start && dateFromInput(input.start, "Start date")) || UNKNOWN_DATE;
+  if (duplicate) throw new RelationshipError(t("err.partnerExists"));
+  const startDate = (input.start && dateFromInput(input.start, t("date.start"))) || UNKNOWN_DATE;
   const base = { id, personAId: input.personAId, personBId: input.personBId, startDate };
   if (input.status !== "ended") return { ...base, status: input.status };
   // `ended` additionally requires an end date by type.
-  const endDate = (input.end && dateFromInput(input.end, "End date")) || UNKNOWN_DATE;
+  const endDate = (input.end && dateFromInput(input.end, t("date.end"))) || UNKNOWN_DATE;
   if (isCertainlyBefore(endDate, startDate)) {
-    throw new RelationshipError("The end date cannot be before the start date.");
+    throw new RelationshipError(t("err.endBeforeStart"));
   }
   return { ...base, status: "ended", endDate };
 }
@@ -215,14 +214,14 @@ export function updateRelationship(
       ? buildParentChild(data, input, id, id)
       : buildPartners(data, input, id, id);
   if (isParentChild(existing) !== isParentChild(next)) {
-    throw new RelationshipError("A relationship cannot change between parent-child and partners.");
+    throw new RelationshipError(t("err.relTypeChange"));
   }
   const samePeople = isParentChild(existing)
     ? existing.parentId === (next as RelationshipFamilial).parentId &&
       existing.childId === (next as RelationshipFamilial).childId
     : existing.personAId === (next as RelationshipSocial).personAId &&
       existing.personBId === (next as RelationshipSocial).personBId;
-  if (!samePeople) throw new RelationshipError("The people in a relationship cannot be changed.");
+  if (!samePeople) throw new RelationshipError(t("err.relPeopleChange"));
   return { ...data, relationships: data.relationships.map((r) => (r.id === id ? next : r)) };
 }
 
@@ -231,17 +230,13 @@ export function removeRelationship(data: FamilyData, id: RelationshipId): Family
   return { ...data, relationships: data.relationships.filter((r) => r.id !== id) };
 }
 
-const NATURE_LABEL: Record<RelationshipFamilial["nature"], string> = {
-  "biological-confirmed": "biological, confirmed",
-  "biological-presumed": "biological, presumed",
-  adoptive: "adoptive",
-  step: "step",
-  foster: "foster",
-  guardian: "guardian",
-};
-
 export function natureLabel(nature: RelationshipFamilial["nature"]): string {
-  return NATURE_LABEL[nature];
+  return t(`nature.${nature}`);
+}
+
+/** "ongoing" / "ended" / "unknown" in the active language. */
+export function statusLabel(status: TemporaryStatus | PartnerStatus): string {
+  return t(`status.${status}`);
 }
 
 function periodText(start: VariablePrecisionDate, end?: VariablePrecisionDate): string {
@@ -250,7 +245,7 @@ function periodText(start: VariablePrecisionDate, end?: VariablePrecisionDate): 
     if (!known(start) && !known(end)) return "";
     return `${known(start) ? formatDate(start) : "?"}–${known(end) ? formatDate(end) : "?"}`;
   }
-  return known(start) ? `from ${formatDate(start)}` : "";
+  return known(start) ? t("rel.from", { date: formatDate(start) }) : "";
 }
 
 /** e.g. "Ada is parent of Byron (biological, confirmed)" or "(foster, 1990–1995)". */
@@ -260,15 +255,23 @@ export function describeRelationship(r: Relationship, nameOf: (id: PersonId) => 
     if (isTemporary(r)) {
       const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
       if (period) parts.push(period);
-      if (r.status === "ended" && !period) parts.push("ended");
-      else if (r.status === "unknown") parts.push("status unknown");
-      else if (r.status === "ongoing" && !period) parts.push("ongoing");
+      if (r.status === "ended" && !period) parts.push(statusLabel("ended"));
+      else if (r.status === "unknown") parts.push(t("rel.statusUnknown"));
+      else if (r.status === "ongoing" && !period) parts.push(statusLabel("ongoing"));
     }
-    return `${nameOf(r.parentId)} is parent of ${nameOf(r.childId)} (${parts.join(", ")})`;
+    return t("rel.describe.parent", {
+      parent: nameOf(r.parentId),
+      child: nameOf(r.childId),
+      details: parts.join(", "),
+    });
   }
   const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
-  const detail = period ? `${r.status}, ${period}` : r.status;
-  return `${nameOf(r.personAId)} and ${nameOf(r.personBId)} are partners (${detail})`;
+  const detail = period ? `${statusLabel(r.status)}, ${period}` : statusLabel(r.status);
+  return t("rel.describe.partners", {
+    a: nameOf(r.personAId),
+    b: nameOf(r.personBId),
+    details: detail,
+  });
 }
 
 export interface RelationshipEditValues {

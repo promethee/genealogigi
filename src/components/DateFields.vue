@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { MONTH_NAMES, type PartialDateInput } from "../data/dates.ts";
+import { monthNames, type PartialDateInput } from "../data/dates.ts";
+import { t } from "../i18n/index.ts";
 
 defineProps<{ label: string; testPrefix: string }>();
 const model = defineModel<PartialDateInput>({ required: true });
@@ -13,20 +14,20 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
     <input
       v-model="model.year"
       :data-testid="`${testPrefix}-year`"
-      placeholder="Year"
+      :placeholder="t('form.year')"
       inputmode="numeric"
       :class="[inputClass, 'w-24']"
     />
     <select v-model="model.month" :data-testid="`${testPrefix}-month`" :class="inputClass">
-      <option value="">Month</option>
-      <option v-for="(name, index) in MONTH_NAMES" :key="name" :value="String(index + 1)">
+      <option value="">{{ t("form.month") }}</option>
+      <option v-for="(name, index) in monthNames()" :key="name" :value="String(index + 1)">
         {{ name }}
       </option>
     </select>
     <input
       v-model="model.day"
       :data-testid="`${testPrefix}-day`"
-      placeholder="Day"
+      :placeholder="t('form.day')"
       inputmode="numeric"
       :class="[inputClass, 'w-20']"
     />

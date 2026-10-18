@@ -3,6 +3,7 @@
 //! directly. Only the family file is ever staged.
 
 use serde::Serialize;
+use std::fmt;
 use std::path::Path;
 use std::process::Command;
 
@@ -13,6 +14,40 @@ pub enum GitStatus {
     NotRepo,
     NoRemote,
     Ready,
+}
+
+/// A failed sync: a code the UI translates, plus git's own text when it has any.
+#[derive(Debug, Serialize)]
+pub struct SyncError {
+    pub code: &'static str,
+    pub detail: String,
+}
+
+impl SyncError {
+    fn new(code: &'static str) -> Self {
+        SyncError {
+            code,
+            detail: String::new(),
+        }
+    }
+
+    fn with(code: &'static str, out: &Output) -> Self {
+        let detail = if out.stderr.is_empty() {
+            &out.stdout
+        } else {
+            &out.stderr
+        };
+        SyncError {
+            code,
+            detail: detail.clone(),
+        }
+    }
+}
+
+impl fmt::Display for SyncError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.code, self.detail)
+    }
 }
 
 struct Output {
@@ -28,7 +63,7 @@ impl Output {
 }
 
 /// Runs `git args` in `dir`. `Err` only when git itself cannot be started.
-fn run(dir: &Path, args: &[&str]) -> Result<Output, String> {
+fn run(dir: &Path, args: &[&str]) -> Result<Output, SyncError> {
     let mut cmd = Command::new("git");
     cmd.current_dir(dir).args(args);
     #[cfg(windows)]
@@ -36,9 +71,10 @@ fn run(dir: &Path, args: &[&str]) -> Result<Output, String> {
         use std::os::windows::process::CommandExt;
         cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
     }
-    let out = cmd
-        .output()
-        .map_err(|e| format!("Could not run git: {e}"))?;
+    let out = cmd.output().map_err(|e| SyncError {
+        code: "spawn",
+        detail: e.to_string(),
+    })?;
     Ok(Output {
         code: out.status.code(),
         stdout: String::from_utf8_lossy(&out.stdout).trim().to_string(),
@@ -46,17 +82,17 @@ fn run(dir: &Path, args: &[&str]) -> Result<Output, String> {
     })
 }
 
-fn split(file: &Path) -> Result<(&Path, &str), String> {
-    let dir = file.parent().ok_or("The file has no folder.")?;
+fn split(file: &Path) -> Result<(&Path, &str), SyncError> {
+    let dir = file.parent().ok_or(SyncError::new("bad-path"))?;
     let name = file
         .file_name()
         .and_then(|n| n.to_str())
-        .ok_or("The file name is not valid text.")?;
+        .ok_or(SyncError::new("bad-path"))?;
     Ok((dir, name))
 }
 
 /// Preferred remote: `origin`, else the first one listed.
-fn remote_of(dir: &Path) -> Result<Option<String>, String> {
+fn remote_of(dir: &Path) -> Result<Option<String>, SyncError> {
     let out = run(dir, &["remote"])?;
     if !out.ok() {
         return Ok(None);
@@ -92,37 +128,21 @@ pub fn status(file: &Path) -> GitStatus {
     }
 }
 
-fn describe(status: &GitStatus) -> &'static str {
-    match status {
-        GitStatus::NoGit => "Git was not found. Install git to sync.",
-        GitStatus::NotRepo => "This file is not inside a git repository.",
-        GitStatus::NoRemote => "This repository has no remote to sync with.",
-        GitStatus::Ready => "",
-    }
-}
-
-fn failure(what: &str, out: &Output) -> String {
-    let detail = if out.stderr.is_empty() {
-        &out.stdout
-    } else {
-        &out.stderr
-    };
-    format!("{what}: {detail}")
-}
-
 /// Commits the file if it changed, pulls with rebase, pushes. On a conflict the
 /// rebase is aborted so nothing is lost and the user can resolve it with git.
-pub fn sync(file: &Path) -> Result<String, String> {
-    let state = status(file);
-    if state != GitStatus::Ready {
-        return Err(describe(&state).to_string());
+pub fn sync(file: &Path) -> Result<&'static str, SyncError> {
+    match status(file) {
+        GitStatus::Ready => {}
+        GitStatus::NoGit => return Err(SyncError::new("no-git")),
+        GitStatus::NotRepo => return Err(SyncError::new("not-repo")),
+        GitStatus::NoRemote => return Err(SyncError::new("no-remote")),
     }
     let (dir, name) = split(file)?;
-    let remote = remote_of(dir)?.ok_or("This repository has no remote to sync with.")?;
+    let remote = remote_of(dir)?.ok_or(SyncError::new("no-remote"))?;
 
     let add = run(dir, &["add", "--", name])?;
     if !add.ok() {
-        return Err(failure("Could not stage the file", &add));
+        return Err(SyncError::with("stage", &add));
     }
     // Exit code 1 = there are staged differences for this file.
     let staged = run(dir, &["diff", "--cached", "--quiet", "--", name])?;
@@ -130,13 +150,13 @@ pub fn sync(file: &Path) -> Result<String, String> {
     if committed {
         let commit = run(dir, &["commit", "-m", "Update family data", "--", name])?;
         if !commit.ok() {
-            return Err(failure("Could not commit", &commit));
+            return Err(SyncError::with("commit", &commit));
         }
     }
 
     let branch = run(dir, &["rev-parse", "--abbrev-ref", "HEAD"])?;
     if !branch.ok() || branch.stdout == "HEAD" {
-        return Err("There is no branch with a commit to sync yet.".to_string());
+        return Err(SyncError::new("no-branch"));
     }
     let branch = branch.stdout;
 
@@ -159,22 +179,15 @@ pub fn sync(file: &Path) -> Result<String, String> {
         };
         if !pull.ok() {
             let _ = run(dir, &["rebase", "--abort"]);
-            return Err(failure(
-                "Could not merge the remote changes. Your changes are kept locally; resolve it with git",
-                &pull,
-            ));
+            return Err(SyncError::with("merge", &pull));
         }
     }
 
     let push = run(dir, &["push", "-u", &remote, "HEAD"])?;
     if !push.ok() {
-        return Err(failure("Could not push", &push));
+        return Err(SyncError::with("push", &push));
     }
-    Ok(if committed {
-        "Synced with git: committed your changes and pushed.".to_string()
-    } else {
-        "Synced with git: no local changes to commit.".to_string()
-    })
+    Ok(if committed { "committed" } else { "no-changes" })
 }
 
 #[cfg(test)]
@@ -245,7 +258,7 @@ mod tests {
         let dir = temp_dir("noremote");
         git_ok(&dir, &["init", "-b", "main"]);
         let err = sync(&dir.join("family.json")).unwrap_err();
-        assert!(err.contains("no remote"), "{err}");
+        assert_eq!(err.code, "no-remote");
     }
 
     #[test]
@@ -253,8 +266,7 @@ mod tests {
         let remote = bare_remote();
         let (_a, file_a) = clone_of(&remote, "a");
         fs::write(&file_a, "one").unwrap();
-        let message = sync(&file_a).unwrap();
-        assert!(message.contains("committed"), "{message}");
+        assert_eq!(sync(&file_a).unwrap(), "committed");
 
         let (_b, file_b) = clone_of(&remote, "b");
         assert_eq!(fs::read_to_string(file_b).unwrap(), "one");
@@ -267,8 +279,7 @@ mod tests {
         fs::write(&file, "one").unwrap();
         sync(&file).unwrap();
         let before = run(&dir, &["rev-list", "--count", "HEAD"]).unwrap().stdout;
-        let message = sync(&file).unwrap();
-        assert!(message.contains("no local changes"), "{message}");
+        assert_eq!(sync(&file).unwrap(), "no-changes");
         assert_eq!(
             run(&dir, &["rev-list", "--count", "HEAD"]).unwrap().stdout,
             before
@@ -303,7 +314,7 @@ mod tests {
 
         fs::write(&file_a, "from a").unwrap();
         let err = sync(&file_a).unwrap_err();
-        assert!(err.contains("resolve it with git"), "{err}");
+        assert_eq!(err.code, "merge");
         // Not stuck mid-rebase, local commit and content intact.
         assert!(!dir_a.join(".git/rebase-merge").exists());
         assert!(!dir_a.join(".git/rebase-apply").exists());

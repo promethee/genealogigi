@@ -10,6 +10,7 @@ import {
   type PartialDateInput,
 } from "./dates.ts";
 import { PersonNotFoundError } from "./errors.ts";
+import { t } from "../i18n/index.ts";
 import { involvesPerson } from "./relationships.ts";
 import {
   createUuidId,
@@ -26,8 +27,6 @@ import {
 } from "./types.ts";
 
 export { PersonNotFoundError, UNKNOWN_DATE };
-
-export const UNNAMED_PERSON_LABEL = "Unnamed person";
 
 export type LifeStatusChoice = "unknown" | "living" | "deceased";
 export type FirstNameKind = PersonFirstName["kind"];
@@ -85,21 +84,21 @@ export function emptyPersonForm(): PersonFormValues {
 
 export class NameRequiredError extends Error {
   constructor() {
-    super("At least one name is required.");
+    super(t("err.nameRequired"));
     this.name = "NameRequiredError";
   }
 }
 
 export class NamesNotEditableError extends Error {
   constructor() {
-    super("This person has several names and cannot be edited here yet.");
+    super(t("err.namesNotEditable"));
     this.name = "NamesNotEditableError";
   }
 }
 
 export class DateOrderError extends InvalidDateError {
   constructor() {
-    super("Death cannot be before birth.");
+    super(t("err.deathBeforeBirth"));
     this.name = "DateOrderError";
   }
 }
@@ -132,7 +131,7 @@ function buildEntries<K extends string>(rows: NameEntryInput<K>[], label: string
   return kept.map(({ row, value }, index) => ({
     value,
     kind: row.kind,
-    date: dateFromInput(row.date, `${label} date`) ?? UNKNOWN_DATE,
+    date: dateFromInput(row.date, label) ?? UNKNOWN_DATE,
     ...(index === primaryIndex ? { primary: true } : {}),
   }));
 }
@@ -154,8 +153,8 @@ function rowsFromInput(input: PersonFormInput): {
 
 function buildNames(id: PersonId, input: PersonFormInput): NamedPerson {
   const rows = rowsFromInput(input);
-  const first = buildEntries(rows.first, "First name");
-  const last = buildEntries(rows.last, "Last name");
+  const first = buildEntries(rows.first, t("date.firstName"));
+  const last = buildEntries(rows.last, t("date.lastName"));
   const [firstHead, ...firstRest] = first;
   if (firstHead) return { id, firstNames: [firstHead, ...firstRest], lastNames: last };
   const [lastHead, ...lastRest] = last;
@@ -164,7 +163,7 @@ function buildNames(id: PersonId, input: PersonFormInput): NamedPerson {
 }
 
 function buildBorn(id: PersonId, birth: PartialDateInput): PersonBorn | undefined {
-  const birthDate = dateFromInput(birth, "Birth date");
+  const birthDate = dateFromInput(birth, t("date.birth"));
   return birthDate ? { id, birthDate } : undefined;
 }
 
@@ -175,7 +174,11 @@ function buildLifeStatus(
 ): PersonLiving | PersonDeceased | undefined {
   if (status === "living") return { id, living: true };
   if (status === "deceased") {
-    return { id, living: false, dateOfDeath: dateFromInput(death, "Death date") ?? UNKNOWN_DATE };
+    return {
+      id,
+      living: false,
+      dateOfDeath: dateFromInput(death, t("date.death")) ?? UNKNOWN_DATE,
+    };
   }
   return undefined;
 }
@@ -225,7 +228,7 @@ export function inputFromPerson(person: Person): PersonFormValues {
 export function displayNameParts(person: Person): { name: string; birthName?: string } {
   const first = primaryOf(person.names?.firstNames)?.value;
   const last = primaryOf(person.names?.lastNames)?.value;
-  const name = [first, last].filter(Boolean).join(" ") || UNNAMED_PERSON_LABEL;
+  const name = [first, last].filter(Boolean).join(" ") || t("person.unnamed");
   const birth = person.names?.lastNames?.find((n) => n.kind === "birth")?.value;
   return last && birth && birth !== last ? { name, birthName: birth } : { name };
 }
@@ -233,18 +236,22 @@ export function displayNameParts(person: Person): { name: string; birthName?: st
 /** e.g. "Marie Dubois (née Martin)"; lists and selects use this. */
 export function displayName(person: Person): string {
   const { name, birthName } = displayNameParts(person);
-  return birthName ? `${name} (née ${birthName})` : name;
+  return birthName ? `${name} (${t("person.nee", { name: birthName })})` : name;
 }
 
 /** e.g. "b. 10 Dec 1815 · d. 27 Nov 1852", "living", or "" when nothing is known. */
 export function lifeSummary(person: Person): string {
   const pieces: string[] = [];
-  if (person.born) pieces.push(`b. ${formatDate(person.born.birthDate)}`);
+  if (person.born) pieces.push(t("person.birthShort", { date: formatDate(person.born.birthDate) }));
   const status = person.lifeStatus;
-  if (status?.living) pieces.push("living");
+  if (status?.living) pieces.push(t("person.living"));
   if (status && !status.living) {
     const known = status.dateOfDeath.yearKnown || status.dateOfDeath.monthKnown;
-    pieces.push(known ? `d. ${formatDate(status.dateOfDeath)}` : "deceased");
+    pieces.push(
+      known
+        ? t("person.deathShort", { date: formatDate(status.dateOfDeath) })
+        : t("person.deceased"),
+    );
   }
   return pieces.join(" · ");
 }
@@ -257,7 +264,7 @@ export function lifespan(person: Person): string {
     return `${born ?? "?"}–${yearOf(status.dateOfDeath) ?? "?"}`;
   }
   if (status?.living && person.born) return `${born ?? "?"}–`;
-  if (born !== null) return `b. ${born}`;
+  if (born !== null) return t("person.birthShort", { date: born });
   return "";
 }
 

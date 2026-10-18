@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { t } from "../i18n/index.ts";
 import {
   buildPedigree,
   clampGenerations,
@@ -95,7 +96,9 @@ const lifespans = computed(
         const { birthName } = displayNameParts(p);
         return [
           p.id,
-          [birthName ? `née ${birthName}` : "", lifespan(p)].filter(Boolean).join(" · "),
+          [birthName ? t("person.nee", { name: birthName }) : "", lifespan(p)]
+            .filter(Boolean)
+            .join(" · "),
         ];
       }),
     ),
@@ -105,20 +108,20 @@ const shortNames = computed(
 );
 
 function fullName(id: PersonId): string {
-  return names.value.get(id) ?? "Unknown person";
+  return names.value.get(id) ?? t("rel.unknownPerson");
 }
 </script>
 
 <template>
   <section data-testid="tree-section">
     <p v-if="!people.length" data-testid="tree-empty" class="text-gray-400">
-      Nobody to show yet. Add people and parent-child relationships first.
+      {{ t("tree.empty") }}
     </p>
 
     <template v-else>
       <div class="mb-4 flex flex-wrap items-end gap-4">
         <label class="flex flex-col text-sm">
-          Root person
+          {{ t("tree.root") }}
           <select
             :value="rootId ?? ''"
             data-testid="tree-root"
@@ -131,19 +134,19 @@ function fullName(id: PersonId): string {
           </select>
         </label>
         <label class="flex flex-col text-sm">
-          Show
+          {{ t("tree.show") }}
           <select
             v-model="direction"
             data-testid="tree-direction"
             class="rounded border border-gray-300 px-2 py-1"
           >
-            <option value="ancestors">Ancestors</option>
-            <option value="descendants">Descendants</option>
-            <option value="hourglass">Hourglass (both)</option>
+            <option value="ancestors">{{ t("tree.ancestors") }}</option>
+            <option value="descendants">{{ t("tree.descendants") }}</option>
+            <option value="hourglass">{{ t("tree.hourglass") }}</option>
           </select>
         </label>
         <label class="flex flex-col text-sm">
-          Generations
+          {{ t("tree.generations") }}
           <select
             v-model.number="generations"
             data-testid="tree-generations"
@@ -157,7 +160,7 @@ function fullName(id: PersonId): string {
             <svg width="28" height="6">
               <line x1="0" y1="3" x2="28" y2="3" stroke="#374151" stroke-width="2" />
             </svg>
-            biological, confirmed
+            {{ t("tree.legend.confirmed") }}
           </span>
           <span class="flex items-center gap-1">
             <svg width="28" height="6">
@@ -171,7 +174,7 @@ function fullName(id: PersonId): string {
                 stroke-dasharray="5 3"
               />
             </svg>
-            presumed, adoptive, step, foster or guardian
+            {{ t("tree.legend.other") }}
           </span>
         </p>
       </div>

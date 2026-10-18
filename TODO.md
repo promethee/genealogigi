@@ -118,3 +118,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `name-change-ui`: person form is simple by default; "+ Last name changed (e.g. marriage)" adds a Married row that becomes the main name; "+ First name changed" adds a Current row (not main); detailed controls appear only with several names or a dated/kinded one; list/selects show "Marie Dubois (née Martin)", tree boxes show née before the lifespan; "Primary" is now "Main name"; autofill off. 144 unit tests. Existing name e2e updated for the new default.
 
+- **2026-10-18 (cont.)** — Implemented change `i18n-en-fr`: hand-rolled typed i18n (`src/i18n`, English + French catalogs, plurals, French month names), EN/FR switch in a top bar on every screen, language remembered via `PlatformAPI.settings`, first launch follows the system language, every UI string, error, confirmation and relationship/life text translated, git sync results/errors are now codes from Rust translated in the UI. 159 unit, 7 cargo, 65 e2e. Website and OS dialog buttons not translated. Manual steps added.
+

@@ -1,3 +1,4 @@
+import { monthName, monthShort, t } from "../i18n/index.ts";
 import { UNKNOWN_YEAR_SENTINEL, type VariablePrecisionDate } from "./types.ts";
 
 /** Fully-unknown date: the model requires a date wherever one is expected. */
@@ -28,35 +29,12 @@ export class InvalidDateError extends Error {
   }
 }
 
-const MONTH_ABBREVIATIONS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
-export const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+/** Month names 1..12 in the active language (call at render time, not import time). */
+export const monthNames = (): string[] =>
+  Array.from({ length: 12 }, (_, i) => {
+    const name = monthName(i + 1);
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  });
 
 const MIN_YEAR = 1;
 const MAX_YEAR = UNKNOWN_YEAR_SENTINEL - 1;
@@ -75,10 +53,10 @@ function daysInMonth(year: number, month: number): number {
 function parsePart(label: string, text: string, min: number, max: number): number | null {
   const trimmed = text.trim();
   if (trimmed === "") return null;
-  if (!/^\d+$/.test(trimmed)) throw new InvalidDateError(`${label} must be a number.`);
+  if (!/^\d+$/.test(trimmed)) throw new InvalidDateError(t("err.dateNumber", { label }));
   const value = Number(trimmed);
   if (value < min || value > max) {
-    throw new InvalidDateError(`${label} must be between ${min} and ${max}.`);
+    throw new InvalidDateError(t("err.dateRange", { label, min, max }));
   }
   return value;
 }
@@ -97,19 +75,20 @@ export function dateFromInput(
     try {
       return fn();
     } catch (err) {
-      if (err instanceof InvalidDateError) throw new InvalidDateError(`${label}: ${err.message}`);
+      if (err instanceof InvalidDateError)
+        throw new InvalidDateError(t("err.dateWrap", { label, message: err.message }));
       throw err;
     }
   };
 
   return wrap(() => {
-    const year = parsePart("Year", input.year, MIN_YEAR, MAX_YEAR);
-    const month = parsePart("Month", input.month, 1, 12);
-    const day = parsePart("Day", input.day, 1, 31);
+    const year = parsePart(t("date.year"), input.year, MIN_YEAR, MAX_YEAR);
+    const month = parsePart(t("date.month"), input.month, 1, 12);
+    const day = parsePart(t("date.day"), input.day, 1, 31);
     if (year === null && month === null && day === null) return null;
-    if (day !== null && month === null) throw new InvalidDateError("A day needs a month.");
+    if (day !== null && month === null) throw new InvalidDateError(t("err.dateDayNeedsMonth"));
     if (day !== null && month !== null && day > daysInMonth(year ?? LEAP_YEAR_FOR_UNKNOWN, month)) {
-      throw new InvalidDateError("That day does not exist in that month.");
+      throw new InvalidDateError(t("err.dateDayInvalid"));
     }
     return {
       raw: `${pad(year ?? UNKNOWN_YEAR_SENTINEL, 4)}-${pad(month ?? 1, 2)}-${pad(day ?? 1, 2)}T00:00`,
@@ -146,10 +125,10 @@ export function formatDate(date: VariablePrecisionDate): string {
   const p = parts(date);
   const pieces: string[] = [];
   if (date.dayKnown) pieces.push(String(p.day));
-  if (date.monthKnown) pieces.push(MONTH_ABBREVIATIONS[p.month - 1] ?? "?");
+  if (date.monthKnown) pieces.push(monthShort(p.month));
   if (date.yearKnown) pieces.push(String(p.year));
-  if (pieces.length === 0) return "unknown";
-  if (!date.yearKnown) pieces.push("(year unknown)");
+  if (pieces.length === 0) return t("date.unknown");
+  if (!date.yearKnown) pieces.push(t("date.yearUnknown"));
   return pieces.join(" ");
 }
 

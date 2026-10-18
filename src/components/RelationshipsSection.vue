@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { emptyDateInput } from "../data/dates.ts";
+import { t } from "../i18n/index.ts";
 import { displayName } from "../data/people.ts";
 import {
   describeRelationship,
   natureLabel,
+  statusLabel,
   PARENT_CHILD_NATURES,
   PARTNER_STATUSES,
   TEMPORARY_NATURES,
@@ -41,12 +43,12 @@ const canAdd = computed(() => people.value.length >= 2);
 
 function nameOf(id: PersonId): string {
   const person = people.value.find((p) => p.id === id);
-  return person ? displayName(person) : "Unknown person";
+  return person ? displayName(person) : t("rel.unknownPerson");
 }
 
 async function add(): Promise<void> {
   if (!firstId.value || !secondId.value) {
-    family.error = "Choose two people.";
+    family.error = t("rel.chooseTwo");
     return;
   }
   const parent = { parentId: firstId.value, childId: secondId.value };
@@ -81,51 +83,51 @@ async function add(): Promise<void> {
 
 <template>
   <section class="mt-8" data-testid="relationships-section">
-    <h2 class="mb-3 text-lg font-medium">Relationships</h2>
+    <h2 class="mb-3 text-lg font-medium">{{ t("rel.title") }}</h2>
 
     <p v-if="!canAdd" data-testid="relationships-hint" class="mb-3 text-sm text-gray-400">
-      Add at least two people before adding relationships.
+      {{ t("rel.hint") }}
     </p>
 
     <form class="mb-4 flex flex-wrap items-end gap-3" @submit.prevent="add">
       <label class="flex flex-col text-sm">
-        Type
+        {{ t("rel.type") }}
         <select
           v-model="kind"
           data-testid="rel-kind"
           :disabled="!canAdd"
           class="rounded border border-gray-300 px-2 py-1"
         >
-          <option value="parent">Parent of</option>
-          <option value="partner">Partner of</option>
+          <option value="parent">{{ t("rel.parentOf") }}</option>
+          <option value="partner">{{ t("rel.partnerOf") }}</option>
         </select>
       </label>
       <label class="flex flex-col text-sm">
-        {{ kind === "parent" ? "Parent" : "Person" }}
+        {{ kind === "parent" ? t("rel.parent") : t("rel.person") }}
         <select
           v-model="firstId"
           data-testid="rel-first"
           :disabled="!canAdd"
           class="rounded border border-gray-300 px-2 py-1"
         >
-          <option value="" disabled>Choose…</option>
+          <option value="" disabled>{{ t("rel.choose") }}</option>
           <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
         </select>
       </label>
       <label class="flex flex-col text-sm">
-        {{ kind === "parent" ? "Child" : "Partner" }}
+        {{ kind === "parent" ? t("rel.child") : t("rel.partner") }}
         <select
           v-model="secondId"
           data-testid="rel-second"
           :disabled="!canAdd"
           class="rounded border border-gray-300 px-2 py-1"
         >
-          <option value="" disabled>Choose…</option>
+          <option value="" disabled>{{ t("rel.choose") }}</option>
           <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
         </select>
       </label>
       <label v-if="kind === 'parent'" class="flex flex-col text-sm">
-        Nature
+        {{ t("rel.nature") }}
         <select
           v-model="nature"
           data-testid="rel-nature"
@@ -139,40 +141,42 @@ async function add(): Promise<void> {
       </label>
       <template v-if="isTemporary">
         <label class="flex flex-col text-sm">
-          Status
+          {{ t("rel.status") }}
           <select
             v-model="linkStatus"
             data-testid="rel-link-status"
             class="rounded border border-gray-300 px-2 py-1"
           >
-            <option v-for="s in TEMPORARY_STATUSES" :key="s" :value="s">{{ s }}</option>
+            <option v-for="s in TEMPORARY_STATUSES" :key="s" :value="s">
+              {{ statusLabel(s) }}
+            </option>
           </select>
         </label>
-        <DateFields v-model="start" label="Start (optional)" test-prefix="rel-start" />
+        <DateFields v-model="start" :label="t('rel.start')" test-prefix="rel-start" />
         <DateFields
           v-if="linkStatus === 'ended'"
           v-model="end"
-          label="End (optional)"
+          :label="t('rel.end')"
           test-prefix="rel-end"
         />
       </template>
       <label v-else-if="kind === 'partner'" class="flex flex-col text-sm">
-        Status
+        {{ t("rel.status") }}
         <select
           v-model="status"
           data-testid="rel-status"
           :disabled="!canAdd"
           class="rounded border border-gray-300 px-2 py-1"
         >
-          <option v-for="s in PARTNER_STATUSES" :key="s" :value="s">{{ s }}</option>
+          <option v-for="s in PARTNER_STATUSES" :key="s" :value="s">{{ statusLabel(s) }}</option>
         </select>
       </label>
       <template v-if="kind === 'partner'">
-        <DateFields v-model="start" label="Start (optional)" test-prefix="rel-start" />
+        <DateFields v-model="start" :label="t('rel.start')" test-prefix="rel-start" />
         <DateFields
           v-if="status === 'ended'"
           v-model="end"
-          label="End (optional)"
+          :label="t('rel.end')"
           test-prefix="rel-end"
         />
       </template>
@@ -182,12 +186,12 @@ async function add(): Promise<void> {
         :disabled="!canAdd"
         class="rounded bg-emerald-700 px-4 py-1.5 text-white disabled:bg-gray-300"
       >
-        Add relationship
+        {{ t("rel.add") }}
       </button>
     </form>
 
     <p v-if="!relationships.length" data-testid="relationships-empty" class="text-gray-400">
-      No relationships yet.
+      {{ t("rel.empty") }}
     </p>
     <ul v-else class="divide-y divide-gray-200">
       <li v-for="r in relationships" :key="r.id" data-testid="relationship-row" class="py-2">
@@ -199,14 +203,14 @@ async function add(): Promise<void> {
               class="text-sm text-emerald-700 hover:underline"
               @click="editingId = editingId === r.id ? null : r.id"
             >
-              Edit
+              {{ t("common.edit") }}
             </button>
             <button
               data-testid="delete-relationship"
               class="text-sm text-red-600 hover:underline"
               @click="family.deleteRelationship(r.id, describeRelationship(r, nameOf))"
             >
-              Delete
+              {{ t("common.delete") }}
             </button>
           </span>
         </div>

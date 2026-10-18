@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="K extends string">
 import { computed } from "vue";
-import { MONTH_NAMES } from "../data/dates.ts";
+import { monthNames } from "../data/dates.ts";
+import { t, type MessageKey } from "../i18n/index.ts";
 import { blankNameEntry, type NameEntryInput } from "../data/people.ts";
 
 const props = defineProps<{
@@ -101,16 +102,18 @@ function makePrimary(index: number): void {
         :data-testid="`${testPrefix}-kind`"
         :class="inputClass"
       >
-        <option v-for="kind in kinds" :key="kind" :value="kind">{{ capitalise(kind) }}</option>
+        <option v-for="kind in kinds" :key="kind" :value="kind">
+          {{ t(`kind.${kind}` as MessageKey) }}
+        </option>
       </select>
       <input
         v-if="detailed"
         v-model="entry.date.year"
         :data-testid="`${testPrefix}-year`"
-        :placeholder="index === 0 ? 'Year' : 'Since year'"
+        :placeholder="index === 0 ? t('form.year') : t('form.sinceYear')"
         autocomplete="off"
         inputmode="numeric"
-        :class="[inputClass, index === 0 ? 'w-20' : 'w-28']"
+        :class="[inputClass, index === 0 ? 'w-20' : 'w-36']"
       />
       <select
         v-if="detailed"
@@ -118,8 +121,8 @@ function makePrimary(index: number): void {
         :data-testid="`${testPrefix}-month`"
         :class="inputClass"
       >
-        <option value="">Month</option>
-        <option v-for="(name, i) in MONTH_NAMES" :key="name" :value="String(i + 1)">
+        <option value="">{{ t("form.month") }}</option>
+        <option v-for="(name, i) in monthNames()" :key="name" :value="String(i + 1)">
           {{ name }}
         </option>
       </select>
@@ -127,7 +130,7 @@ function makePrimary(index: number): void {
         v-if="detailed"
         v-model="entry.date.day"
         :data-testid="`${testPrefix}-day`"
-        placeholder="Day"
+        :placeholder="t('form.day')"
         autocomplete="off"
         inputmode="numeric"
         :class="[inputClass, 'w-16']"
@@ -140,13 +143,13 @@ function makePrimary(index: number): void {
           :data-testid="`${testPrefix}-primary`"
           @change="makePrimary(index)"
         />
-        Main name
+        {{ t("form.mainName") }}
       </label>
       <button
         v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-up`"
-        :aria-label="`Move ${noun} up`"
+        :aria-label="t('form.moveUp', { noun })"
         :disabled="index === 0"
         class="rounded border border-gray-300 px-2 py-1 disabled:text-gray-300"
         @click="move(index, -1)"
@@ -157,7 +160,7 @@ function makePrimary(index: number): void {
         v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-down`"
-        :aria-label="`Move ${noun} down`"
+        :aria-label="t('form.moveDown', { noun })"
         :disabled="index === entries.length - 1"
         class="rounded border border-gray-300 px-2 py-1 disabled:text-gray-300"
         @click="move(index, 1)"
@@ -168,7 +171,7 @@ function makePrimary(index: number): void {
         v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-remove`"
-        :aria-label="`Remove ${noun}`"
+        :aria-label="t('form.remove', { noun })"
         class="rounded border border-gray-300 px-2 py-1 text-red-600"
         @click="remove(index)"
       >

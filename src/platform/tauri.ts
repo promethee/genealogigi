@@ -4,12 +4,14 @@ import { exists, readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-
 import { exit } from "@tauri-apps/plugin-process";
 import { load as loadStore } from "@tauri-apps/plugin-store";
 import { loadFamilyData, saveFamilyData, type FileIO } from "../data/store.ts";
+import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
 import type { GitStatus, PlatformAPI } from "./PlatformAPI.ts";
 
 const FAMILY_FILE_FILTER_NAME = "Genealogigi family";
 const DEFAULT_EXTENSIONS = ["json"];
 const SETTINGS_FILE = "settings.json";
 const LAST_FILE_PATH_KEY = "lastFilePath";
+const LANGUAGE_KEY = "language";
 
 // Opened lazily so merely importing this module never touches Tauri.
 const settingsStore = () => loadStore(SETTINGS_FILE, { defaults: {}, autoSave: false });
@@ -55,15 +57,24 @@ export function createPlatformAPI(): PlatformAPI {
         else await store.set(LAST_FILE_PATH_KEY, filePath);
         await store.save();
       },
+      getLanguage: async () => {
+        const store = await settingsStore();
+        return (await store.get<string>(LANGUAGE_KEY)) ?? null;
+      },
+      setLanguage: async (language) => {
+        const store = await settingsStore();
+        await store.set(LANGUAGE_KEY, language);
+        await store.save();
+      },
     },
     git: {
       status: (filePath) => invoke<GitStatus>("git_status", { filePath }),
-      // Rust returns Err(String); invoke rejects with that string, so wrap it.
+      // Rust rejects with { code, detail }; keep it a typed, translated error.
       sync: async (filePath) => {
         try {
-          return await invoke<string>("git_sync", { filePath });
+          return await invoke<GitSyncResult>("git_sync", { filePath });
         } catch (err) {
-          throw err instanceof Error ? err : new Error(String(err));
+          throw toGitSyncError(err);
         }
       },
     },

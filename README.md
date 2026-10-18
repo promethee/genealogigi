@@ -13,6 +13,7 @@ Working today:
 - Save a copy of the open family to another file.
 - Link people as parent-child (biological confirmed or presumed, adoptive, step, foster, guardian with status and dates) or as partners, with validation against duplicates and cycles. Relationships can be edited.
 - Tree charts: pedigree (ancestors), descendants and hourglass; opens on the tree when the family has relationships.
+- English and French interface, switchable at any time (top right).
 - Sync the family file through git (commit, pull --rebase, push) with one button.
 
 Not yet: installers (build from source for now), other export formats.

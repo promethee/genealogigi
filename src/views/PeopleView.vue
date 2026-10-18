@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { t, tn } from "../i18n/index.ts";
 import PedigreeTree from "../components/PedigreeTree.vue";
 import PersonForm from "../components/PersonForm.vue";
 import RelationshipsSection from "../components/RelationshipsSection.vue";
@@ -17,11 +18,6 @@ import { useFamilyStore } from "../store/index.ts";
 const family = useFamilyStore();
 
 // Tree first once there are relationships; chosen once, so adding the first one does not switch tabs.
-const GIT_HINTS: Record<string, string> = {
-  "no-git": "Git sync unavailable: git was not found.",
-  "not-repo": "Git sync unavailable: this file is not in a git repository.",
-  "no-remote": "Git sync unavailable: this repository has no remote.",
-};
 
 const tab = ref<"list" | "tree">(family.data?.relationships.length ? "tree" : "list");
 
@@ -44,21 +40,19 @@ async function submit(input: PersonFormInput): Promise<void> {
 </script>
 
 <template>
-  <main class="h-screen w-screen overflow-auto bg-white p-6 text-gray-700">
+  <main class="h-full w-full overflow-auto bg-white p-6 text-gray-700">
     <header class="mb-4">
       <p data-testid="loaded-path" class="text-sm text-gray-500">{{ family.filePath }}</p>
       <p data-testid="loaded-summary" class="text-lg">
-        {{ family.data?.people.length }}
-        {{ family.data?.people.length === 1 ? "person" : "people" }} ·
-        {{ family.data?.relationships.length }}
-        relationships
+        {{ tn("summary.people", family.data?.people.length ?? 0) }} ·
+        {{ tn("summary.relationships", family.data?.relationships.length ?? 0) }}
       </p>
       <button
         data-testid="save-copy"
         class="mt-2 rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
         @click="family.saveCopy()"
       >
-        Save a copy…
+        {{ t("header.saveCopy") }}
       </button>
       <button
         v-if="family.gitStatus === 'ready'"
@@ -67,14 +61,14 @@ async function submit(input: PersonFormInput): Promise<void> {
         class="mt-2 ml-2 rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:text-gray-400"
         @click="family.syncGit()"
       >
-        {{ family.syncing ? "Syncing…" : "Sync with Git" }}
+        {{ family.syncing ? t("git.syncing") : t("git.sync") }}
       </button>
       <p
         v-else-if="family.gitStatus !== 'unavailable'"
         data-testid="git-hint"
         class="mt-2 text-sm text-gray-400"
       >
-        {{ GIT_HINTS[family.gitStatus] }}
+        {{ t(`git.hint.${family.gitStatus}`) }}
       </p>
       <p v-if="family.notice" data-testid="notice" class="mt-2 text-sm text-emerald-700">
         {{ family.notice }}
@@ -88,7 +82,7 @@ async function submit(input: PersonFormInput): Promise<void> {
         :class="tab === 'list' ? 'border-b-2 border-emerald-700 font-medium' : 'text-gray-500'"
         @click="tab = 'list'"
       >
-        People
+        {{ t("tab.people") }}
       </button>
       <button
         data-testid="tab-tree"
@@ -96,7 +90,7 @@ async function submit(input: PersonFormInput): Promise<void> {
         :class="tab === 'tree' ? 'border-b-2 border-emerald-700 font-medium' : 'text-gray-500'"
         @click="tab = 'tree'"
       >
-        Tree
+        {{ t("tab.tree") }}
       </button>
     </nav>
 
@@ -108,7 +102,7 @@ async function submit(input: PersonFormInput): Promise<void> {
         class="mb-4 rounded bg-emerald-700 px-4 py-2 text-white"
         @click="formTarget = 'new'"
       >
-        Add person
+        {{ t("person.add") }}
       </button>
 
       <PersonForm
@@ -124,7 +118,7 @@ async function submit(input: PersonFormInput): Promise<void> {
       </p>
 
       <p v-if="!family.data?.people.length" data-testid="empty-state" class="text-gray-400">
-        No people yet. Add the first person to get started.
+        {{ t("person.empty") }}
       </p>
       <ul v-else class="divide-y divide-gray-200">
         <li
@@ -148,14 +142,14 @@ async function submit(input: PersonFormInput): Promise<void> {
               class="text-sm text-emerald-700 hover:underline disabled:text-gray-400 disabled:no-underline"
               @click="formTarget = person.id"
             >
-              Edit
+              {{ t("common.edit") }}
             </button>
             <button
               data-testid="delete-person"
               class="text-sm text-red-600 hover:underline"
               @click="family.deletePerson(person.id, displayName(person))"
             >
-              Delete
+              {{ t("common.delete") }}
             </button>
           </span>
         </li>

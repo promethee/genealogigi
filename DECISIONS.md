@@ -206,3 +206,12 @@ credentials and ssh keys, no auth code, no new plugin scope, testable with
 temporary local repositories. Cost: git must be installed (the UI says so).
 Manual button only; conflicts abort the rebase and are resolved with git.
 
+## Internationalisation: English and French (2026-10-18)
+
+Decision: hand-rolled i18n (`src/i18n`), no library. Typed catalogs (French must
+have every English key), `t()` usable in the data layer, plural keys via
+`Intl.PluralRules`, month names in the catalog. The switch is a fixed top bar
+(EN | FR) on every screen. Language is stored in the settings store, not in the
+family file. Adding a language = a new catalog file and one entry in `LOCALES`.
+Shells return codes (git sync), never sentences.
+

@@ -9,10 +9,13 @@ fn git_status(file_path: String) -> git::GitStatus {
 
 // Runs git, which can take a while (network), so keep it off the UI thread.
 #[tauri::command]
-async fn git_sync(file_path: String) -> Result<String, String> {
+async fn git_sync(file_path: String) -> Result<&'static str, git::SyncError> {
     tauri::async_runtime::spawn_blocking(move || git::sync(Path::new(&file_path)))
         .await
-        .map_err(|e| e.to_string())?
+        .map_err(|e| git::SyncError {
+            code: "unknown",
+            detail: e.to_string(),
+        })?
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
