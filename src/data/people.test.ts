@@ -11,6 +11,7 @@ import {
   type LastNameKind,
   lastNameSuggestions,
   lifeSummary,
+  placeSuggestions,
   lifespan,
   type PersonFormInput,
   NameRequiredError,
@@ -184,7 +185,7 @@ describe("person dates and life status", () => {
     const person = data.people[0] as Person;
     expect(person.born?.birthDate.raw).toBe("1815-12-10T00:00");
     expect(person.lifeStatus).toMatchObject({ living: false });
-    expect(lifeSummary(person)).toBe("b. 10 Dec 1815 · d. 27 Nov 1852");
+    expect(lifeSummary(person)).toBe("born 10 Dec 1815 · died 27 Nov 1852");
     expect(lifespan(person)).toBe("1815–1852");
   });
 
@@ -224,7 +225,7 @@ describe("person dates and life status", () => {
     const make = (extra: Partial<PersonFormInput>) =>
       addPerson(base, { firstName: "A", lastName: "", ...extra }).people[0] as Person;
     expect(lifespan(make({ birth: d("1990"), status: "living" }))).toBe("1990–");
-    expect(lifespan(make({ birth: d("1815") }))).toBe("b. 1815");
+    expect(lifespan(make({ birth: d("1815") }))).toBe("born 1815");
     expect(lifespan(make({ status: "living" }))).toBe("");
     expect(lifespan(make({ status: "deceased", death: d("1852") }))).toBe("?–1852");
     expect(lifeSummary(make({ status: "living" }))).toBe("living");
@@ -301,8 +302,10 @@ describe("person dates and life status", () => {
       firstNames: [{ value: "Ada", kind: "birth", date: empty, primary: true }],
       lastNames: [{ value: "Lovelace", kind: "birth", date: empty, primary: true }],
       birth: d("1815", "12", "10"),
+      birthPlace: "",
       status: "deceased",
       death: d("1852", "11", "27"),
+      deathPlace: "",
     });
   });
 
@@ -606,5 +609,114 @@ describe("no future dates", () => {
     expect(() =>
       addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: { ...blank, year: "1815" } }),
     ).not.toThrow();
+  });
+});
+
+describe("birth and death places", () => {
+  const blank = { year: "", month: "", day: "" };
+
+  it("stores a trimmed birth place with the birth date", () => {
+    const p = onlyPerson(
+      addPerson(EMPTY, {
+        firstName: "Ada",
+        lastName: "",
+        birth: { ...blank, year: "1815" },
+        birthPlace: "  London, UK ",
+      }),
+    );
+    expect(p.born?.birthPlace).toBe("London, UK");
+    expect(p.born?.birthDate.yearKnown).toBe(true);
+  });
+
+  it("keeps a place without a date, with a fully unknown date", () => {
+    const p = onlyPerson(
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: blank, birthPlace: "Lyon" }),
+    );
+    expect(p.born).toMatchObject({ birthPlace: "Lyon", birthDate: { yearKnown: false } });
+  });
+
+  it("stores no birth facet without a date or a place, and no empty place field", () => {
+    const none = onlyPerson(addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: blank }));
+    expect(none.born).toBeUndefined();
+    const dated = onlyPerson(
+      addPerson(EMPTY, {
+        firstName: "Ada",
+        lastName: "",
+        birth: { ...blank, year: "1900" },
+        birthPlace: "   ",
+      }),
+    );
+    expect("birthPlace" in (dated.born ?? {})).toBe(false);
+  });
+
+  it("stores the death place only for a deceased person", () => {
+    const deceased = onlyPerson(
+      addPerson(EMPTY, {
+        firstName: "Ada",
+        lastName: "",
+        status: "deceased",
+        death: { ...blank, year: "1852" },
+        deathPlace: "Paris",
+      }),
+    );
+    expect(deceased.lifeStatus).toMatchObject({ living: false, placeOfDeath: "Paris" });
+    const living = onlyPerson(
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", status: "living", deathPlace: "Paris" }),
+    );
+    expect(living.lifeStatus).toEqual({ id: living.id, living: true });
+  });
+
+  it("round-trips through the form values and survives edits that omit places", () => {
+    const added = addPerson(EMPTY, {
+      firstName: "Ada",
+      lastName: "",
+      birth: { ...blank, year: "1815" },
+      birthPlace: "London",
+      status: "deceased",
+      death: { ...blank, year: "1852" },
+      deathPlace: "Paris",
+    });
+    const person = onlyPerson(added);
+    expect(inputFromPerson(person)).toMatchObject({ birthPlace: "London", deathPlace: "Paris" });
+    // A caller that only renames leaves birth and death (and places) untouched.
+    const renamed = onlyPerson(
+      updatePerson(added, person.id, { firstName: "Adaline", lastName: "" }),
+    );
+    expect(renamed.born?.birthPlace).toBe("London");
+    expect(renamed.lifeStatus).toMatchObject({ placeOfDeath: "Paris" });
+    // The form sends everything: an emptied place is removed.
+    const cleared = onlyPerson(
+      updatePerson(added, person.id, {
+        ...inputFromPerson(person),
+        birthPlace: "",
+      }),
+    );
+    expect(cleared.born && "birthPlace" in cleared.born).toBe(false);
+  });
+
+  it("loads old files without places", () => {
+    const old = onlyPerson(
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: { ...blank, year: "1815" } }),
+    );
+    expect(inputFromPerson(old).birthPlace).toBe("");
+    expect(inputFromPerson(old).deathPlace).toBe("");
+  });
+});
+
+describe("placeSuggestions", () => {
+  it("ranks birth and death places together, most frequent first, ignoring case", () => {
+    const blank = { year: "", month: "", day: "" };
+    let data = EMPTY;
+    for (const place of ["Lyon", "Paris", "lyon", "Nice"]) {
+      data = addPerson(data, { firstName: "X", lastName: "", birth: blank, birthPlace: place });
+    }
+    data = addPerson(data, {
+      firstName: "Y",
+      lastName: "",
+      status: "deceased",
+      death: blank,
+      deathPlace: "Paris",
+    });
+    expect(placeSuggestions(data.people)).toEqual(["Lyon", "Paris", "Nice"]);
   });
 });

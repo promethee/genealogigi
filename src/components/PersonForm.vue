@@ -17,6 +17,8 @@ const props = defineProps<{
   autoStatus?: boolean;
   /** Last names already saved, offered as suggestions in the last-name fields. */
   lastNameSuggestions?: string[];
+  /** Places already saved, offered in the birth and death place fields. */
+  placeSuggestions?: string[];
 }>();
 const emit = defineEmits<{ submit: [input: PersonFormValues]; cancel: [] }>();
 
@@ -95,6 +97,20 @@ const birthYearExample = computed(() =>
         :class="[inputClass, 'w-20']"
       />
     </fieldset>
+    <datalist v-if="placeSuggestions?.length" id="place-suggestions">
+      <option v-for="place in placeSuggestions" :key="place" :value="place" />
+    </datalist>
+    <label class="label max-w-md">
+      {{ t("form.birthPlace") }}
+      <input
+        v-model="form.birthPlace"
+        data-testid="birth-place"
+        :placeholder="t('form.placeExample')"
+        autocomplete="off"
+        :list="placeSuggestions?.length ? 'place-suggestions' : undefined"
+        :class="inputClass"
+      />
+    </label>
 
     <div class="flex flex-wrap items-end gap-3">
       <label class="label">
@@ -132,6 +148,17 @@ const birthYearExample = computed(() =>
           inputmode="numeric"
           :class="[inputClass, 'w-20']"
         />
+        <label class="label max-w-md">
+          {{ t("form.deathPlace") }}
+          <input
+            v-model="form.deathPlace"
+            data-testid="death-place"
+            :placeholder="t('form.placeExample')"
+            autocomplete="off"
+            :list="placeSuggestions?.length ? 'place-suggestions' : undefined"
+            :class="inputClass"
+          />
+        </label>
       </fieldset>
     </div>
 

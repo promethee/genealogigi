@@ -87,9 +87,9 @@ Start from an open family with at least one person.
 
 | #   | Action                                                                          | Expected                                                                                                           |
 | --- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 1   | Add person Ada, birth 10 December 1815, status Deceased, death 27 November 1852 | List shows "b. 10 Dec 1815 · d. 27 Nov 1852".                                                                      |
+| 1   | Add person Ada, birth 10 December 1815, status Deceased, death 27 November 1852 | List shows "born 10 Dec 1815 · died 27 Nov 1852".                                                                  |
 | 2   | Edit Ada                                                                        | All fields are pre-filled with the saved values.                                                                   |
-| 3   | Add person with only birth year 1900                                            | List shows "b. 1900".                                                                                              |
+| 3   | Add person with only birth year 1900                                            | List shows "born 1900".                                                                                            |
 | 4   | Enter a day but no month                                                        | Error "A day needs a month." Nothing saved.                                                                        |
 | 5   | Enter 31 April                                                                  | Error that the day does not exist in that month.                                                                   |
 | 6   | Enter death year earlier than birth year                                        | Error "Death cannot be before birth."                                                                              |
@@ -257,3 +257,19 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 8   | Save without typing a birth year                               | No birth date stored.                                                                          |
 | 9   | Enter next year as the birth year                              | Error "Birth date cannot be in the future."                                                    |
 | 10  | Deceased with a death year in the future                       | Error "Death date cannot be in the future."                                                    |
+
+## Person card, places, delete on the card
+
+| #   | Action                                                                            | Expected                                                                                         |
+| --- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1   | Add a person with birth year 1815, birth place London, deceased 1852, place Paris | The list shows "born 1815 · died 1852".                                                          |
+| 2   | Click the person's name                                                           | A card opens: names (kind, main marked), "born 1815 in London", "died 1852 in Paris", relatives. |
+| 3   | Click a parent or child name in the card                                          | That person's card opens.                                                                        |
+| 4   | Click **Edit** in the card, change the place, Save                                | Back on the card with the new place.                                                             |
+| 5   | Look at the list rows                                                             | Only **Edit**: no Delete button.                                                                 |
+| 6   | Open a card, click **Delete**, cancel, then Delete and confirm                    | Cancel keeps the person; confirm removes the person and their relationships and closes the card. |
+| 7   | Tree tab: click a person                                                          | Their card opens **below** the chart; the chart root is unchanged and the box is outlined.       |
+| 8   | Double-click a person, or click **Show tree from here**                           | The chart re-centres on them.                                                                    |
+| 9   | Edit a person from the tree card and Save                                         | The chart and the card show the new name.                                                        |
+| 10  | Add person, click into Birth place                                                | Places already saved are suggested.                                                              |
+| 11  | App logo (top left) and window/taskbar icon                                       | A tree growing upward: root at the bottom, branches above.                                       |

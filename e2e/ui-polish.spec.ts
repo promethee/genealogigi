@@ -60,14 +60,18 @@ test("welcome screen: name, tagline and three icon buttons", async ({ page }) =>
   await expect(page.getByTestId("tagline")).toContainText("Votre arbre généalogique");
 });
 
-test("Edit and Delete look like buttons: bordered, with an icon, Delete in red", async ({
-  page,
-}) => {
+test("Edit and Delete look like buttons; Delete is only on the person card", async ({ page }) => {
   await newFamily(page);
   await page.getByTestId("add-person").click();
   await page.getByTestId("first-name").fill("Ada");
   await page.getByTestId("submit-person").click();
-  for (const id of ["edit-person", "delete-person"]) {
+
+  // The list row offers Edit, but no direct Delete.
+  await expect(page.getByTestId("edit-person")).toBeVisible();
+  await expect(page.getByTestId("delete-person")).toHaveCount(0);
+
+  await page.getByTestId("person-name").click();
+  for (const id of ["edit-person", "detail-edit", "detail-delete"]) {
     const button = page.getByTestId(id);
     await expect(button.locator("svg")).toBeVisible();
     await expect(button).toHaveCSS("border-top-width", "1px");
@@ -75,7 +79,7 @@ test("Edit and Delete look like buttons: bordered, with an icon, Delete in red",
   }
   // Delete is visually distinct (red) from Edit.
   const colorOf = (id: string) => page.getByTestId(id).evaluate((el) => getComputedStyle(el).color);
-  expect(await colorOf("delete-person")).not.toBe(await colorOf("edit-person"));
+  expect(await colorOf("detail-delete")).not.toBe(await colorOf("detail-edit"));
 });
 
 test("the people list shows an avatar with initials", async ({ page }) => {

@@ -60,8 +60,12 @@ export interface PersonFormInput {
   firstNames?: NameEntryInput<FirstNameKind>[];
   lastNames?: NameEntryInput<LastNameKind>[];
   birth?: PartialDateInput;
+  /** Optional; sent together with `birth` by the form. */
+  birthPlace?: string;
   status?: LifeStatusChoice;
   death?: PartialDateInput;
+  /** Optional; only kept when the status is deceased. */
+  deathPlace?: string;
 }
 
 /** A fully-populated form state. */
@@ -69,8 +73,10 @@ export interface PersonFormValues {
   firstNames: NameEntryInput<FirstNameKind>[];
   lastNames: NameEntryInput<LastNameKind>[];
   birth: PartialDateInput;
+  birthPlace: string;
   status: LifeStatusChoice;
   death: PartialDateInput;
+  deathPlace: string;
 }
 
 export function emptyPersonForm(): PersonFormValues {
@@ -78,8 +84,10 @@ export function emptyPersonForm(): PersonFormValues {
     firstNames: [blankNameEntry<FirstNameKind>("birth", true)],
     lastNames: [blankNameEntry<LastNameKind>("birth", true)],
     birth: emptyDateInput(),
+    birthPlace: "",
     status: "living",
     death: emptyDateInput(),
+    deathPlace: "",
   };
 }
 
@@ -180,18 +188,22 @@ function buildNames(id: PersonId, input: PersonFormInput): NamedPerson {
   throw new NameRequiredError();
 }
 
-function buildBorn(id: PersonId, birth: PartialDateInput): PersonBorn | undefined {
+function buildBorn(id: PersonId, birth: PartialDateInput, place = ""): PersonBorn | undefined {
   const birthDate = dateFromInput(birth, t("date.birth"));
   if (birthDate && isInFuture(birthDate)) {
     throw new InvalidDateError(t("err.dateFuture", { label: t("date.birth") }));
   }
-  return birthDate ? { id, birthDate } : undefined;
+  const birthPlace = place.trim();
+  // A place alone still needs a date on the facet: a fully unknown one.
+  if (!birthDate && !birthPlace) return undefined;
+  return { id, birthDate: birthDate ?? UNKNOWN_DATE, ...(birthPlace ? { birthPlace } : {}) };
 }
 
 function buildLifeStatus(
   id: PersonId,
   status: LifeStatusChoice,
   death: PartialDateInput,
+  deathPlace = "",
 ): PersonLiving | PersonDeceased | undefined {
   if (status === "living") return { id, living: true };
   if (status === "deceased") {
@@ -199,7 +211,8 @@ function buildLifeStatus(
     if (isInFuture(dateOfDeath)) {
       throw new InvalidDateError(t("err.dateFuture", { label: t("date.death") }));
     }
-    return { id, living: false, dateOfDeath };
+    const placeOfDeath = deathPlace.trim();
+    return { id, living: false, dateOfDeath, ...(placeOfDeath ? { placeOfDeath } : {}) };
   }
   return undefined;
 }
@@ -237,8 +250,10 @@ export function inputFromPerson(person: Person): PersonFormValues {
     firstNames: rowsFromStored(person.names?.firstNames, "birth"),
     lastNames: rowsFromStored(person.names?.lastNames, "birth"),
     birth: inputFromDate(person.born?.birthDate),
+    birthPlace: person.born?.birthPlace ?? "",
     status: !status ? "unknown" : status.living ? "living" : "deceased",
     death: inputFromDate(status && !status.living ? status.dateOfDeath : undefined),
+    deathPlace: status && !status.living ? (status.placeOfDeath ?? "") : "",
   };
 }
 
@@ -261,34 +276,56 @@ export function displayName(person: Person): string {
 }
 
 /**
- * Every last name already saved, for suggestions: most frequent first, then alphabetical,
- * one entry per name ignoring case (shown in its most common spelling).
+ * Distinct values ranked for suggestions: most frequent first, then alphabetical, one entry
+ * per value ignoring case (shown in its most common spelling).
  */
-export function lastNameSuggestions(people: Person[]): string[] {
+function rankedSuggestions(values: string[]): string[] {
   const groups = new Map<string, Map<string, number>>();
-  for (const person of people) {
-    for (const entry of person.names?.lastNames ?? []) {
-      const value = entry.value.trim();
-      if (value === "") continue;
-      const key = value.toLocaleLowerCase();
-      const spellings = groups.get(key) ?? new Map<string, number>();
-      spellings.set(value, (spellings.get(value) ?? 0) + 1);
-      groups.set(key, spellings);
-    }
+  for (const raw of values) {
+    const value = raw.trim();
+    if (value === "") continue;
+    const key = value.toLocaleLowerCase();
+    const spellings = groups.get(key) ?? new Map<string, number>();
+    spellings.set(value, (spellings.get(value) ?? 0) + 1);
+    groups.set(key, spellings);
   }
   const byCountThenName = (a: [string, number], b: [string, number]) =>
     b[1] - a[1] || a[0].localeCompare(b[0]);
   return [...groups.values()]
     .map((spellings) => {
       const total = [...spellings.values()].reduce((sum, n) => sum + n, 0);
-      const [spelling] = [...spellings.entries()].sort(byCountThenName)[0] as [string, number];
+      // The most common spelling; on a tie, the one seen first.
+      let spelling = "";
+      let best = 0;
+      for (const [value, count] of spellings) {
+        if (count > best) {
+          spelling = value;
+          best = count;
+        }
+      }
       return [spelling, total] as [string, number];
     })
     .sort(byCountThenName)
     .map(([name]) => name);
 }
 
-/** e.g. "b. 10 Dec 1815 · d. 27 Nov 1852", "living", or "" when nothing is known. */
+/** Every last name already saved, for suggestions. */
+export function lastNameSuggestions(people: Person[]): string[] {
+  return rankedSuggestions(people.flatMap((p) => (p.names?.lastNames ?? []).map((n) => n.value)));
+}
+
+/** Every birth and death place already saved, for suggestions. */
+export function placeSuggestions(people: Person[]): string[] {
+  const places: string[] = [];
+  for (const person of people) {
+    if (person.born?.birthPlace) places.push(person.born.birthPlace);
+    const status = person.lifeStatus;
+    if (status && !status.living && status.placeOfDeath) places.push(status.placeOfDeath);
+  }
+  return rankedSuggestions(places);
+}
+
+/** e.g. "born 10 Dec 1815 · died 27 Nov 1852", "living", or "" when nothing is known. */
 export function lifeSummary(person: Person): string {
   const pieces: string[] = [];
   if (person.born) pieces.push(t("person.birthShort", { date: formatDate(person.born.birthDate) }));
@@ -305,7 +342,7 @@ export function lifeSummary(person: Person): string {
   return pieces.join(" · ");
 }
 
-/** e.g. "1815–1852", "1990–", "b. 1815", or "" when there is nothing to show. */
+/** e.g. "1815–1852", "1990–", "born 1815", or "" when there is nothing to show. */
 export function lifespan(person: Person): string {
   const born = person.born ? yearOf(person.born.birthDate) : null;
   const status = person.lifeStatus;
@@ -320,11 +357,12 @@ export function lifespan(person: Person): string {
 export function addPerson(data: FamilyData, input: PersonFormInput): FamilyData {
   const id = createUuidId<"PersonId">();
   const person: Person = { id, names: buildNames(id, input) };
-  const born = buildBorn(id, input.birth ?? emptyDateInput());
+  const born = buildBorn(id, input.birth ?? emptyDateInput(), input.birthPlace);
   const lifeStatus = buildLifeStatus(
     id,
     input.status ?? "unknown",
     input.death ?? emptyDateInput(),
+    input.deathPlace,
   );
   if (born) person.born = born;
   if (lifeStatus) person.lifeStatus = lifeStatus;
@@ -342,11 +380,11 @@ export function updatePerson(data: FamilyData, id: PersonId, input: PersonFormIn
   const updated: Person = { ...rest, names: buildNames(id, input) };
 
   // Facets the caller did not send are kept as they were.
-  const born = input.birth === undefined ? oldBorn : buildBorn(id, input.birth);
+  const born = input.birth === undefined ? oldBorn : buildBorn(id, input.birth, input.birthPlace);
   const lifeStatus =
     input.status === undefined
       ? oldLifeStatus
-      : buildLifeStatus(id, input.status, input.death ?? emptyDateInput());
+      : buildLifeStatus(id, input.status, input.death ?? emptyDateInput(), input.deathPlace);
   if (born) updated.born = born;
   if (lifeStatus) updated.lifeStatus = lifeStatus;
 

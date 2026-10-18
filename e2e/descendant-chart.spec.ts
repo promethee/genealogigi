@@ -84,7 +84,7 @@ test("clicking re-roots and stays in descendants mode; switching back shows ance
 }) => {
   await buildFamily(page);
   await page.getByTestId("tree-root").selectOption({ label: "GreatGran" });
-  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).click();
+  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
   await expect(page.getByTestId("tree-node")).toHaveCount(2); // Mum, Me
   await page.getByTestId("tree-direction").selectOption("ancestors");

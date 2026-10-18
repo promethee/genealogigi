@@ -128,3 +128,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented changes `two-parents` (relationship form defaults to "Parents of": child + two parents + nature added atomically, optional "also record as partners" with status unknown) and `birth-date-default` (grey example birth year = current year − 30, as the user chose; birth and death dates in the future rejected). 183 unit, ~97 e2e. Manual steps added.
 
+- **2026-10-18 (cont.)** — Implemented change `person-detail`: read-only person card (names, birth/death date and place, parents, partners, children, siblings; relatives are links) with Edit (returns to the card) and Delete (Delete now only on the card, not in list rows); optional birth and death places (optional model fields, suggestions from saved places); tree click opens the card below the chart, double-click or "Show tree from here" re-roots, selected box outlined; "born/died" wording; logo and app icon flipped (tree growing upward). 199 unit, 113 e2e.
+

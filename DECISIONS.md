@@ -215,3 +215,11 @@ have every English key), `t()` usable in the data layer, plural keys via
 family file. Adding a language = a new catalog file and one entry in `LOCALES`.
 Shells return codes (git sync), never sentences.
 
+## Birth and death places (2026-10-18)
+
+Decision: `PersonBorn.birthPlace?` and `PersonDeceased.placeOfDeath?` are optional
+free-text fields; no schema version bump (files without them load unchanged,
+older app versions ignore them). Places are suggested from places already saved.
+Relatives (parents, children, partners, siblings) are always derived from the
+stored relationships, never stored.
+

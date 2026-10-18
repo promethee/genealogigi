@@ -67,7 +67,7 @@ test("saves birth, deceased status and death date, and shows a summary", async (
     status: "deceased",
     death: ["1852", "11", "27"],
   });
-  await expect(page.getByTestId("person-life")).toHaveText("b. 10 Dec 1815 · d. 27 Nov 1852");
+  await expect(page.getByTestId("person-life")).toHaveText("born 10 Dec 1815 · died 27 Nov 1852");
 });
 
 test("accepts a partial date and a living person", async ({ page }) => {
@@ -77,7 +77,7 @@ test("accepts a partial date and a living person", async ({ page }) => {
   await page.getByTestId("first-name").fill("Carl");
   await page.getByTestId("birth-year").fill("1990");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-life")).toHaveText(["living", "b. 1990 · living"]);
+  await expect(page.getByTestId("person-life")).toHaveText(["living", "born 1990 · living"]);
 });
 
 test("rejects a day without a month, an impossible day and death before birth", async ({
@@ -119,11 +119,11 @@ test("editing shows the saved dates and keeps them after a restart", async ({ pa
   await page.getByTestId("life-status").selectOption("deceased");
   await page.getByTestId("death-year").fill("1852");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-life")).toHaveText("b. 10 Dec 1815 · d. 1852");
+  await expect(page.getByTestId("person-life")).toHaveText("born 10 Dec 1815 · died 1852");
 
   await page.reload();
   await page.getByTestId("resume").click();
-  await expect(page.getByTestId("person-life")).toHaveText("b. 10 Dec 1815 · d. 1852");
+  await expect(page.getByTestId("person-life")).toHaveText("born 10 Dec 1815 · died 1852");
 });
 
 test("the tree shows a lifespan under names that have dates", async ({ page }) => {

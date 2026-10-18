@@ -84,7 +84,7 @@ test("keeps dashed links and limits each side by generations", async ({ page }) 
 
 test("clicking re-roots and stays in hourglass mode", async ({ page }) => {
   await buildFamily(page);
-  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).click();
+  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
   await expect(page.getByTestId("tree-direction")).toHaveValue("hourglass");
   await expect(page.getByTestId("tree-node")).toHaveCount(4); // Gran, Mum, Me, Kid

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import AppIcon from "../components/AppIcon.vue";
 import { t, tn } from "../i18n/index.ts";
 import PedigreeTree from "../components/PedigreeTree.vue";
+import PersonDetail from "../components/PersonDetail.vue";
 import PersonForm from "../components/PersonForm.vue";
 import RelationshipsSection from "../components/RelationshipsSection.vue";
 import {
@@ -12,6 +13,7 @@ import {
   emptyPersonForm,
   lastNameSuggestions,
   lifeSummary,
+  placeSuggestions,
   type PersonFormInput,
   type PersonFormValues,
 } from "../data/people.ts";
@@ -26,6 +28,9 @@ const tab = ref<"list" | "tree">(family.data?.relationships.length ? "tree" : "l
 
 /** "new" = add form open, a PersonId = editing that person, null = form closed. */
 const formTarget = ref<"new" | PersonId | null>(null);
+
+/** The person whose detail card is open (read-only), or null. */
+const viewing = ref<PersonId | null>(null);
 
 function initialInput(): PersonFormValues {
   const target = formTarget.value;
@@ -63,7 +68,11 @@ async function submit(input: PersonFormInput): Promise<void> {
   if (!target) return;
   const ok =
     target === "new" ? await family.addPerson(input) : await family.editPerson(target, input);
-  if (ok) formTarget.value = null;
+  if (ok) {
+    formTarget.value = null;
+    // After editing someone, go back to their card.
+    if (target !== "new") viewing.value = target;
+  }
 }
 </script>
 
@@ -148,12 +157,24 @@ async function submit(input: PersonFormInput): Promise<void> {
           </button>
         </div>
 
+        <div v-if="viewing && !formTarget" class="card p-5" data-testid="person-card">
+          <PersonDetail
+            :key="viewing"
+            :person-id="viewing"
+            @edit="formTarget = viewing"
+            @close="viewing = null"
+            @select="viewing = $event"
+            @deleted="viewing = null"
+          />
+        </div>
+
         <div v-if="formTarget" class="card p-5">
           <PersonForm
             :key="formTarget"
             :initial="initialInput()"
             :auto-status="formTarget === 'new'"
             :last-name-suggestions="lastNameSuggestions(family.data?.people ?? [])"
+            :place-suggestions="placeSuggestions(family.data?.people ?? [])"
             @submit="submit"
             @cancel="formTarget = null"
           />
@@ -190,9 +211,14 @@ async function submit(input: PersonFormInput): Promise<void> {
                 {{ initials(person) }}
               </span>
               <span class="min-w-0">
-                <span data-testid="person-name" class="block truncate font-medium text-slate-900">{{
-                  displayName(person)
-                }}</span>
+                <button
+                  data-testid="person-name"
+                  class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-emerald-700 hover:underline"
+                  :title="t('detail.open', { name: displayName(person) })"
+                  @click="viewing = person.id"
+                >
+                  {{ displayName(person) }}
+                </button>
                 <span
                   v-if="lifeSummary(person)"
                   data-testid="person-life"
@@ -209,14 +235,6 @@ async function submit(input: PersonFormInput): Promise<void> {
               >
                 <AppIcon name="pencil" />
                 {{ t("common.edit") }}
-              </button>
-              <button
-                data-testid="delete-person"
-                class="btn btn-danger btn-sm"
-                @click="family.deletePerson(person.id, displayName(person))"
-              >
-                <AppIcon name="trash" />
-                {{ t("common.delete") }}
               </button>
             </span>
           </li>

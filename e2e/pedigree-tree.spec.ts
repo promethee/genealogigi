@@ -85,7 +85,7 @@ test("draws adoptive links dashed and confirmed links solid, with a legend", asy
 
 test("clicking a person re-roots the chart", async ({ page }) => {
   await buildFamily(page);
-  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).click();
+  await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
   await expect(page.getByTestId("tree-node")).toHaveCount(3); // Mum, Gran, GreatGran
 });

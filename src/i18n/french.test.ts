@@ -71,7 +71,7 @@ describe("French output of the data layer", () => {
       death: { year: "2020", month: "", day: "" },
     }).people[0]!;
     expect(displayName(person)).toBe("Marie Dubois (née Martin)");
-    expect(lifeSummary(person)).toBe("° 1950 · † 2020");
+    expect(lifeSummary(person)).toBe("né(e) 1950 · décédé(e) 2020");
     expect(lifespan(person)).toBe("1950–2020");
   });
 

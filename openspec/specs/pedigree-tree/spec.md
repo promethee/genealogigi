@@ -24,7 +24,8 @@ chart of the loaded family.
 ### Requirement: Choose the root person
 
 The app SHALL let the user pick the root person from a list of everyone in the
-family, defaulting to the first person.
+family, defaulting to the first person, and re-centre the chart on a person by
+double-clicking them or using "Show tree from here" in their detail.
 
 #### Scenario: Default root
 
@@ -38,7 +39,7 @@ family, defaulting to the first person.
 
 #### Scenario: Click to re-root
 
-- **WHEN** the user clicks a person in the chart
+- **WHEN** the user double-clicks a person in the chart
 - **THEN** that person becomes the root
 
 ### Requirement: Show ancestors by generation
@@ -162,7 +163,7 @@ as the ancestor chart.
 
 #### Scenario: Click to re-root
 
-- **WHEN** the user clicks a person in the descendants chart
+- **WHEN** the user double-clicks a person in the descendants chart
 - **THEN** that person becomes the root and the mode stays descendants
 
 #### Scenario: Cycle in file
@@ -192,7 +193,7 @@ and descendants below the root, with the root appearing once.
 
 #### Scenario: Re-root
 
-- **WHEN** the user clicks a person in the hourglass
+- **WHEN** the user double-clicks a person in the hourglass
 - **THEN** that person becomes the root and the view stays hourglass
 
 ### Requirement: Tree first when relationships exist
@@ -230,3 +231,33 @@ window, and SHALL be centred when it is narrower.
 
 - **WHEN** the chart is wider than the window
 - **THEN** the chart area scrolls instead of the page or the chart being clipped
+
+### Requirement: Person detail below the tree
+
+Clicking a person in the chart SHALL open that person's detail view below the
+chart, with Edit and "Show tree from here" actions, without changing the root.
+
+#### Scenario: Click
+
+- **WHEN** the user clicks a person in the chart
+- **THEN** their detail is shown below the chart and the root is unchanged
+
+#### Scenario: Selected highlight
+
+- **WHEN** a person's detail is open
+- **THEN** their box is highlighted in the chart
+
+#### Scenario: Edit in place
+
+- **WHEN** the user clicks Edit in the detail, changes a name and saves
+- **THEN** the chart shows the new name and the detail returns to view mode
+
+#### Scenario: Show tree from here
+
+- **WHEN** the user clicks "Show tree from here"
+- **THEN** that person becomes the root
+
+#### Scenario: Close
+
+- **WHEN** the user closes the detail
+- **THEN** it disappears and the chart is unchanged

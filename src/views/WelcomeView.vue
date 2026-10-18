@@ -26,7 +26,7 @@ onMounted(() => family.init());
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M12 3v6M12 9H6v4M12 9h6v4M6 13v5M18 13v5" />
+          <path d="M12 21v-6M12 15H6v-4M12 15h6v-4M6 11V6M18 11V6" />
         </svg>
       </span>
       <div class="text-center">

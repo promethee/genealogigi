@@ -10,9 +10,19 @@ import {
   truncateName,
   type PedigreeDirection,
 } from "../data/pedigree.ts";
-import { displayName, displayNameParts, lifespan } from "../data/people.ts";
+import {
+  displayName,
+  displayNameParts,
+  inputFromPerson,
+  lastNameSuggestions,
+  lifespan,
+  placeSuggestions,
+  type PersonFormInput,
+} from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
+import PersonDetail from "./PersonDetail.vue";
+import PersonForm from "./PersonForm.vue";
 
 const SLOT_WIDTH = 190;
 const BOX_WIDTH = 170;
@@ -23,6 +33,9 @@ const PADDING = 16;
 const family = useFamilyStore();
 
 const chosenRoot = ref<PersonId | "">("");
+/** The person whose detail is open below the chart, and whether it is being edited. */
+const selectedId = ref<PersonId | null>(null);
+const editing = ref(false);
 const generations = ref(DEFAULT_GENERATIONS);
 const direction = ref<PedigreeDirection>("ancestors");
 
@@ -43,6 +56,18 @@ const pedigree = computed(() =>
     ? buildPedigree(family.data, rootId.value, clampGenerations(generations.value), direction.value)
     : null,
 );
+
+const selected = computed(() => people.value.find((p) => p.id === selectedId.value));
+
+function select(id: PersonId | null): void {
+  selectedId.value = id;
+  editing.value = false;
+}
+
+async function saveSelected(input: PersonFormInput): Promise<void> {
+  if (!selectedId.value) return;
+  if (await family.editPerson(selectedId.value, input)) editing.value = false;
+}
 
 const names = computed(() => new Map(people.value.map((p) => [p.id, displayName(p)])));
 
@@ -211,8 +236,10 @@ function fullName(id: PersonId): string {
             data-testid="tree-node"
             :data-root="node.generation === 0"
             class="cursor-pointer"
+            :data-selected="node.personId === selectedId"
             :transform="`translate(${positions.get(node.key)?.x ?? 0} ${positions.get(node.key)?.y ?? 0})`"
-            @click="chosenRoot = node.personId"
+            @click="select(node.personId)"
+            @dblclick="chosenRoot = node.personId"
           >
             <title>{{ fullName(node.personId) }}</title>
             <rect
@@ -220,8 +247,14 @@ function fullName(id: PersonId): string {
               :height="BOX_HEIGHT"
               rx="10"
               :fill="node.generation === 0 ? '#ecfdf5' : '#ffffff'"
-              :stroke="node.generation === 0 ? '#059669' : '#cbd5e1'"
-              :stroke-width="node.generation === 0 ? 1.5 : 1"
+              :stroke="
+                node.personId === selectedId
+                  ? '#0ea5e9'
+                  : node.generation === 0
+                    ? '#059669'
+                    : '#cbd5e1'
+              "
+              :stroke-width="node.personId === selectedId ? 2.5 : node.generation === 0 ? 1.5 : 1"
               filter="url(#node-shadow)"
             />
             <text
@@ -247,6 +280,40 @@ function fullName(id: PersonId): string {
             </text>
           </g>
         </svg>
+      </div>
+
+      <div
+        v-if="selected"
+        class="mt-4 rounded-xl border border-slate-200 bg-white p-5"
+        data-testid="tree-detail-panel"
+      >
+        <PersonForm
+          v-if="editing"
+          :key="selected.id"
+          :initial="inputFromPerson(selected)"
+          :last-name-suggestions="lastNameSuggestions(people)"
+          :place-suggestions="placeSuggestions(people)"
+          @submit="saveSelected"
+          @cancel="editing = false"
+        />
+        <p
+          v-if="editing && family.error"
+          data-testid="error"
+          class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          {{ family.error }}
+        </p>
+        <PersonDetail
+          v-else-if="!editing"
+          :key="selected.id"
+          :person-id="selected.id"
+          show-tree-action
+          @edit="editing = true"
+          @close="select(null)"
+          @select="select($event)"
+          @center="chosenRoot = $event"
+          @deleted="select(null)"
+        />
       </div>
     </template>
   </section>

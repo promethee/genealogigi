@@ -75,12 +75,15 @@ test("deleting asks for confirmation and respects cancel", async ({ page }) => {
   await addPerson(page, "Ada", "");
 
   await page.evaluate(() => localStorage.setItem("fake:confirm", "no"));
-  await page.getByTestId("delete-person").click();
+  await page.getByTestId("person-name").click(); // Delete lives on the person card
+  await page.getByTestId("detail-delete").click();
   await expect(page.getByTestId("person-row")).toHaveCount(1);
+  await expect(page.getByTestId("person-card")).toBeVisible();
 
   await page.evaluate(() => localStorage.setItem("fake:confirm", "yes"));
-  await page.getByTestId("delete-person").click();
+  await page.getByTestId("detail-delete").click();
   await expect(page.getByTestId("person-row")).toHaveCount(0);
+  await expect(page.getByTestId("person-card")).toHaveCount(0);
 });
 
 test("people survive a restart", async ({ page }) => {

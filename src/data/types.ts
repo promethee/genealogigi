@@ -88,6 +88,8 @@ export type NamedPerson = NamedPersonWithFirstName | NamedPersonWithLastName;
 
 export interface PersonBorn extends UnknownPerson {
   birthDate: VariablePrecisionDate;
+  /** Optional free-text place, e.g. "Lyon, France". */
+  birthPlace?: string;
 }
 
 export interface PersonLiving extends UnknownPerson {
@@ -97,6 +99,8 @@ export interface PersonLiving extends UnknownPerson {
 export interface PersonDeceased extends UnknownPerson {
   living: false;
   dateOfDeath: VariablePrecisionDate;
+  /** Optional free-text place. */
+  placeOfDeath?: string;
 }
 
 /**
