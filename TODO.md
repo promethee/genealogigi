@@ -34,7 +34,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [~] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [~] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [x] Feature: save a copy of the open family (OpenSpec `save-copy`, archived 2026-10-18) — covers the JSON-export need, since the file is already JSON
-- [ ] Feature: data export (JSON)
+- [x] Feature: data export (JSON) — closed: covered by save-copy, the family file is already JSON
 - [ ] (Add more features here as they're defined — keep one feature per checklist item, don't pre-plan too far ahead of current progress)
 
 ## Phase 3 — GitHub Pages portfolio site
