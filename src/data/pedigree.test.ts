@@ -200,3 +200,72 @@ describe("clampGenerations / truncateName", () => {
     expect(truncateName(long).endsWith("…")).toBe(true);
   });
 });
+
+describe("buildPedigree descendants", () => {
+  const family = () =>
+    build(
+      ["Gran", "Mum", "Uncle", "Me", "Sis"],
+      [
+        ["Gran", "Mum"],
+        ["Gran", "Uncle", "adoptive"],
+        ["Mum", "Me"],
+        ["Mum", "Sis"],
+      ],
+    );
+
+  it("lays out children and grandchildren in later columns", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Gran"), 4, "descendants");
+    expect(personsAt(p, 0, data)).toEqual(["Gran"]);
+    expect(personsAt(p, 1, data).sort()).toEqual(["Mum", "Uncle"]);
+    expect(personsAt(p, 2, data).sort()).toEqual(["Me", "Sis"]);
+    expect(p.columns).toBe(3);
+    expect(p.edges).toHaveLength(4);
+    expect(p.edges.find((e) => e.nature === "adoptive")).toBeDefined();
+  });
+
+  it("respects the generation limit", () => {
+    const { data, id } = build(
+      ["Gran", "Mum", "Me", "Kid"],
+      [
+        ["Gran", "Mum"],
+        ["Mum", "Me"],
+        ["Me", "Kid"],
+      ],
+    );
+    const p = buildPedigree(data, id("Gran"), 2, "descendants");
+    expect(p.columns).toBe(3);
+    expect(personsAt(p, 3, data)).toEqual([]);
+  });
+
+  it("centres a parent on their children", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Mum"), 4, "descendants");
+    const rows = p.nodes.map((n) => n.row);
+    const root = p.nodes.find((n) => n.generation === 0);
+    expect(root?.row).toBe((Math.min(...rows) + Math.max(...rows)) / 2);
+  });
+
+  it("does not loop on a cycle", () => {
+    const { data, id } = build(
+      ["A", "B"],
+      [
+        ["A", "B"],
+        ["B", "A"],
+      ],
+    );
+    const p = buildPedigree(data, id("A"), 6, "descendants");
+    expect(p.nodes).toHaveLength(2);
+  });
+
+  it("gives just the root for someone without children", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Me"), 4, "descendants");
+    expect(p.nodes).toHaveLength(1);
+  });
+
+  it("defaults to ancestors", () => {
+    const { data, id } = family();
+    expect(buildPedigree(data, id("Me")).nodes).toHaveLength(3);
+  });
+});

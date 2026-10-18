@@ -15,9 +15,11 @@ export interface PedigreeNode {
   row: number;
 }
 
+export type PedigreeDirection = "ancestors" | "descendants";
+
 export interface PedigreeEdge {
-  fromKey: string; // the child's node
-  toKey: string; // the parent's node
+  fromKey: string; // the node nearer the root
+  toKey: string; // the node further from the root (parent or child)
   nature: RelationshipFamilial["nature"];
 }
 
@@ -36,7 +38,7 @@ export function clampGenerations(value: number): number {
 }
 
 /**
- * Lays out `rootId` and its ancestors. Pure and framework-free. Stops at
+ * Lays out `rootId` and its ancestors (or descendants). Pure and framework-free. Stops at
  * `maxGenerations` and never revisits a person already on the current path,
  * so cyclic or hand-edited data cannot loop forever.
  */
@@ -44,6 +46,7 @@ export function buildPedigree(
   data: FamilyData,
   rootId: PersonId,
   maxGenerations: number = DEFAULT_GENERATIONS,
+  direction: PedigreeDirection = "ancestors",
 ): Pedigree {
   const limit = clampGenerations(maxGenerations);
   const known = new Set(data.people.map((p) => p.id));
@@ -54,18 +57,25 @@ export function buildPedigree(
   let nextRow = 0;
   let deepest = 0;
 
+  const ancestors = direction === "ancestors";
+
   function place(personId: PersonId, generation: number, path: PersonId[], key: string): number {
     deepest = Math.max(deepest, generation);
     const parentRows: number[] = [];
     if (generation < limit) {
-      const links = parentLinks.filter(
-        (r) => r.childId === personId && known.has(r.parentId) && !path.includes(r.parentId),
-      );
-      links.forEach((link, index) => {
-        const parentKey = `${key}/${index}:${link.parentId}`;
-        const row = place(link.parentId, generation + 1, [...path, link.parentId], parentKey);
+      const links = parentLinks
+        .map((link) => ({ link, otherId: ancestors ? link.parentId : link.childId }))
+        .filter(
+          ({ link, otherId }) =>
+            (ancestors ? link.childId : link.parentId) === personId &&
+            known.has(otherId) &&
+            !path.includes(otherId),
+        );
+      links.forEach(({ link, otherId }, index) => {
+        const otherKey = `${key}/${index}:${otherId}`;
+        const row = place(otherId, generation + 1, [...path, otherId], otherKey);
         parentRows.push(row);
-        edges.push({ fromKey: key, toKey: parentKey, nature: link.nature });
+        edges.push({ fromKey: key, toKey: otherKey, nature: link.nature });
       });
     }
 

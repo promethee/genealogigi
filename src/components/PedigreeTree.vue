@@ -7,6 +7,7 @@ import {
   MAX_GENERATIONS,
   MIN_GENERATIONS,
   truncateName,
+  type PedigreeDirection,
 } from "../data/pedigree.ts";
 import { displayName, lifespan } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
@@ -22,6 +23,7 @@ const family = useFamilyStore();
 
 const chosenRoot = ref<PersonId | "">("");
 const generations = ref(DEFAULT_GENERATIONS);
+const direction = ref<PedigreeDirection>("ancestors");
 
 const people = computed(() => family.data?.people ?? []);
 const generationOptions = Array.from(
@@ -37,7 +39,7 @@ const rootId = computed<PersonId | null>(() => {
 
 const pedigree = computed(() =>
   family.data && rootId.value
-    ? buildPedigree(family.data, rootId.value, clampGenerations(generations.value))
+    ? buildPedigree(family.data, rootId.value, clampGenerations(generations.value), direction.value)
     : null,
 );
 
@@ -109,6 +111,17 @@ function fullName(id: PersonId): string {
             <option v-for="p in people" :key="p.id" :value="p.id">
               {{ displayName(p) }}
             </option>
+          </select>
+        </label>
+        <label class="flex flex-col text-sm">
+          Show
+          <select
+            v-model="direction"
+            data-testid="tree-direction"
+            class="rounded border border-gray-300 px-2 py-1"
+          >
+            <option value="ancestors">Ancestors</option>
+            <option value="descendants">Descendants</option>
           </select>
         </label>
         <label class="flex flex-col text-sm">

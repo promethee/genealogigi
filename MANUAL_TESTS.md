@@ -136,3 +136,13 @@ Start from an open family with at least one person.
 | 5   | Edit with end 1980 and start 1990                                    | Error "end date cannot be before"; form stays open. |
 | 6   | Click Cancel                                                         | Form closes, row unchanged.                         |
 | 7   | Add partners with start year 1985                                    | Row "(ongoing, from 1985)".                         |
+
+## Descendant chart
+
+| #   | Action                                                                                      | Expected                                        |
+| --- | ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| 1   | Family: Gran -> Mum -> Me, Gran -> Uncle (adoptive). Tree tab, Show: Descendants, root Gran | Gran at left; Mum and Uncle next; Me after Mum. |
+| 2   | Look at the Uncle link                                                                      | Dashed line.                                    |
+| 3   | Generations 2 with a great-grandchild present                                               | The great-grandchild is not shown.              |
+| 4   | Click Mum                                                                                   | Mum becomes root; still showing descendants.    |
+| 5   | Show: Ancestors                                                                             | Mum and her ancestors.                          |
