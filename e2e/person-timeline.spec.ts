@@ -103,13 +103,13 @@ test("the event survives a restart", async ({ page }) => {
   await start(page);
   await open(page, "Marie");
   await page.getByTestId("event-add").click();
-  await page.getByTestId("event-kind").selectOption("baptism");
+  await page.getByTestId("event-kind").selectOption("education");
   await page.getByTestId("event-date-year").fill("1950");
   await page.getByTestId("event-save").click();
   await page.reload();
   await page.getByTestId("resume").click();
   await open(page, "Marie");
-  expect(await texts(page)).toContain("Baptism");
+  expect(await texts(page)).toContain("Education");
 });
 
 test("type Other needs a description; future dates are rejected", async ({ page }) => {

@@ -21,6 +21,10 @@ const props = defineProps<{
 const emit = defineEmits<{ submit: [input: EventInput]; cancel: [] }>();
 
 const kind = ref<EventKind>(props.event?.kind ?? "marriage");
+// An event saved with a type that is no longer offered (baptism) can still be edited.
+const kinds = computed<readonly EventKind[]>(() =>
+  EVENT_KINDS.includes(kind.value) ? EVENT_KINDS : [kind.value, ...EVENT_KINDS],
+);
 const date = reactive<PartialDateInput>(
   props.event ? { ...inputFromDate(props.event.date) } : emptyDateInput(),
 );
@@ -67,7 +71,7 @@ function submit(): void {
       <label class="label">
         {{ t("event.type") }}
         <select v-model="kind" data-testid="event-kind" class="input">
-          <option v-for="k in EVENT_KINDS" :key="k" :value="k">
+          <option v-for="k in kinds" :key="k" :value="k">
             {{ t(`event.kind.${k}` as MessageKey) }}
           </option>
         </select>

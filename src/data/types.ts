@@ -198,6 +198,7 @@ export type Relationship = RelationshipFamilial | RelationshipSocial;
 export type EventKind =
   | "marriage"
   | "divorce"
+  /** No longer offered, but events saved with it still load and show. */
   | "baptism"
   | "residence"
   | "occupation"

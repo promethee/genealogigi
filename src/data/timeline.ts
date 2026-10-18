@@ -120,7 +120,12 @@ export function timelineOf(data: FamilyData, personId: PersonId): TimelineEntry[
           kind: "child",
           date: childBorn,
           text: t("timeline.childBorn", { name: nameOf(other) }),
-          people: [other],
+          // "with" names the child's other parent(s), never the child (who is in the text).
+          people: data.relationships
+            .filter(isParentChild)
+            .filter((link) => link.childId === other && link.parentId !== personId)
+            .map((link) => link.parentId)
+            .filter((id, i, all) => known_.has(id) && all.indexOf(id) === i),
         });
       }
     }

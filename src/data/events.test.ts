@@ -34,7 +34,7 @@ describe("addEvent", () => {
 
   it("stores an undated event with a fully unknown date and omits empty fields", () => {
     const { data, ids } = family("Ada");
-    const event = addEvent(data, { kind: "baptism", date: blank, personIds: [ids[0]!] })
+    const event = addEvent(data, { kind: "education", date: blank, personIds: [ids[0]!] })
       .events![0]!;
     expect(event.date.yearKnown).toBe(false);
     expect("place" in event).toBe(false);
@@ -127,7 +127,7 @@ describe("updateEvent / removeEvent", () => {
     );
     expect(() =>
       updateEvent(data, createUuidId<"EventId">() as EventId, {
-        kind: "baptism",
+        kind: "education",
         date: blank,
         personIds: [data.people[0]!.id],
       }),
@@ -139,7 +139,7 @@ describe("deleting a person", () => {
   it("takes them out of shared events and deletes events left with nobody", () => {
     const { data, ids } = family("Ada", "Paul", "Solo");
     let next = addEvent(data, { kind: "marriage", date: blank, personIds: [ids[0]!, ids[1]!] });
-    next = addEvent(next, { kind: "baptism", date: blank, personIds: [ids[2]!] });
+    next = addEvent(next, { kind: "education", date: blank, personIds: [ids[2]!] });
     const after = removePerson(next, ids[1]!);
     expect(after.events).toHaveLength(2);
     expect(after.events![0]!.personIds).toEqual([ids[0]]);

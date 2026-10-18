@@ -138,21 +138,21 @@ describe("timelineOf", () => {
       death: blank,
     });
     const ada = data.people[0]!.id;
-    data = addEvent(data, { kind: "baptism", date: blank, personIds: [ada] });
+    data = addEvent(data, { kind: "education", date: blank, personIds: [ada] });
     data = addEvent(data, { kind: "residence", date: y("1900"), personIds: [ada] });
     // Dated first; then undated: the birth entry before the other undated one, death last.
-    expect(texts(data, ada)).toEqual(["Residence", "Born in Rome", "Baptism", "Died"]);
+    expect(texts(data, ada)).toEqual(["Residence", "Born in Rome", "Education", "Died"]);
   });
 
   it("orders partial dates by what is known", () => {
     const { data, marie } = base();
     let next = addEvent(data, { kind: "residence", date: y("1980", "12"), personIds: [marie] });
     next = addEvent(next, { kind: "education", date: y("1980"), personIds: [marie] });
-    next = addEvent(next, { kind: "baptism", date: y("1980", "6", "15"), personIds: [marie] });
+    next = addEvent(next, { kind: "occupation", date: y("1980", "6", "15"), personIds: [marie] });
     const order = texts(next, marie).filter((t) =>
-      ["Education", "Baptism", "Residence"].includes(t),
+      ["Education", "Occupation", "Residence"].includes(t),
     );
-    expect(order).toEqual(["Education", "Baptism", "Residence"]);
+    expect(order).toEqual(["Education", "Occupation", "Residence"]);
   });
 
   it("is empty for a person with nothing, and for an unknown id", () => {
@@ -167,5 +167,74 @@ describe("timelineOf", () => {
     setLocale("fr");
     expect(texts(data, marie)[0]).toBe("Naissance à Lyon");
     expect(texts(data, marie).at(-1)).toBe("Décès à Nice");
+  });
+});
+
+describe("child births name the other parent, not the child", () => {
+  it("shows the child's other parent after 'with', and nobody when there is none", () => {
+    const { data, marie, paul, kid } = base();
+    const both = addParentChild(
+      addParentChild(data, { parentId: marie, childId: kid, nature: "biological-confirmed" }),
+      { parentId: paul, childId: kid, nature: "biological-confirmed" },
+    );
+    const entry = timelineOf(both, marie).find((e) => e.kind === "child")!;
+    expect(entry.text).toBe("Child born: Kid");
+    expect(entry.people).toEqual([paul]); // the other parent, never the child
+    expect(timelineOf(both, paul).find((e) => e.kind === "child")!.people).toEqual([marie]);
+
+    const single = addParentChild(data, {
+      parentId: marie,
+      childId: kid,
+      nature: "biological-confirmed",
+    });
+    expect(timelineOf(single, marie).find((e) => e.kind === "child")!.people).toEqual([]);
+  });
+
+  it("lists every other parent once, even with a step-parent, and skips people who left the file", () => {
+    const { data, marie, paul, kid } = base();
+    let next = addParentChild(data, {
+      parentId: marie,
+      childId: kid,
+      nature: "biological-confirmed",
+    });
+    next = addParentChild(next, { parentId: paul, childId: kid, nature: "adoptive" });
+    next = {
+      ...next,
+      relationships: [
+        ...next.relationships,
+        { ...next.relationships[1]!, id: "22222222-2222-4222-8222-222222222222" as never },
+      ],
+    };
+    expect(timelineOf(next, marie).find((e) => e.kind === "child")!.people).toEqual([paul]);
+    const gone = { ...next, people: next.people.filter((p) => p.id !== paul) };
+    expect(timelineOf(gone, marie).find((e) => e.kind === "child")!.people).toEqual([]);
+  });
+});
+
+describe("event types", () => {
+  it("does not offer baptism any more, but an old baptism event still shows", async () => {
+    const { EVENT_KINDS } = await import("./events.ts");
+    expect(EVENT_KINDS).not.toContain("baptism");
+    expect(EVENT_KINDS).toContain("marriage");
+    const { data, marie } = base();
+    const old: FamilyData = {
+      ...data,
+      events: [
+        {
+          id: "33333333-3333-4333-8333-333333333333" as never,
+          kind: "baptism",
+          date: {
+            raw: "1950-04-01T00:00",
+            yearKnown: true,
+            monthKnown: false,
+            dayKnown: false,
+            hourKnown: false,
+            minuteKnown: false,
+          },
+          personIds: [marie],
+        },
+      ],
+    };
+    expect(texts(old, marie)).toContain("Baptism");
   });
 });

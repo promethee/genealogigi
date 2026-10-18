@@ -11,10 +11,10 @@ import {
   type PersonId,
 } from "./types.ts";
 
+/** The types offered when adding an event. */
 export const EVENT_KINDS: readonly EventKind[] = [
   "marriage",
   "divorce",
-  "baptism",
   "residence",
   "occupation",
   "education",

@@ -127,9 +127,6 @@ async function remove(): Promise<void> {
           <AppIcon name="trash" />
           {{ t("common.delete") }}
         </button>
-        <button data-testid="detail-close" class="btn btn-secondary btn-sm" @click="emit('close')">
-          {{ t("detail.close") }}
-        </button>
       </div>
     </header>
 
@@ -254,5 +251,11 @@ async function remove(): Promise<void> {
     </div>
 
     <PersonTimeline :person-id="personId" @select="emit('select', $event)" />
+
+    <footer class="flex justify-end border-t border-slate-100 pt-3">
+      <button data-testid="detail-close" class="btn btn-secondary" @click="emit('close')">
+        {{ t("detail.close") }}
+      </button>
+    </footer>
   </section>
 </template>
