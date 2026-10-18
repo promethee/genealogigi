@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildPedigree,
   clampGenerations,
+  ALL_GENERATIONS,
   DEFAULT_GENERATIONS,
   truncateName,
   type Pedigree,
@@ -190,7 +191,8 @@ describe("buildPedigree", () => {
 describe("clampGenerations / truncateName", () => {
   it("clamps to 2..6 and defaults on NaN", () => {
     expect(clampGenerations(1)).toBe(2);
-    expect(clampGenerations(99)).toBe(6);
+    expect(clampGenerations(50)).toBe(6);
+    expect(clampGenerations(ALL_GENERATIONS)).toBe(ALL_GENERATIONS);
     expect(clampGenerations(Number.NaN)).toBe(DEFAULT_GENERATIONS);
   });
 

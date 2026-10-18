@@ -1,0 +1,4 @@
+- [x] focusStats + tests
+- [x] All generations, default All
+- [x] Stats panel, i18n en/fr, rename
+- [x] e2e

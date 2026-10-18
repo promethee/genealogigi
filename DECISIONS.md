@@ -274,3 +274,7 @@ Decision: family files are `.gigi` with JSON content; `.json` stays readable. Re
 ## In-app confirmation and wide layout (2026-10-18)
 
 Decision: `PlatformAPI.confirm` is unchanged but the Tauri shell answers it with a Vue modal (`ConfirmDialog`), so it follows theme and language; Cancel is the default focus. The people tab uses two columns from `xl`.
+
+## Tree fit and focused person (2026-10-18)
+
+Decision: the tree scales down with CSS (viewBox, max-width 100%, floor 45%), no resize observer. The chart centre is called "focused person"; Generations defaults to All (sentinel 99) and a stats panel gives the focused person's counts. Direction default unchanged.

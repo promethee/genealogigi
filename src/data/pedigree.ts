@@ -5,6 +5,8 @@ import type { FamilyData, PersonId, RelationshipFamilial } from "./types.ts";
 export const MIN_GENERATIONS = 2;
 export const MAX_GENERATIONS = 6;
 export const DEFAULT_GENERATIONS = 4;
+/** "All": no limit (cycles are still cut by the path check). */
+export const ALL_GENERATIONS = 99;
 
 export interface PedigreeNode {
   /** Unique per position in the chart (a person can appear several times). */
@@ -39,6 +41,7 @@ export interface Pedigree {
 
 export function clampGenerations(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_GENERATIONS;
+  if (value >= ALL_GENERATIONS) return ALL_GENERATIONS;
   return Math.min(MAX_GENERATIONS, Math.max(MIN_GENERATIONS, Math.round(value)));
 }
 

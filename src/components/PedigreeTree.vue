@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { t } from "../i18n/index.ts";
+import { t, tn } from "../i18n/index.ts";
+import { focusStats } from "../data/focusStats.ts";
 import {
+  ALL_GENERATIONS,
   buildPedigree,
   clampGenerations,
-  DEFAULT_GENERATIONS,
   MAX_GENERATIONS,
   MIN_GENERATIONS,
   truncateName,
@@ -34,6 +35,8 @@ const AVATAR_R = 21;
 const TEXT_X = 58;
 const NAME_MAX = 17;
 const PADDING = 16;
+/** The tree shrinks to fit the panel, but never below this fraction (then it scrolls). */
+const MIN_SCALE = 0.45;
 
 const family = useFamilyStore();
 
@@ -41,7 +44,8 @@ const chosenRoot = ref<PersonId | "">("");
 /** The person whose detail is open below the chart, and whether it is being edited. */
 const selectedId = ref<PersonId | null>(null);
 const editing = ref(false);
-const generations = ref(DEFAULT_GENERATIONS);
+// Everything is shown by default; the focused person only decides who the chart is centred on.
+const generations = ref(ALL_GENERATIONS);
 const direction = ref<PedigreeDirection>("ancestors");
 const showSiblings = ref(false);
 
@@ -50,6 +54,31 @@ const generationOptions = Array.from(
   { length: MAX_GENERATIONS - MIN_GENERATIONS + 1 },
   (_, i) => MIN_GENERATIONS + i,
 );
+
+const GENERATION_KEYS = {
+  ancestors: ["parents", "grandparents", "greatGrandparents"],
+  descendants: ["children", "grandchildren", "greatGrandchildren"],
+} as const;
+
+/** "2 parents · 3 grandparents · 1 child ..." for the focused person. */
+const focusChips = computed(() => {
+  if (!family.data || !rootId.value) return [];
+  const stats = focusStats(family.data, rootId.value);
+  const chips: string[] = [];
+  for (const side of ["ancestors", "descendants"] as const) {
+    stats[side].forEach((count, index) => {
+      const known = GENERATION_KEYS[side][index];
+      chips.push(
+        known
+          ? tn(`tree.stats.${known}`, count)
+          : tn(`tree.stats.${side}`, count, { gen: index + 1 }),
+      );
+    });
+  }
+  if (stats.siblings > 0) chips.push(tn("tree.stats.siblings", stats.siblings));
+  if (stats.partners > 0) chips.push(tn("tree.stats.partners", stats.partners));
+  return chips;
+});
 
 /** The chosen root if it still exists, otherwise the first person. */
 const rootId = computed<PersonId | null>(() => {
@@ -184,6 +213,7 @@ function fullName(id: PersonId): string {
         <label class="label">
           {{ t("tree.generations") }}
           <select v-model.number="generations" data-testid="tree-generations" class="input">
+            <option :value="ALL_GENERATIONS">{{ t("tree.generations.all") }}</option>
             <option v-for="n in generationOptions" :key="n" :value="n">{{ n }}</option>
           </select>
         </label>
@@ -224,6 +254,21 @@ function fullName(id: PersonId): string {
       </div>
 
       <div
+        class="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600"
+        data-testid="focus-stats"
+      >
+        <span class="font-medium text-slate-800">{{
+          t("tree.stats.title", { name: rootId ? (names.get(rootId) ?? "") : "" })
+        }}</span>
+        <span v-if="!focusChips.length" class="ml-2">{{ t("tree.stats.none") }}</span>
+        <ul v-else class="mt-1 flex flex-wrap gap-1.5">
+          <li v-for="chip in focusChips" :key="chip" data-testid="focus-chip" class="chip">
+            {{ chip }}
+          </li>
+        </ul>
+      </div>
+
+      <div
         class="overflow-auto rounded-xl border border-slate-200 bg-slate-50/70 bg-[radial-gradient(circle,#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:bg-[radial-gradient(circle,#334155_1px,transparent_1px)]"
       >
         <svg
@@ -232,6 +277,11 @@ function fullName(id: PersonId): string {
           data-testid="tree-svg"
           :width="size.width"
           :height="size.height"
+          :style="{
+            maxWidth: '100%',
+            height: 'auto',
+            minWidth: `${Math.round(size.width * MIN_SCALE)}px`,
+          }"
           :viewBox="`0 0 ${size.width} ${size.height}`"
         >
           <defs>

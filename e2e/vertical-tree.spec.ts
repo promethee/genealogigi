@@ -101,9 +101,10 @@ test("descendants hang below the root", async ({ page }) => {
   expect(mum!.y).toBeLessThan(me!.y);
 });
 
-test("the chart scrolls when it is wider than the window", async ({ page }) => {
+test("the chart scrolls once it would have to shrink below its floor", async ({ page }) => {
   await buildFamily(page);
-  await page.setViewportSize({ width: 320, height: 600 });
+  const natural = Number(await page.getByTestId("tree-svg").getAttribute("width"));
+  await page.setViewportSize({ width: Math.round(natural * 0.3), height: 600 });
   const scroller = page.getByTestId("tree-svg").locator("xpath=..");
   await expect(scroller).toHaveCSS("overflow-x", "auto");
   const { client, scroll } = await scroller.evaluate((el) => ({
@@ -111,4 +112,24 @@ test("the chart scrolls when it is wider than the window", async ({ page }) => {
     scroll: el.scrollWidth,
   }));
   expect(scroll).toBeGreaterThan(client);
+});
+
+test("the chart shrinks to fit the panel instead of scrolling, down to a floor", async ({
+  page,
+}) => {
+  await buildFamily(page);
+  const svg = page.getByTestId("tree-svg");
+  const scroller = svg.locator("xpath=..");
+  const natural = Number(await svg.getAttribute("width"));
+
+  await page.setViewportSize({ width: 1400, height: 800 });
+  const wide = (await svg.boundingBox())!.width;
+  expect(wide).toBeCloseTo(natural, 0); // enough room: natural size, no upscaling
+
+  const fits = Math.round(natural * 0.7) + 80; // panel and page padding included
+  await page.setViewportSize({ width: fits, height: 800 });
+  const shrunk = (await svg.boundingBox())!.width;
+  expect(shrunk).toBeLessThan(natural);
+  expect(shrunk).toBeGreaterThan(natural * 0.45);
+  expect(await scroller.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
 });

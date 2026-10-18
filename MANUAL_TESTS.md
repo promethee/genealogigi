@@ -398,3 +398,11 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 4   | Maximise the window (≥1280px wide)       | People list and Relationships sit side by side; little empty space at the sides.            |
 | 5   | Narrow the window                        | They stack again.                                                                           |
 | 6   | French: open a card and the tree option  | "Fratrie / sororité" and "Afficher la fratrie / sororité".                                  |
+
+## Tree: fit, focused person
+
+| #   | Action                                               | Expected                                                                                                      |
+| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 1   | Open the Tree tab on a family of several generations | "Focused person" selector; Generations = All; whole tree drawn; no horizontal scroll if it fits at ≥45% size. |
+| 2   | Change the focused person                            | The panel lists parents, grandparents, children, grandchildren, siblings, partners with counts.               |
+| 3   | Narrow the window gradually                          | The chart shrinks with it; only below ~45% of its size does a scroll bar appear.                              |

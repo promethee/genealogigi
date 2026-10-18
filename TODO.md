@@ -158,3 +158,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (gigi-extension)** — Family files now use `.gigi` (JSON inside): default names, save dialogs; Open/Import still accept `.json`; backups keep the source extension. Archived `gigi-extension`.
 
 - **2026-10-18 (confirm-dialog, wide-layout)** — Confirmations use an in-app themed dialog (Tauri `confirm` -> `askConfirm`, Cancel focused, Esc/backdrop cancel); French "Fratrie / sororité"; people list and relationships side by side from 1280px, content width up to 120rem. Archived both. Real-window check deferred (MANUAL_TESTS.md).
+
+- **2026-10-18 (tree-fit-width, focused-person)** — Tree SVG scales to the panel (floor 45%, then scrolls); "Root person" is now "Focused person" (fr "Personne ciblée"), Generations defaults to All, and a panel shows counts of ancestors/descendants per generation, siblings and partners (`focusStats`). Archived both.

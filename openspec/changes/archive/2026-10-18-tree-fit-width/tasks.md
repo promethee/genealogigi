@@ -1,0 +1,2 @@
+- [x] Scale SVG to width with a floor
+- [x] e2e: fits when moderately wide, scrolls beyond the floor
