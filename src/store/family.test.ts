@@ -16,6 +16,7 @@ interface FakeOptions {
   saveError?: Error;
   gitStatus?: "no-git" | "not-repo" | "no-remote" | "ready";
   gitSync?: () => Promise<"committed" | "no-changes">;
+  pickImages?: { name: string; dataUrl: string }[];
 }
 
 function fakePlatform(options: FakeOptions = {}) {
@@ -56,6 +57,7 @@ function fakePlatform(options: FakeOptions = {}) {
       status: async () => options.gitStatus ?? "not-repo",
       sync: options.gitSync ?? (async () => "committed"),
     },
+    pickImages: async () => options.pickImages ?? [],
     window: { setTitle: async () => {} },
     openExternal: async () => {},
     exit: async () => {},
@@ -74,7 +76,7 @@ function fakePlatform(options: FakeOptions = {}) {
 function makeStore(options?: FakeOptions) {
   const fake = fakePlatform(options);
   setActivePinia(createPinia());
-  return { store: defineFamilyStore(fake.platform)(), ...fake };
+  return { store: defineFamilyStore(fake.platform, async (dataUrl) => dataUrl)(), ...fake };
 }
 
 describe("family store: welcome screen", () => {
@@ -578,5 +580,109 @@ describe("family store: git sync", () => {
     const sync = made.store.syncGit();
     await Promise.all([add, sync]);
     expect(order).toEqual(["save", "sync"]);
+  });
+});
+
+describe("family store: photos", () => {
+  const png = "data:image/png;base64,AAAA";
+
+  async function withPerson(options: FakeOptions = {}) {
+    const made = makeStore({ ...options, saveResult: "/p/family.json" });
+    await made.store.createNew();
+    await made.store.addPerson({ firstName: "Ada", lastName: "" });
+    const id = made.store.data?.people[0]?.id;
+    if (!id) throw new Error("no person");
+    return { ...made, id };
+  }
+
+  it("adds the picked photos in one save", async () => {
+    const { store, save, id } = await withPerson({
+      pickImages: [
+        { name: "a.png", dataUrl: png },
+        { name: "b.png", dataUrl: png },
+      ],
+    });
+    save.mockClear();
+    expect(await store.pickPhotos(id)).toBe(true);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(store.data?.people[0]?.photos).toHaveLength(2);
+  });
+
+  it("does nothing when the picker is cancelled", async () => {
+    const { store, save, id } = await withPerson({ pickImages: [] });
+    save.mockClear();
+    expect(await store.pickPhotos(id)).toBe(false);
+    expect(save).not.toHaveBeenCalled();
+    expect(store.error).toBeNull();
+  });
+
+  it("skips files that cannot be shrunk, adds the rest and reports the problem", async () => {
+    const made = makeStore({
+      saveResult: "/p/family.json",
+      pickImages: [
+        { name: "good.png", dataUrl: png },
+        { name: "bad.txt", dataUrl: "BAD" },
+      ],
+    });
+    // A fresh store (own pinia) whose shrinker refuses "BAD" like a browser would for a non-image.
+    setActivePinia(createPinia());
+    const store = defineFamilyStore(made.platform, async (url) => {
+      if (url === "BAD") throw new Error("decode failed");
+      return url;
+    })();
+    await store.createNew();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    const id = store.data!.people[0]!.id;
+    const ok = await store.pickPhotos(id);
+    expect(store.error).toMatch(/not a supported image/);
+    expect(ok).toBe(true);
+    expect(store.data?.people[0]?.photos).toHaveLength(1);
+  });
+
+  it("reports a failing picker", async () => {
+    const made = makeStore({ saveResult: "/p/family.json" });
+    (made.platform as unknown as { pickImages: unknown }).pickImages = async () => {
+      throw new Error("dialog failed");
+    };
+    await made.store.createNew();
+    await made.store.addPerson({ firstName: "Ada", lastName: "" });
+    expect(await made.store.pickPhotos(made.store.data!.people[0]!.id)).toBe(false);
+    expect(made.store.error).toBe("dialog failed");
+  });
+
+  it("makes a photo main, captions it, and removes it only after confirmation", async () => {
+    const { store, id } = await withPerson({
+      pickImages: [
+        { name: "a.png", dataUrl: png },
+        { name: "b.png", dataUrl: png },
+      ],
+    });
+    await store.pickPhotos(id);
+    const [first, second] = store.data!.people[0]!.photos!;
+    expect(await store.makeMainPhoto(id, second!.id)).toBe(true);
+    expect(store.data!.people[0]!.photos![0]!.id).toBe(second!.id);
+    expect(await store.captionPhoto(id, first!.id, "Summer")).toBe(true);
+    expect(store.data!.people[0]!.photos!.find((p) => p.id === first!.id)?.caption).toBe("Summer");
+    expect(await store.deletePhoto(id, first!.id)).toBe(true);
+    expect(store.data!.people[0]!.photos).toHaveLength(1);
+  });
+
+  it("keeps the photo when the removal is declined", async () => {
+    const { store, id } = await withPerson({
+      confirmResult: false,
+      pickImages: [{ name: "a.png", dataUrl: png }],
+    });
+    await store.pickPhotos(id);
+    const photoId = store.data!.people[0]!.photos![0]!.id;
+    expect(await store.deletePhoto(id, photoId)).toBe(false);
+    expect(store.data!.people[0]!.photos).toHaveLength(1);
+  });
+
+  it("refuses beyond the limit and leaves the data as it was", async () => {
+    const many = Array.from({ length: 13 }, (_, i) => ({ name: `${i}.png`, dataUrl: png }));
+    const { store, id } = await withPerson({ pickImages: many });
+    expect(await store.pickPhotos(id)).toBe(false);
+    expect(store.error).toMatch(/at most 12 photos/);
+    expect(store.data!.people[0]!.photos).toBeUndefined();
   });
 });

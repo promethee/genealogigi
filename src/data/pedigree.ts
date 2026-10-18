@@ -229,6 +229,6 @@ function addSiblings(
 
 const MAX_NAME_LENGTH = 22;
 
-export function truncateName(name: string): string {
-  return name.length <= MAX_NAME_LENGTH ? name : `${name.slice(0, MAX_NAME_LENGTH - 1)}…`;
+export function truncateName(name: string, max: number = MAX_NAME_LENGTH): string {
+  return name.length <= max ? name : `${name.slice(0, max - 1)}…`;
 }

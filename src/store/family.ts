@@ -1,6 +1,14 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { addEvent, removeEvent, updateEvent, type EventInput } from "../data/events.ts";
+import {
+  addPhotos,
+  makeMainPhoto,
+  removePhoto,
+  setPhotoCaption,
+  type PhotoInput,
+} from "../data/photos.ts";
+import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
 import { addPersonWithParents, type NewPersonParents } from "../data/createPerson.ts";
 import { removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
@@ -15,7 +23,7 @@ import {
   type ParentsOfChildInput,
   type PartnersInput,
 } from "../data/relationships.ts";
-import type { EventId, FamilyData, PersonId, RelationshipId } from "../data/types.ts";
+import type { EventId, FamilyData, PersonId, PhotoId, RelationshipId } from "../data/types.ts";
 import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.json";
@@ -41,7 +49,11 @@ function describe(err: unknown): string {
 }
 
 /** Built from a PlatformAPI so the logic is testable without a shell. */
-export function defineFamilyStore(platform: PlatformAPI) {
+export function defineFamilyStore(
+  platform: PlatformAPI,
+  /** Shrinks a picked image to the size stored in the file; replaceable in tests (no canvas in Node). */
+  shrink: (dataUrl: string) => Promise<string> = shrinkToJpeg,
+) {
   return defineStore("family", () => {
     const filePath = ref<string | null>(null);
     const data = ref<FamilyData | null>(null);
@@ -239,6 +251,46 @@ export function defineFamilyStore(platform: PlatformAPI) {
       return mutate((current) => removeEvent(current, id));
     }
 
+    /**
+     * Lets the user pick images, shrinks them and adds the valid ones to the person's photos in
+     * one save. A file that is not a usable image is skipped and reported.
+     */
+    async function pickPhotos(personId: PersonId): Promise<boolean> {
+      let picked: Awaited<ReturnType<PlatformAPI["pickImages"]>>;
+      try {
+        picked = await platform.pickImages();
+      } catch (err) {
+        error.value = describe(err);
+        return false;
+      }
+      if (picked.length === 0) return false;
+      const photos: PhotoInput[] = [];
+      let skipped = 0;
+      for (const image of picked) {
+        try {
+          photos.push({ dataUrl: await shrink(image.dataUrl) });
+        } catch {
+          skipped += 1;
+        }
+      }
+      let ok = true;
+      if (photos.length > 0) ok = await mutate((current) => addPhotos(current, personId, photos));
+      if (ok && skipped > 0) error.value = t("err.photoInvalid");
+      return ok && photos.length > 0;
+    }
+
+    const makeMain = (personId: PersonId, photoId: PhotoId) =>
+      mutate((current) => makeMainPhoto(current, personId, photoId));
+
+    const captionPhoto = (personId: PersonId, photoId: PhotoId, caption: string) =>
+      mutate((current) => setPhotoCaption(current, personId, photoId, caption));
+
+    /** Asks for confirmation first; returns true only if the photo was removed. */
+    async function deletePhoto(personId: PersonId, photoId: PhotoId): Promise<boolean> {
+      if (!(await platform.confirm(t("photo.confirmRemove")))) return false;
+      return mutate((current) => removePhoto(current, personId, photoId));
+    }
+
     const addPartnersLink = (input: PartnersInput) =>
       mutate((current) => addPartners(current, input));
 
@@ -273,6 +325,10 @@ export function defineFamilyStore(platform: PlatformAPI) {
       addParents,
       addPartners: addPartnersLink,
       addEvent: addEventLink,
+      pickPhotos,
+      makeMainPhoto: makeMain,
+      captionPhoto,
+      deletePhoto,
       editEvent,
       deleteEvent,
       editRelationship,

@@ -354,3 +354,22 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 5   | Quit and relaunch                                                                                           | The last choice is kept, with no flash of the other theme at startup.      |
 | 6   | Change Windows' light/dark setting while the app is open (before ever clicking the button)                  | The app follows. After a click on the button it no longer follows.         |
 | 7   | Show an update banner / error message in dark mode                                                          | Coloured panels are dark tinted with light text.                           |
+
+## Photos
+
+| #   | Action                                                           | Expected                                                                                                                                                        |
+| --- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Open a person's card, click **Add photos**                       | The Windows file picker opens, filtered to images; several files can be selected.                                                                               |
+| 2   | Pick two photos straight from a phone/camera (large, 4000 px)    | Both appear as thumbnails; the first has a star (main) and is the avatar in the card header and the people list.                                                |
+| 3   | Check the family file size before and after                      | It grew by roughly 30–100 KB per photo, not by the original sizes.                                                                                              |
+| 4   | Open a photo (click a thumbnail)                                 | A viewer with the photo, "1 / 2", arrows (also ← → keys), caption field, **Make main**, **Remove**, **Close** (Esc also closes).                                |
+| 5   | Type a caption, **Save caption**; close and reopen the photo     | The caption is still there.                                                                                                                                     |
+| 6   | **Make main** on the second photo                                | It moves first and becomes the avatar everywhere.                                                                                                               |
+| 7   | **Remove** and cancel, then Remove and confirm                   | Cancel keeps it; confirm removes it; removing the main promotes the next.                                                                                       |
+| 8   | Tree tab                                                         | Each box has a round portrait at the left (photo or initials on a coloured disc), name and lifespan beside it; long names end with "…" and stay inside the box. |
+| 9   | Click, then double-click a box with a portrait                   | Click opens the card below; double-click re-centres.                                                                                                            |
+| 10  | Open a card: the small family tree                               | Small portraits in each little box.                                                                                                                             |
+| 11  | Switch to the dark theme                                         | Portraits and initials discs are still clear.                                                                                                                   |
+| 12  | **Save a copy…**, open the copy                                  | The photos are in the copy.                                                                                                                                     |
+| 13  | Try to add a 13th photo, a .txt renamed to .png, a corrupt image | Add is disabled at 12; bad files give "not a supported image" and are skipped; good ones in the same selection are still added.                                 |
+| 14  | Sync with git (if configured)                                    | The family file (with photos) is committed and pushed.                                                                                                          |

@@ -24,6 +24,7 @@ export function parseUuidId<Brand extends string>(value: string): UuidId<Brand> 
 export type PersonId = UuidId<"PersonId">;
 export type RelationshipId = UuidId<"RelationshipId">;
 export type EventId = UuidId<"EventId">;
+export type PhotoId = UuidId<"PhotoId">;
 
 /** A person known only by id — no other facts recorded (yet). */
 export interface UnknownPerson {
@@ -113,6 +114,16 @@ export interface Person extends UnknownPerson {
   names?: NamedPerson;
   born?: PersonBorn;
   lifeStatus?: PersonLiving | PersonDeceased;
+  /** The first photo is the main one. Optional: files saved before photos load unchanged. */
+  photos?: PersonPhoto[];
+}
+
+/** A picture of a person, shrunk and stored inside the family file as a data URL. */
+export interface PersonPhoto {
+  id: PhotoId;
+  /** "data:image/jpeg;base64,..." (png and webp are accepted too). */
+  dataUrl: string;
+  caption?: string;
 }
 
 export interface UnknownRelationship {

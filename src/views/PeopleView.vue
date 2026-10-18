@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import type { NewPersonParents } from "../data/createPerson.ts";
 import { isParentChild } from "../data/relationships.ts";
 import AppIcon from "../components/AppIcon.vue";
+import PersonAvatar from "../components/PersonAvatar.vue";
 import { t, tn } from "../i18n/index.ts";
 import PedigreeTree from "../components/PedigreeTree.vue";
 import PersonDetail from "../components/PersonDetail.vue";
@@ -10,7 +11,6 @@ import PersonForm from "../components/PersonForm.vue";
 import RelationshipsSection from "../components/RelationshipsSection.vue";
 import {
   displayName,
-  displayNameParts,
   inputFromPerson,
   emptyPersonForm,
   lastNameSuggestions,
@@ -38,31 +38,6 @@ function initialInput(): PersonFormValues {
   const target = formTarget.value;
   const person = family.data?.people.find((p) => p.id === target);
   return person ? inputFromPerson(person) : emptyPersonForm();
-}
-
-const AVATAR_COLORS = [
-  "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200",
-  "bg-sky-100 text-sky-800 dark:bg-sky-950/50 dark:text-sky-100",
-  "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200",
-  "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200",
-  "bg-violet-100 text-violet-800 dark:bg-violet-950/50 dark:text-violet-200",
-  "bg-teal-100 text-teal-800 dark:bg-teal-950/50 dark:text-teal-200",
-];
-
-/** Up to two initials of the main name, e.g. "Marie Dubois" -> "MD". */
-function initials(person: Parameters<typeof displayName>[0]): string {
-  const words = displayNameParts(person).name.split(/\s+/).filter(Boolean);
-  return words
-    .slice(0, 2)
-    .map((w) => w.charAt(0).toUpperCase())
-    .join("");
-}
-
-/** A stable pastel colour per person, from a hash of their id. */
-function avatarColor(person: Parameters<typeof displayName>[0]): string {
-  let hash = 0;
-  for (const ch of person.id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length] as string;
 }
 
 const parentChoices = computed(() =>
@@ -221,13 +196,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
           >
             <span class="flex min-w-0 items-center gap-3">
-              <span
-                class="grid size-9 shrink-0 place-items-center rounded-full text-xs font-semibold"
-                :class="avatarColor(person)"
-                aria-hidden="true"
-              >
-                {{ initials(person) }}
-              </span>
+              <PersonAvatar :person="person" size="md" />
               <span class="min-w-0">
                 <button
                   data-testid="person-name"

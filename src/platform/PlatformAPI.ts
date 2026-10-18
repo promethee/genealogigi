@@ -1,6 +1,12 @@
 import type { FamilyData } from "../data/types.ts";
 import type { GitSyncResult } from "./gitSync.ts";
 
+/** An image the user picked, as the file's own bytes in a data URL. */
+export interface PickedImage {
+  name: string;
+  dataUrl: string;
+}
+
 /** Whether the folder of a family file can be synced through git, and if not why. */
 export type GitStatus = "no-git" | "not-repo" | "no-remote" | "ready";
 
@@ -40,6 +46,8 @@ export interface PlatformAPI {
     /** The native window title (the app name and version). */
     setTitle(title: string): Promise<void>;
   };
+  /** Lets the user pick image files; resolves to their contents as data URLs (none if cancelled). */
+  pickImages(): Promise<PickedImage[]>;
   /** Opens a link in the system browser. */
   openExternal(url: string): Promise<void>;
   exit(code?: number): Promise<void>;

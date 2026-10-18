@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { formatDate } from "../data/dates.ts";
-import { displayName, displayNameParts, lifeSummary, primaryOf } from "../data/people.ts";
+import { displayName, lifeSummary, primaryOf } from "../data/people.ts";
 import { relativesOf } from "../data/relatives.ts";
 import { natureLabel, statusLabel } from "../data/relationships.ts";
 import type { PersonId } from "../data/types.ts";
@@ -9,7 +9,9 @@ import { t, type MessageKey } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
 import AppIcon from "./AppIcon.vue";
 import FamilyMiniTree from "./FamilyMiniTree.vue";
+import PersonAvatar from "./PersonAvatar.vue";
 import PersonTimeline from "./PersonTimeline.vue";
+import PhotoGallery from "./PhotoGallery.vue";
 
 const props = defineProps<{
   personId: PersonId;
@@ -33,17 +35,6 @@ const nameOf = (id: PersonId): string => {
   const other = family.data?.people.find((p) => p.id === id);
   return other ? displayName(other) : t("rel.unknownPerson");
 };
-
-const initials = computed(() =>
-  person.value
-    ? displayNameParts(person.value)
-        .name.split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w.charAt(0).toUpperCase())
-        .join("")
-    : "",
-);
 
 interface NameLine {
   value: string;
@@ -108,12 +99,7 @@ async function remove(): Promise<void> {
   <section v-if="person" data-testid="person-detail" class="flex flex-col gap-5">
     <header class="flex flex-wrap items-start justify-between gap-3">
       <div class="flex min-w-0 items-center gap-3">
-        <span
-          class="grid size-12 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
-          aria-hidden="true"
-        >
-          {{ initials }}
-        </span>
+        <PersonAvatar :person="person" size="lg" />
         <div class="min-w-0">
           <h2 data-testid="detail-name" class="truncate text-xl font-semibold text-slate-900">
             {{ displayName(person) }}
@@ -186,6 +172,7 @@ async function remove(): Promise<void> {
             {{ t("detail.nothingKnown") }}
           </p>
         </div>
+        <PhotoGallery :person-id="personId" />
       </div>
 
       <div v-if="relatives" class="flex flex-col gap-4" data-testid="detail-relatives">

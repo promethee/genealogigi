@@ -22,12 +22,17 @@ import {
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
 import PersonDetail from "./PersonDetail.vue";
+import TreeAvatar from "./TreeAvatar.vue";
 import PersonForm from "./PersonForm.vue";
 
-const SLOT_WIDTH = 190;
-const BOX_WIDTH = 170;
-const BOX_HEIGHT = 48;
-const LEVEL_HEIGHT = 96;
+// Boxes hold a round portrait at the left, then the name and lifespan.
+const SLOT_WIDTH = 224;
+const BOX_WIDTH = 200;
+const BOX_HEIGHT = 56;
+const LEVEL_HEIGHT = 104;
+const AVATAR_R = 21;
+const TEXT_X = 58;
+const NAME_MAX = 17;
 const PADDING = 16;
 
 const family = useFamilyStore();
@@ -76,6 +81,8 @@ async function saveSelected(input: PersonFormInput): Promise<void> {
   if (!selectedId.value) return;
   if (await family.editPerson(selectedId.value, input)) editing.value = false;
 }
+
+const byId = computed(() => new Map(people.value.map((p) => [p.id, p])));
 
 const names = computed(() => new Map(people.value.map((p) => [p.id, displayName(p)])));
 
@@ -228,6 +235,9 @@ function fullName(id: PersonId): string {
           :viewBox="`0 0 ${size.width} ${size.height}`"
         >
           <defs>
+            <clipPath id="tree-avatar-clip" clipPathUnits="objectBoundingBox">
+              <circle cx="0.5" cy="0.5" r="0.5" />
+            </clipPath>
             <filter id="node-shadow" x="-10%" y="-10%" width="120%" height="140%">
               <feDropShadow
                 dx="0"
@@ -285,22 +295,28 @@ function fullName(id: PersonId): string {
               "
               filter="url(#node-shadow)"
             />
+            <TreeAvatar
+              :person="byId.get(node.personId)"
+              :cx="BOX_HEIGHT / 2"
+              :cy="BOX_HEIGHT / 2"
+              :r="AVATAR_R"
+            />
             <text
-              :x="BOX_WIDTH / 2"
-              :y="lifespans.get(node.personId) ? 20 : BOX_HEIGHT / 2 + 5"
-              text-anchor="middle"
+              :x="TEXT_X"
+              :y="lifespans.get(node.personId) ? 25 : BOX_HEIGHT / 2 + 5"
+              text-anchor="start"
               font-size="14"
               font-weight="500"
               fill="var(--tree-text)"
             >
-              {{ truncateName(shortNames.get(node.personId) ?? fullName(node.personId)) }}
+              {{ truncateName(shortNames.get(node.personId) ?? fullName(node.personId), NAME_MAX) }}
             </text>
             <text
               v-if="lifespans.get(node.personId)"
               data-testid="tree-lifespan"
-              :x="BOX_WIDTH / 2"
-              y="38"
-              text-anchor="middle"
+              :x="TEXT_X"
+              y="42"
+              text-anchor="start"
               font-size="11"
               fill="var(--tree-muted)"
             >

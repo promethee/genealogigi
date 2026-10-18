@@ -247,3 +247,11 @@ colours; coloured panels have explicit `dark:` variants; SVG trees use `--tree-*
 One toggle button; first launch follows the system, a click is saved and wins. Contrast
 (4.5:1 text, 3:1 muted) is asserted by a Playwright test in both themes.
 
+## Photos (2026-10-18)
+
+Decision: photos are embedded in the family JSON as JPEG data URLs (`Person.photos?`, first =
+main, up to 12 per person, max 480 px, quality 0.85), not stored as files beside it. Reason: the
+product promise is "one file you own": save-a-copy, git sync and backups keep working with nothing
+extra to stage. Cost: a larger file that is rewritten on every save (about 30-100 KB per photo).
+Upgrade path if families outgrow this: photos in a sibling folder referenced by name.
+

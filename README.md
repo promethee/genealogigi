@@ -12,6 +12,7 @@ Working today:
 - Add, edit and delete people: several names (nickname, married...) with a primary, birth date, life status and death date (dates may be partial).
 - Save a copy of the open family to another file.
 - Link people as parent-child (biological confirmed or presumed, adoptive, step, foster, guardian with status and dates) or as partners, with validation against duplicates and cycles. Relationships can be edited.
+- Photos for each person (several, with a main one and captions), shown as portraits in the cards and trees. They are shrunk to 480 px and stored inside the family file (about 30–100 KB each), so the family stays one portable file.
 - Person card with a timeline of their life, and events you add (marriage, residence...) that can involve other people.
 - Tree charts: pedigree (ancestors), descendants and hourglass; opens on the tree when the family has relationships.
 - English and French interface, switchable at any time (top right).

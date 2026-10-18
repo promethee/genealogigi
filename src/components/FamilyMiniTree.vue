@@ -8,14 +8,17 @@ import type { PersonId } from "../data/types.ts";
 import { truncateName } from "../data/pedigree.ts";
 import { t } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
+import TreeAvatar from "./TreeAvatar.vue";
 
 const props = defineProps<{ personId: PersonId }>();
 const emit = defineEmits<{ select: [id: PersonId] }>();
 
-const BOX_W = 132;
-const BOX_H = 38;
+const BOX_W = 156;
+const BOX_H = 42;
 const GAP_X = 16;
-const ROW_H = 68;
+const ROW_H = 70;
+const AVATAR_R = 14;
+const TEXT_X = 38;
 const PAD = 8;
 
 const family = useFamilyStore();
@@ -23,6 +26,8 @@ const family = useFamilyStore();
 const tree = computed(() =>
   family.data ? miniTreeOf(props.personId, relativesOf(family.data, props.personId)) : null,
 );
+
+const byId = computed(() => new Map((family.data?.people ?? []).map((p) => [p.id, p])));
 
 const nameOf = (id: PersonId): string => {
   const person = family.data?.people.find((p) => p.id === id);
@@ -90,6 +95,11 @@ const lines = computed(() => {
         role="img"
         :aria-label="t('detail.family')"
       >
+        <defs>
+          <clipPath id="tree-avatar-clip" clipPathUnits="objectBoundingBox">
+            <circle cx="0.5" cy="0.5" r="0.5" />
+          </clipPath>
+        </defs>
         <path
           v-for="line in lines"
           :key="line.key"
@@ -119,22 +129,28 @@ const lines = computed(() => {
             :stroke="box.role === 'self' ? 'var(--tree-root-stroke)' : 'var(--tree-node-stroke)'"
             :stroke-width="box.role === 'self' ? 1.5 : 1"
           />
+          <TreeAvatar
+            :person="byId.get(box.personId)"
+            :cx="BOX_H / 2"
+            :cy="BOX_H / 2"
+            :r="AVATAR_R"
+          />
           <text
-            :x="BOX_W / 2"
-            :y="box.nature ? 16 : BOX_H / 2 + 4"
-            text-anchor="middle"
+            :x="TEXT_X"
+            :y="box.nature ? 19 : BOX_H / 2 + 4"
+            text-anchor="start"
             font-size="12"
             font-weight="500"
             fill="var(--tree-text)"
           >
-            {{ truncateName(nameOf(box.personId)) }}
+            {{ truncateName(nameOf(box.personId), 15) }}
           </text>
           <text
             v-if="box.nature"
             data-testid="mini-nature"
-            :x="BOX_W / 2"
-            y="30"
-            text-anchor="middle"
+            :x="TEXT_X"
+            y="33"
+            text-anchor="start"
             font-size="9"
             fill="var(--tree-muted)"
           >

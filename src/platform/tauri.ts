@@ -1,13 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { confirm, open, save } from "@tauri-apps/plugin-dialog";
-import { exists, readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
+import { exists, readFile, readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { load as loadStore } from "@tauri-apps/plugin-store";
 import { loadFamilyData, saveFamilyData, type FileIO } from "../data/store.ts";
 import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
-import type { GitStatus, PlatformAPI } from "./PlatformAPI.ts";
+import type { GitStatus, PickedImage, PlatformAPI } from "./PlatformAPI.ts";
 
 const FAMILY_FILE_FILTER_NAME = "Genealogigi family";
 const DEFAULT_EXTENSIONS = ["json"];
@@ -16,6 +16,24 @@ const LAST_FILE_PATH_KEY = "lastFilePath";
 const LANGUAGE_KEY = "language";
 const DISMISSED_UPDATE_KEY = "dismissedUpdate";
 const THEME_KEY = "theme";
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "gif"];
+const MIME: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+
+/** The file's bytes as a data URL (read through the browser so large files are not copied by hand). */
+function toDataUrl(bytes: Uint8Array, mime: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error("Could not read the image."));
+    reader.readAsDataURL(new Blob([bytes as BlobPart], { type: mime }));
+  });
+}
 
 // Opened lazily so merely importing this module never touches Tauri.
 const settingsStore = () => loadStore(SETTINGS_FILE, { defaults: {}, autoSave: false });
@@ -101,6 +119,27 @@ export function createPlatformAPI(): PlatformAPI {
       },
     },
     window: { setTitle: (title) => getCurrentWindow().setTitle(title) },
+    pickImages: async (): Promise<PickedImage[]> => {
+      const selected = await open({
+        multiple: true,
+        directory: false,
+        filters: [{ name: "Images", extensions: IMAGE_EXTENSIONS }],
+      });
+      const paths = selected === null ? [] : Array.isArray(selected) ? selected : [selected];
+      const images: PickedImage[] = [];
+      for (const path of paths) {
+        const name = path.split(/[/\\]/).pop() ?? path;
+        const extension = name.split(".").pop()?.toLowerCase() ?? "";
+        images.push({
+          name,
+          dataUrl: await toDataUrl(
+            await readFile(path),
+            MIME[extension] ?? "application/octet-stream",
+          ),
+        });
+      }
+      return images;
+    },
     openExternal: (url) => openUrl(url),
     exit: (code) => exit(code ?? 0),
   };
