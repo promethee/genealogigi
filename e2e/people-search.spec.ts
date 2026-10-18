@@ -132,3 +132,17 @@ test("Escape and clicking elsewhere also close the suggestions", async ({ page }
   await page.getByTestId("people-section").click({ position: { x: 5, y: 5 } });
   await expect(page.getByTestId("search-results")).toHaveCount(0);
 });
+
+test("Add person sits on the toolbar line, and the two lists start at the same height", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  const tab = (await page.getByTestId("tab-list").boundingBox())!;
+  const add = (await page.getByTestId("add-person").boundingBox())!;
+  expect(Math.abs(tab.y + tab.height / 2 - (add.y + add.height / 2))).toBeLessThan(20);
+  const people = (await page.getByTestId("people-section").boundingBox())!;
+  const rels = (await page.getByTestId("relationships-section").locator("xpath=..").boundingBox())!;
+  expect(Math.abs(people.y - rels.y)).toBeLessThan(2);
+});

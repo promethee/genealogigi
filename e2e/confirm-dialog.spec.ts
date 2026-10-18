@@ -80,3 +80,24 @@ test("the dialog follows the language and the dark theme", async ({ page }) => {
     .evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(bg).not.toBe("rgb(255, 255, 255)");
 });
+
+test("Confirm is neutral and Cancel is red", async ({ page }) => {
+  await askToDelete(page);
+  // Any CSS colour notation (oklch included) read back as rgb through a canvas.
+  const rgb = (id: string): Promise<[number, number, number]> =>
+    page.getByTestId(id).evaluate((el) => {
+      const c = document.createElement("canvas");
+      c.width = c.height = 1;
+      const x = c.getContext("2d")!;
+      x.fillStyle = getComputedStyle(el).color;
+      x.fillRect(0, 0, 1, 1);
+      const d = x.getImageData(0, 0, 1, 1).data;
+      return [d[0]!, d[1]!, d[2]!];
+    });
+  const [r, g, b] = await rgb("confirm-cancel");
+  expect(r).toBeGreaterThan(g + 60);
+  expect(r).toBeGreaterThan(b + 60);
+  const [cr, cg, cb] = await rgb("confirm-ok");
+  expect(Math.abs(cr - cg)).toBeLessThan(40); // grey-ish, not green or red
+  expect(Math.abs(cg - cb)).toBeLessThan(60);
+});

@@ -95,7 +95,8 @@ test("clicking a name opens a read-only card with names, birth and death places"
   await expect(page.getByTestId("detail-born")).toHaveText("born 1815 in London");
   await expect(page.getByTestId("detail-status")).toHaveText("died 1852 in Paris");
   await expect(page.getByTestId("detail-names")).toContainText("Ada");
-  await expect(page.getByTestId("detail-main")).toHaveCount(2); // first and last name
+  await expect(page.getByTestId("detail-names")).not.toContainText("main"); // no "main" badge
+  await expect(page.getByTestId("detail-names")).not.toContainText("Birth"); // default kind is not shown
   // Read-only: no form inputs.
   await expect(page.getByTestId("first-name")).toHaveCount(0);
 });
@@ -250,4 +251,21 @@ test.describe("in the tree", () => {
     await expect(page.getByTestId("tree-detail-panel")).toHaveCount(0);
     await expect(node(page, "Cleo")).toHaveCount(0);
   });
+});
+
+test("a name that is not the default kind still shows its kind", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("create").click();
+  await page.getByTestId("add-person").click();
+  await page.getByTestId("first-name").first().fill("Ada");
+  await page.getByTestId("last-name").first().fill("Byron");
+  await page.getByTestId("add-last-name").click();
+  await page.getByTestId("last-name").nth(1).fill("King");
+  await page.getByTestId("last-name-kind").nth(1).selectOption("married");
+  await page.getByTestId("submit-person").click();
+  await page.getByTestId("view-person").click();
+  const names = page.getByTestId("detail-names");
+  await expect(names).toContainText("King");
+  await expect(names).toContainText("Married");
+  await expect(names).not.toContainText("Birth");
 });

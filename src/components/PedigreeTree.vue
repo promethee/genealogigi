@@ -366,11 +366,8 @@ function fullName(id: PersonId): string {
         class="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600"
         data-testid="focus-stats"
       >
-        <span class="font-medium text-slate-800">{{
-          t("tree.stats.title", { name: rootId ? (names.get(rootId) ?? "") : "" })
-        }}</span>
-        <span v-if="!focusChips.length" class="ml-2">{{ t("tree.stats.none") }}</span>
-        <ul v-else class="mt-1 flex flex-wrap gap-1.5">
+        <span v-if="!focusChips.length">{{ t("tree.stats.none") }}</span>
+        <ul v-else class="flex flex-wrap gap-1.5">
           <li v-for="chip in focusChips" :key="chip" data-testid="focus-chip" class="chip">
             {{ chip }}
           </li>

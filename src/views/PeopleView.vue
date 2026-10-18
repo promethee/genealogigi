@@ -104,6 +104,10 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             <AppIcon name="download" />
             {{ t("header.export") }}
           </button>
+          <button data-testid="share" class="btn btn-secondary" @click="family.shareWebPage()">
+            <AppIcon name="globe" />
+            {{ t("header.share") }}
+          </button>
           <button data-testid="import" class="btn btn-secondary" @click="family.importFamily()">
             <AppIcon name="upload" />
             {{ t("header.import") }}
@@ -222,6 +226,15 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ t("search.none") }}
           </p>
         </div>
+        <button
+          v-if="tab === 'list' && !formTarget"
+          data-testid="add-person"
+          class="btn btn-primary ml-auto"
+          @click="formTarget = 'new'"
+        >
+          <AppIcon name="plus" />
+          {{ t("person.add") }}
+        </button>
       </div>
 
       <div v-if="tab === 'tree'" class="card p-5">
@@ -229,17 +242,6 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
       </div>
       <div v-else class="grid items-start gap-5 xl:grid-cols-2" data-testid="list-layout">
         <div class="flex min-w-0 flex-col gap-5">
-          <div v-if="!formTarget">
-            <button
-              data-testid="add-person"
-              class="btn btn-primary px-4 py-2"
-              @click="formTarget = 'new'"
-            >
-              <AppIcon name="plus" />
-              {{ t("person.add") }}
-            </button>
-          </div>
-
           <div v-if="viewing && !formTarget" class="card p-5" data-testid="person-card">
             <PersonDetail
               :key="viewing"

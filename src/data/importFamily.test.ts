@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ImportError, parseFamilyFile, summarize } from "./importFamily.ts";
-import { MAX_NOTES_CHARS, addPerson } from "./people.ts";
+import { addPerson } from "./people.ts";
 import { addParentChild } from "./relationships.ts";
 import { addEvent } from "./events.ts";
 import { addPhotos } from "./photos.ts";

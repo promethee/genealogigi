@@ -1,0 +1,3 @@
+- [x] shareModel and shareHtml with tests
+- [x] saveFileDialog extensions, store action, header button
+- [x] i18n, e2e (generate, open the file, search, links)

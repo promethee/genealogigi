@@ -442,3 +442,13 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 2   | Edit again and clear the note                      | The Notes section disappears.                             |
 | 3   | Search a word that only appears in a note          | The person is found.                                      |
 | 4   | Export, import into a fresh family                 | Notes are kept.                                           |
+
+## Share as web page
+
+| #   | Action                                            | Expected                                                                                     |
+| --- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | Click **Share as web page…**, then Cancel         | Nothing is written.                                                                          |
+| 2   | Confirm the warning, choose a file name           | One `.html` file is written; green message names it.                                         |
+| 3   | Double-click the file (any browser, even offline) | People list with search; click a person to read their card; relatives are links; Back works. |
+| 4   | Open it on a phone-sized window                   | List and card alternate with a Back button.                                                  |
+| 5   | Search a word that is only in a note              | The person is found.                                                                         |

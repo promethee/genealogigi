@@ -286,3 +286,7 @@ Decision: no map. Online geocoding/tiles would break "your data never leaves you
 ## Person notes (2026-10-18)
 
 Decision: `Person.notes?: string`, plain text, 20 000 chars, searchable; no rich text (portable, nothing to sanitise). Edits that do not send notes keep them.
+
+## Share as web page (2026-10-18)
+
+Decision: sharing = one self-contained HTML file built from a pre-computed, already-translated model (`buildShareModel`), rendered by a tiny vanilla viewer. Contains everyone (a warning says so). No tree drawing in v1; navigation through relatives. Chosen over a hosted share because the app promises no cloud.

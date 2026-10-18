@@ -152,3 +152,34 @@ test("French label, and the card has an explicit Close button", async ({ page })
   await expect(page.getByTestId("detail-close")).toHaveText("Close");
   await expect(page.getByTestId("detail-close").locator("svg")).toHaveCount(0);
 });
+
+test("the card's siblings title is singular for one sibling, plural for several (English and French)", async ({
+  page,
+}) => {
+  await build(page); // Me has three siblings
+  await page.getByTestId("tree-node").filter({ hasText: /^Me/ }).first().click();
+  await expect(page.getByTestId("detail-siblings").locator("h3")).toHaveText("Siblings");
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("detail-siblings").locator("h3")).toHaveText("Fratrie / sororité");
+  await page.getByTestId("lang-en").click();
+
+  // A new family where one child has exactly one sibling.
+  await page.getByTestId("close-family").click();
+  await page.getByTestId("create").click();
+  for (const n of ["Mum", "Kid1", "Kid2"]) await person(page, n);
+  for (const kid of ["Kid1", "Kid2"]) {
+    await page.getByTestId("rel-kind").selectOption("parent");
+    await page.getByTestId("rel-first").selectOption({ label: "Mum" });
+    await page.getByTestId("rel-second").selectOption({ label: kid });
+    await page.getByTestId("rel-add").click();
+  }
+  await page.getByTestId("tab-list").click();
+  await page
+    .getByTestId("person-row")
+    .filter({ hasText: "Kid1" })
+    .getByTestId("view-person")
+    .click();
+  await expect(page.getByTestId("detail-siblings").locator("h3")).toHaveText("Sibling");
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("detail-siblings").locator("h3")).toHaveText("Frère / sœur");
+});

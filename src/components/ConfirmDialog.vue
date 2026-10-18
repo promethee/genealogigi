@@ -39,12 +39,12 @@ watch(pendingConfirm, async (value) => {
         <button
           ref="cancelButton"
           data-testid="confirm-cancel"
-          class="btn btn-secondary"
+          class="btn btn-danger"
           @click="answerConfirm(false)"
         >
           {{ t("common.cancel") }}
         </button>
-        <button data-testid="confirm-ok" class="btn btn-primary" @click="answerConfirm(true)">
+        <button data-testid="confirm-ok" class="btn btn-secondary" @click="answerConfirm(true)">
           {{ t("confirm.ok") }}
         </button>
       </div>

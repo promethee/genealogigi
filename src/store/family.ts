@@ -16,6 +16,9 @@ import {
   type FamilySummary,
   type ImportWarning,
 } from "../data/importFamily.ts";
+import { renderShareHtml } from "../data/shareHtml.ts";
+import { buildShareModel } from "../data/shareModel.ts";
+import { locale } from "../i18n/index.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
 import { addPersonWithParents, type NewPersonParents } from "../data/createPerson.ts";
@@ -319,6 +322,44 @@ export function defineFamilyStore(
       return result;
     }
 
+    /**
+     * Writes the whole family as one self-contained web page after a warning that everyone,
+     * notes and photos included, will be readable by whoever gets the file.
+     */
+    function shareWebPage(): Promise<boolean> {
+      const run = async (): Promise<boolean> => {
+        const openPath = filePath.value;
+        if (!openPath || !data.value) return false;
+        notice.value = null;
+        warnings.value = [];
+        try {
+          const base = baseName(openPath).replace(/\.[^.]+$/, "");
+          if (!(await platform.confirm(t("share.confirm", { file: baseName(openPath) })))) {
+            return false;
+          }
+          const target = await platform.saveFileDialog({
+            defaultName: t("share.defaultName"),
+            extensions: ["html"],
+          });
+          if (!target) return false;
+          if (!data.value) return false;
+          const html = renderShareHtml(
+            buildShareModel(data.value, { title: base, lang: locale.value, today: new Date() }),
+          );
+          await platform.data.writeRaw(target, html);
+          error.value = null;
+          notice.value = t("share.done", { path: target });
+          return true;
+        } catch (err) {
+          error.value = describe(err);
+          return false;
+        }
+      };
+      const result = pendingMutation.then(run);
+      pendingMutation = result;
+      return result;
+    }
+
     /** Leaves the family (after pending saves finish) and goes back to the welcome screen. */
     async function closeFamily(): Promise<void> {
       await pendingMutation;
@@ -474,6 +515,7 @@ export function defineFamilyStore(
       editRelationship,
       deleteRelationship,
       exportFamily,
+      shareWebPage,
       importFamily,
       closeFamily,
     };

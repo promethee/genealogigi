@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { formatDate } from "../data/dates.ts";
-import { displayName, lifeSummary, primaryOf } from "../data/people.ts";
+import { displayName, lifeSummary } from "../data/people.ts";
 import { relativesOf } from "../data/relatives.ts";
 import { natureLabel, statusLabel } from "../data/relationships.ts";
 import type { PersonId } from "../data/types.ts";
-import { t, type MessageKey } from "../i18n/index.ts";
+import { t, tn, type MessageKey } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
 import AppIcon from "./AppIcon.vue";
 import FamilyMiniTree from "./FamilyMiniTree.vue";
@@ -40,7 +40,6 @@ interface NameLine {
   value: string;
   kind: string;
   since: string;
-  main: boolean;
 }
 
 function lines<K extends string>(
@@ -48,12 +47,11 @@ function lines<K extends string>(
     | { value: string; kind: K; date: Parameters<typeof formatDate>[0]; primary?: boolean }[]
     | undefined,
 ): NameLine[] {
-  const main = primaryOf(entries);
   return (entries ?? []).map((e) => ({
     value: e.value,
-    kind: t(`kind.${e.kind}` as MessageKey),
+    // "Birth" is the default kind, so it is not spelled out.
+    kind: e.kind === "birth" ? "" : t(`kind.${e.kind}` as MessageKey),
     since: e.date.yearKnown || e.date.monthKnown || e.date.dayKnown ? formatDate(e.date) : "",
-    main: e === main,
   }));
 }
 
@@ -143,12 +141,9 @@ async function remove(): Promise<void> {
               class="flex flex-wrap gap-x-2"
             >
               <span class="font-medium text-slate-800">{{ n.value }}</span>
-              <span class="text-slate-500">{{ n.kind }}</span>
+              <span v-if="n.kind" class="text-slate-500">{{ n.kind }}</span>
               <span v-if="n.since" class="text-slate-500">{{
                 t("detail.since", { date: n.since })
-              }}</span>
-              <span v-if="n.main" class="chip" data-testid="detail-main">{{
-                t("detail.main")
               }}</span>
             </li>
           </ul>
@@ -238,7 +233,7 @@ async function remove(): Promise<void> {
         </div>
         <div v-if="relatives.siblings.length" data-testid="detail-siblings">
           <h3 class="mb-1.5 text-xs font-semibold tracking-wide text-slate-400 uppercase">
-            {{ t("detail.siblings") }}
+            {{ tn("detail.siblings", relatives.siblings.length) }}
           </h3>
           <ul class="flex flex-col gap-1 text-sm">
             <li v-for="s in relatives.siblings" :key="s.personId">

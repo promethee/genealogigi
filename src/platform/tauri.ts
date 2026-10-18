@@ -69,7 +69,12 @@ export function createPlatformAPI(): PlatformAPI {
     saveFileDialog: (options) =>
       save({
         defaultPath: options?.defaultName,
-        filters: [{ name: FAMILY_FILE_FILTER_NAME, extensions: SAVE_EXTENSIONS }],
+        filters: [
+          {
+            name: options?.extensions ? "Web page" : FAMILY_FILE_FILTER_NAME,
+            extensions: options?.extensions ?? SAVE_EXTENSIONS,
+          },
+        ],
       }),
     confirm: askConfirm,
     data: {

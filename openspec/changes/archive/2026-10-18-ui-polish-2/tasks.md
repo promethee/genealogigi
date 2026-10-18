@@ -1,0 +1,1 @@
+- [x] All items above with e2e coverage

@@ -17,7 +17,7 @@ export type GitStatus = "no-git" | "not-repo" | "no-remote" | "ready";
  */
 export interface PlatformAPI {
   openFileDialog(options?: { extensions?: string[] }): Promise<string | null>;
-  saveFileDialog(options?: { defaultName?: string }): Promise<string | null>;
+  saveFileDialog(options?: { defaultName?: string; extensions?: string[] }): Promise<string | null>;
   confirm(message: string): Promise<boolean>;
   data: {
     exists(filePath: string): Promise<boolean>;

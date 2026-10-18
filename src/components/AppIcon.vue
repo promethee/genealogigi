@@ -17,6 +17,7 @@ export type IconName =
   | "download"
   | "upload"
   | "home"
+  | "globe"
   | "x";
 
 defineProps<{ name: IconName }>();
@@ -40,6 +41,8 @@ const PATHS: Record<IconName, string> = {
   eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
   download: "M12 3v12M7 10l5 5 5-5M4 20h16",
   upload: "M12 15V3M7 8l5-5 5 5M4 20h16",
+  globe:
+    "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
   home: "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10",
   x: "M6 6l12 12M18 6L6 18",
 };
