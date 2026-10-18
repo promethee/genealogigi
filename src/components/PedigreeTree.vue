@@ -11,6 +11,7 @@ import {
 } from "../data/pedigree.ts";
 import { displayName, lifespan } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
+import FanChart from "./FanChart.vue";
 import { useFamilyStore } from "../store/index.ts";
 
 const COLUMN_WIDTH = 210;
@@ -23,7 +24,7 @@ const family = useFamilyStore();
 
 const chosenRoot = ref<PersonId | "">("");
 const generations = ref(DEFAULT_GENERATIONS);
-const direction = ref<PedigreeDirection>("ancestors");
+const direction = ref<PedigreeDirection | "fan">("ancestors");
 
 const people = computed(() => family.data?.people ?? []);
 const generationOptions = Array.from(
@@ -37,9 +38,19 @@ const rootId = computed<PersonId | null>(() => {
   return chosen?.id ?? people.value[0]?.id ?? null;
 });
 
+// The fan is drawn from the ancestors layout.
+const layoutDirection = computed<PedigreeDirection>(() =>
+  direction.value === "fan" ? "ancestors" : direction.value,
+);
+
 const pedigree = computed(() =>
   family.data && rootId.value
-    ? buildPedigree(family.data, rootId.value, clampGenerations(generations.value), direction.value)
+    ? buildPedigree(
+        family.data,
+        rootId.value,
+        clampGenerations(generations.value),
+        layoutDirection.value,
+      )
     : null,
 );
 
@@ -125,6 +136,7 @@ function fullName(id: PersonId): string {
             <option value="ancestors">Ancestors</option>
             <option value="descendants">Descendants</option>
             <option value="hourglass">Hourglass (both)</option>
+            <option value="fan">Fan (ancestors)</option>
           </select>
         </label>
         <label class="flex flex-col text-sm">
@@ -162,8 +174,15 @@ function fullName(id: PersonId): string {
       </div>
 
       <div class="overflow-auto rounded border border-gray-200">
+        <FanChart
+          v-if="pedigree && direction === 'fan'"
+          :pedigree="pedigree"
+          :names="names"
+          :lifespans="lifespans"
+          @select="chosenRoot = $event"
+        />
         <svg
-          v-if="pedigree"
+          v-else-if="pedigree"
           data-testid="tree-svg"
           :width="size.width"
           :height="size.height"
