@@ -49,7 +49,7 @@ const positions = computed(() => {
   const map = new Map<string, { x: number; y: number }>();
   for (const node of pedigree.value?.nodes ?? []) {
     map.set(node.key, {
-      x: PADDING + node.generation * COLUMN_WIDTH,
+      x: PADDING + node.column * COLUMN_WIDTH,
       y: PADDING + node.row * ROW_HEIGHT,
     });
   }
@@ -70,9 +70,11 @@ const edgePaths = computed(() =>
     const from = positions.value.get(edge.fromKey);
     const to = positions.value.get(edge.toKey);
     if (!from || !to) return [];
-    const x1 = from.x + BOX_WIDTH;
+    // Links run from the near side of one box to the near side of the other.
+    const rightward = to.x >= from.x;
+    const x1 = rightward ? from.x + BOX_WIDTH : from.x;
     const y1 = from.y + BOX_HEIGHT / 2;
-    const x2 = to.x;
+    const x2 = rightward ? to.x : to.x + BOX_WIDTH;
     const y2 = to.y + BOX_HEIGHT / 2;
     const mid = (x1 + x2) / 2;
     return [
@@ -122,6 +124,7 @@ function fullName(id: PersonId): string {
           >
             <option value="ancestors">Ancestors</option>
             <option value="descendants">Descendants</option>
+            <option value="hourglass">Hourglass (both)</option>
           </select>
         </label>
         <label class="flex flex-col text-sm">

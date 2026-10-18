@@ -146,3 +146,12 @@ Start from an open family with at least one person.
 | 3   | Generations 2 with a great-grandchild present                                               | The great-grandchild is not shown.              |
 | 4   | Click Mum                                                                                   | Mum becomes root; still showing descendants.    |
 | 5   | Show: Ancestors                                                                             | Mum and her ancestors.                          |
+
+## Hourglass chart
+
+| #   | Action                                                              | Expected                                                    |
+| --- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 1   | Family Gran -> Mum -> Me -> Kid. Tree tab, Show: Hourglass, root Me | Gran, Mum left of Me; Kid right of Me; Me appears once.     |
+| 2   | Look at the links                                                   | Lines join the facing sides of the boxes; none cross boxes. |
+| 3   | Click Mum                                                           | Mum becomes root; still hourglass.                          |
+| 4   | Generations 2 on Gran                                               | Kid (3 generations down) is not shown.                      |

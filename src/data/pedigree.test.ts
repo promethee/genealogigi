@@ -269,3 +269,66 @@ describe("buildPedigree descendants", () => {
     expect(buildPedigree(data, id("Me")).nodes).toHaveLength(3);
   });
 });
+
+describe("buildPedigree hourglass", () => {
+  const family = () =>
+    build(
+      ["Gran", "Mum", "Dad", "Me", "Kid", "Sis"],
+      [
+        ["Gran", "Mum"],
+        ["Mum", "Me"],
+        ["Dad", "Me"],
+        ["Me", "Kid"],
+        ["Me", "Sis"],
+      ],
+    );
+
+  it("puts ancestors left and descendants right of one shared root", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Me"), 4, "hourglass");
+    const column = (name: string) => p.nodes.find((n) => n.personId === id(name))?.column;
+    expect(p.nodes).toHaveLength(6);
+    expect(p.columns).toBe(4);
+    expect(column("Gran")).toBe(0);
+    expect(column("Mum")).toBe(1);
+    expect(column("Me")).toBe(2);
+    expect(column("Kid")).toBe(3);
+    expect(p.nodes.filter((n) => n.personId === id("Me"))).toHaveLength(1);
+    expect(p.edges).toHaveLength(5);
+  });
+
+  it("aligns the root row and keeps rows non-negative", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Me"), 4, "hourglass");
+    expect(Math.min(...p.nodes.map((n) => n.row))).toBe(0);
+    expect(p.rows).toBeGreaterThanOrEqual(Math.max(...p.nodes.map((n) => n.row)) + 1);
+    const kids = p.nodes.filter((n) => n.column === 3).map((n) => n.row);
+    const root = p.nodes.find((n) => n.generation === 0);
+    expect(root?.row).toBe((Math.min(...kids) + Math.max(...kids)) / 2);
+  });
+
+  it("works with only one side and respects the limit per side", () => {
+    const { data, id } = family();
+    const noKids = buildPedigree(data, id("Kid"), 2, "hourglass");
+    expect(noKids.nodes.map((n) => n.personId)).toContain(id("Me"));
+    const root = noKids.nodes.find((n) => n.generation === 0);
+    expect(root?.column).toBe(noKids.columns - 1);
+    const limited = buildPedigree(data, id("Me"), 2, "hourglass");
+    expect(limited.nodes).toHaveLength(6);
+    const tight = build(
+      ["A", "B", "C", "D"],
+      [
+        ["A", "B"],
+        ["B", "C"],
+        ["C", "D"],
+      ],
+    );
+    expect(buildPedigree(tight.data, tight.id("B"), 2, "hourglass").columns).toBe(4);
+  });
+
+  it("returns an empty chart for an unknown root", () => {
+    const { data } = family();
+    const p = buildPedigree(data, createUuidId<"PersonId">() as PersonId, 4, "hourglass");
+    expect(p.nodes).toHaveLength(0);
+  });
+});
