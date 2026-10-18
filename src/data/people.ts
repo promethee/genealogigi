@@ -12,6 +12,7 @@ import {
 } from "./dates.ts";
 import { PersonNotFoundError } from "./errors.ts";
 import { t } from "../i18n/index.ts";
+import { withoutPerson } from "./events.ts";
 import { involvesPerson } from "./relationships.ts";
 import {
   createUuidId,
@@ -398,5 +399,7 @@ export function removePerson(data: FamilyData, id: PersonId): FamilyData {
     ...data,
     people: data.people.filter((p) => p.id !== id),
     relationships: data.relationships.filter((r) => !involvesPerson(r, id)),
+    // Events lose this person; an event left with nobody goes too.
+    ...(data.events ? { events: withoutPerson(data.events, id) } : {}),
   };
 }

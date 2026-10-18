@@ -578,3 +578,18 @@ and the parent links together or not at all.
 
 - **WHEN** an existing person is edited
 - **THEN** the Parents section is not shown
+
+### Requirement: Deleting a person updates events
+
+When a person is deleted they SHALL be removed from every event; an event left
+with no people SHALL be deleted.
+
+#### Scenario: Shared event
+
+- **WHEN** a marriage event involves Ada and Paul and Paul is deleted
+- **THEN** the event remains on Ada's timeline
+
+#### Scenario: Last person
+
+- **WHEN** an event involves only Ada and Ada is deleted
+- **THEN** the event is deleted

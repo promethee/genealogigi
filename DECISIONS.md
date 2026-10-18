@@ -231,3 +231,11 @@ auto-updater yet. Upgrade path: `tauri-plugin-updater` with a signed `latest.jso
 once installers are published; the banner and store stay. The update request sends no
 family data (README states it). The e2e fake shell never reaches the network.
 
+## Events and the timeline (2026-10-18)
+
+Decision: birth and death stay facts of the person; the timeline derives entries from
+them, from dated names, partnerships, children's births and fixed-period parent links.
+Only user-recorded events are stored: `FamilyData.events?: FamilyEvent[]` (kind, partial
+date, place, description, one or more people). Optional field, no schema bump. A marriage
+event is independent of a partnership record: linking them automatically would guess.
+

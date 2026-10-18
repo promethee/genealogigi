@@ -138,3 +138,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `tree-siblings`: "Show siblings" checkbox (ancestors and hourglass views) draws the root's siblings, including half-siblings, on the root's row linked to their shared parents (older left, younger/unknown right); the card's X became an explicit **Close** button. 241 unit, 138 e2e.
 
+- **2026-10-18 (cont.)** — Implemented change `person-timeline`: the person card has a **Timeline** (birth, dated names, partnerships, children's births, fixed-period parent links, user events, death; date order, undated last) and **Add event** (marriage, divorce, baptism, residence, occupation, education, military, emigration, immigration, other; partial date, place, description, other people involved). User events are editable/deletable; deleting a person updates events. Stored as optional `events` in the file. 261 unit, ~150 e2e. The small family tree in the card is the next change.
+

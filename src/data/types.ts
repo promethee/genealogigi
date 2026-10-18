@@ -23,6 +23,7 @@ export function parseUuidId<Brand extends string>(value: string): UuidId<Brand> 
 
 export type PersonId = UuidId<"PersonId">;
 export type RelationshipId = UuidId<"RelationshipId">;
+export type EventId = UuidId<"EventId">;
 
 /** A person known only by id — no other facts recorded (yet). */
 export interface UnknownPerson {
@@ -183,8 +184,35 @@ export type RelationshipSocial =
 
 export type Relationship = RelationshipFamilial | RelationshipSocial;
 
+export type EventKind =
+  | "marriage"
+  | "divorce"
+  | "baptism"
+  | "residence"
+  | "occupation"
+  | "education"
+  | "military"
+  | "emigration"
+  | "immigration"
+  | "other";
+
+/**
+ * Something that happened in people's lives, recorded by the user (birth and death are facts of
+ * the person, not events). An event involves one or more people: a marriage has two.
+ */
+export interface FamilyEvent {
+  id: EventId;
+  kind: EventKind;
+  date: VariablePrecisionDate;
+  place?: string;
+  description?: string;
+  personIds: [PersonId, ...PersonId[]];
+}
+
 export interface FamilyData {
   schemaVersion: 1;
   people: Person[];
   relationships: Relationship[];
+  /** Optional so files saved before events existed load unchanged. */
+  events?: FamilyEvent[];
 }

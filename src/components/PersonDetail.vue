@@ -8,6 +8,7 @@ import type { PersonId } from "../data/types.ts";
 import { t, type MessageKey } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
 import AppIcon from "./AppIcon.vue";
+import PersonTimeline from "./PersonTimeline.vue";
 
 const props = defineProps<{
   personId: PersonId;
@@ -262,5 +263,7 @@ async function remove(): Promise<void> {
         </div>
       </div>
     </div>
+
+    <PersonTimeline :person-id="personId" @select="emit('select', $event)" />
   </section>
 </template>

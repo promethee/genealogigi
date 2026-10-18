@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { addEvent, removeEvent, updateEvent, type EventInput } from "../data/events.ts";
 import { t, tn } from "../i18n/index.ts";
 import { addPersonWithParents, type NewPersonParents } from "../data/createPerson.ts";
 import { removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
@@ -14,7 +15,7 @@ import {
   type ParentsOfChildInput,
   type PartnersInput,
 } from "../data/relationships.ts";
-import type { FamilyData, PersonId, RelationshipId } from "../data/types.ts";
+import type { EventId, FamilyData, PersonId, RelationshipId } from "../data/types.ts";
 import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.json";
@@ -227,6 +228,17 @@ export function defineFamilyStore(platform: PlatformAPI) {
     const addParents = (input: ParentsOfChildInput) =>
       mutate((current) => addParentsOfChild(current, input));
 
+    const addEventLink = (input: EventInput) => mutate((current) => addEvent(current, input));
+
+    const editEvent = (id: EventId, input: EventInput) =>
+      mutate((current) => updateEvent(current, id, input));
+
+    /** Asks for confirmation first; returns true only if the event was deleted. */
+    async function deleteEvent(id: EventId): Promise<boolean> {
+      if (!(await platform.confirm(t("event.confirmDelete")))) return false;
+      return mutate((current) => removeEvent(current, id));
+    }
+
     const addPartnersLink = (input: PartnersInput) =>
       mutate((current) => addPartners(current, input));
 
@@ -260,6 +272,9 @@ export function defineFamilyStore(platform: PlatformAPI) {
       addParentChild: addParentChildLink,
       addParents,
       addPartners: addPartnersLink,
+      addEvent: addEventLink,
+      editEvent,
+      deleteEvent,
       editRelationship,
       deleteRelationship,
       saveCopy,

@@ -322,15 +322,8 @@ function fullName(id: PersonId): string {
           @submit="saveSelected"
           @cancel="editing = false"
         />
-        <p
-          v-if="editing && family.error"
-          data-testid="error"
-          class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
-          {{ family.error }}
-        </p>
         <PersonDetail
-          v-else-if="!editing"
+          v-else
           :key="selected.id"
           :person-id="selected.id"
           show-tree-action
@@ -340,6 +333,13 @@ function fullName(id: PersonId): string {
           @center="chosenRoot = $event"
           @deleted="select(null)"
         />
+        <p
+          v-if="family.error"
+          data-testid="error"
+          class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          {{ family.error }}
+        </p>
       </div>
     </template>
   </section>

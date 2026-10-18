@@ -314,3 +314,19 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 5   | Click a sibling                                                                                         | Their card opens below the chart; double-click makes them the root.                           |
 | 6   | Show: Descendants                                                                                       | The checkbox disappears. Hourglass: it is back.                                               |
 | 7   | Open any person card                                                                                    | An explicit **Close** button (text, no "X" icon) closes it.                                   |
+
+## Timeline and events
+
+| #   | Action                                                                                | Expected                                                                                |
+| --- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 1   | Open the card of a person born 1950 in Lyon, deceased 2020                            | A **Timeline** with "Born in Lyon" first and "Died" last.                               |
+| 2   | Give them a dated married name (1975), a child born 1980, a partnership starting 1972 | Entries appear in date order: partnership, name, child's birth between birth and death. |
+| 3   | Click **Add event**, type Marriage, year 1975, place Lyon, add Paul under **With**    | "Marriage in Lyon" appears, with "with Paul".                                           |
+| 4   | Click Paul's name in the entry                                                        | Paul's card opens; his timeline shows the same marriage, linking back.                  |
+| 5   | Type **Other** without a description, Save                                            | Error asking for a description.                                                         |
+| 6   | Enter a future year                                                                   | Error "cannot be in the future".                                                        |
+| 7   | **Edit** the event (blue dot) and change the place; Save                              | The new place shows on both people's timelines.                                         |
+| 8   | **Delete** the event, cancel, then confirm                                            | Cancel keeps it; confirm removes it from both timelines.                                |
+| 9   | Look at the birth, name and child entries                                             | No Edit/Delete on them (they come from the person and relationships).                   |
+| 10  | Delete Paul (card, Delete)                                                            | The marriage stays on Marie's timeline without Paul.                                    |
+| 11  | Quit, relaunch, reopen the card                                                       | Events are still there; open the JSON: an `events` list with `personIds`.               |
