@@ -77,7 +77,7 @@ test("accepts a partial date and a living person", async ({ page }) => {
   await page.getByTestId("first-name").fill("Carl");
   await page.getByTestId("birth-year").fill("1990");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-life")).toHaveText(["living", "born 1990 · living"]);
+  await expect(page.getByTestId("person-life")).toHaveText(["born 1990"]); // the living person with no dates has no line at all
 });
 
 test("rejects a day without a month, an impossible day and death before birth", async ({

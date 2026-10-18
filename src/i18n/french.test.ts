@@ -88,6 +88,7 @@ describe("French wording of the life status", () => {
       birth: { year: "1990", month: "", day: "" },
       status: "living",
     }).people[0]!;
-    expect(lifeSummary(person)).toBe("né(e) 1990 · vivant(e)");
+    // The list does not mark a living person; the card's Life section says vivant(e).
+    expect(lifeSummary(person)).toBe("né(e) 1990");
   });
 });

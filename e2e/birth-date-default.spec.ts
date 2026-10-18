@@ -43,7 +43,7 @@ test("the birth year shows a grey example 30 years back and saves nothing by its
   await expect(page.getByTestId("birth-year")).toHaveAttribute("placeholder", `e.g. ${year}`);
   await expect(page.getByTestId("birth-year")).toHaveValue("");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-life")).toHaveText("living"); // no "born …"
+  await expect(page.getByTestId("person-life")).toHaveCount(0); // living is not shown, and no "born …"
   const file = await page.evaluate(() => localStorage.getItem("fake:file:C:/families/names.json"));
   expect(JSON.parse(file ?? "null").people[0].born).toBeUndefined();
 });

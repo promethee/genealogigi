@@ -326,12 +326,12 @@ export function placeSuggestions(people: Person[]): string[] {
   return rankedSuggestions(places);
 }
 
-/** e.g. "born 10 Dec 1815 · died 27 Nov 1852", "living", or "" when nothing is known. */
+/** e.g. "born 10 Dec 1815 · died 27 Nov 1852", "born 1990" (a living person is not marked), or "". */
 export function lifeSummary(person: Person): string {
   const pieces: string[] = [];
   if (person.born) pieces.push(t("person.birthShort", { date: formatDate(person.born.birthDate) }));
   const status = person.lifeStatus;
-  if (status?.living) pieces.push(t("person.living"));
+  // Being alive is the normal case and is not repeated on every row; only a death is shown.
   if (status && !status.living) {
     const known = status.dateOfDeath.yearKnown || status.dateOfDeath.monthKnown;
     pieces.push(

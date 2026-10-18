@@ -373,3 +373,13 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 12  | **Save a copy…**, open the copy                                  | The photos are in the copy.                                                                                                                                     |
 | 13  | Try to add a 13th photo, a .txt renamed to .png, a corrupt image | Add is disabled at 12; bad files give "not a supported image" and are skipped; good ones in the same selection are still added.                                 |
 | 14  | Sync with git (if configured)                                    | The family file (with photos) is committed and pushed.                                                                                                          |
+
+## Living status wording
+
+| #   | Action                                   | Expected                                                                                                                 |
+| --- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Add a living person with birth year 1990 | The list row says "born 1990" and does not say "living".                                                                 |
+| 2   | Add a living person with no dates        | The row has just the name (no second line).                                                                              |
+| 3   | A deceased person                        | "born … · died …" (or "deceased").                                                                                       |
+| 4   | Open a living person's card              | The Life section says "living".                                                                                          |
+| 5   | Switch to French                         | The card says "vivant(e)" and the form's status choice says "Vivant(e)"; the list still shows nothing for living people. |

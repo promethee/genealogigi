@@ -172,12 +172,17 @@ test.describe("first launch on a French system", () => {
   });
 });
 
-test("French says vivant(e) for a living person, in the list and the form", async ({ page }) => {
+test("French says vivant(e) for a living person in the form and the card, not in the list", async ({
+  page,
+}) => {
   await newFamily(page);
   await page.getByTestId("lang-fr").click();
   await page.getByTestId("add-person").click();
   await page.getByTestId("first-name").fill("Ada");
   await expect(page.getByTestId("life-status")).toContainText("Vivant(e)");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-life")).toHaveText("vivant(e)");
+  // The list does not mark a living person; the card's Life section does.
+  await expect(page.getByTestId("person-life")).toHaveCount(0);
+  await page.getByTestId("view-person").click();
+  await expect(page.getByTestId("detail-status")).toHaveText("vivant(e)");
 });

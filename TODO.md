@@ -150,3 +150,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — French: "living" is now "vivant(e)" (summary and the life-status choice), matching "décédé(e)".
 
+- **2026-10-18 (cont.)** — People list: a living person is no longer marked "living" (it is the normal case); only births and deaths are shown. The card's Life section still states the status ("living" / "vivant(e)").
+

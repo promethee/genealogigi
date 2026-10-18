@@ -228,7 +228,9 @@ describe("person dates and life status", () => {
     expect(lifespan(make({ birth: d("1815") }))).toBe("born 1815");
     expect(lifespan(make({ status: "living" }))).toBe("");
     expect(lifespan(make({ status: "deceased", death: d("1852") }))).toBe("?–1852");
-    expect(lifeSummary(make({ status: "living" }))).toBe("living");
+    // A living person is not marked in the summary (the normal case).
+    expect(lifeSummary(make({ status: "living" }))).toBe("");
+    expect(lifeSummary(make({ status: "living", birth: d("1990") }))).toBe("born 1990");
   });
 
   it("rejects invalid dates and does not add the person", () => {

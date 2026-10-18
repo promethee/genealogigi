@@ -138,7 +138,7 @@ test("a person with several names can be edited without losing any, and survives
   await expect(page.getByTestId("first-name-kind").nth(1)).toHaveValue("nickname");
   await page.getByTestId("birth-year").fill("1815");
   await save(page);
-  await expect(page.getByTestId("person-life")).toHaveText("born 1815 · living"); // an edited person keeps their stored status
+  await expect(page.getByTestId("person-life")).toHaveText("born 1815"); // living is not shown in the list
 
   await page.reload();
   await page.getByTestId("resume").click();
