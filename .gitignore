@@ -21,3 +21,7 @@ playwright-report/
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Stray family files written by tests/dev runs
+src-tauri/*.json
+!src-tauri/tauri.conf.json

@@ -21,8 +21,8 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [x] Add CI (lint + typecheck + unit tests on push) — added rather than deferred; see DECISIONS.md
 - [x] Confirm ground work checkpoint: lint, typecheck, and unit tests all pass cleanly on a clean checkout
 
-- [ ] Re-verify on a clean checkout after Deno→Tauri migration: `npm ci`, fmt, lint, check, test, `tauri build`
-- [ ] Replace placeholder app icon (`src-tauri/icons/source.png`, then `npx tauri icon`)
+- [x] Re-verify on a clean checkout after Deno→Tauri migration: `npm ci`, fmt, lint, check, test pass on a copy of tracked files; `cargo check` passes (Linux, with GTK libs). Full `tauri build` (Windows installer) not run
+- [x] Replace placeholder app icon (green tile with a pedigree diagram, regenerated via `npx tauri icon`)
 
 ## Phase 2 — Features (one at a time, each with scoped e2e tests)
 
@@ -96,3 +96,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (person-names)** — Implemented and archived `person-names` exactly as designed (user answers: explicit primary marker, editable partial dates on names, Up/Down ordering; optional `primary` flag, schemaVersion stays 1). New `NameEntriesEditor.vue`, entry-list form input with single-string shorthand kept for callers, no more read-only lock. A real bug found by e2e and fixed: form deep copy now JSON-based (structuredClone threw on reactive proxies). ESLint `no-undef` off for .vue (vue-tsc covers it). Unit tests 109 total, e2e 36 total. Manual steps added (run at the end). Next candidate: step/foster/guardian parents.
 
 - **2026-10-18 (cont.)** — Implemented change `temporary-parents`: parent links can be step/foster/guardian with status (ongoing/ended/unknown), partial start/end dates, end-before-start validation, per-nature duplicate rule, period shown in the list, legend updated. New `DateFields.vue`. 116 unit tests, 40 e2e, fmt/lint/typecheck/build green. Manual steps added to `MANUAL_TESTS.md`.
+
+- **2026-10-18 (cont.)** — Chores: new app icon; CI now also runs build, Playwright e2e (chromium) and `cargo check`; removed two stray family JSON files from `src-tauri/` and ignored `src-tauri/*.json` (except `tauri.conf.json`). Clean-copy check: fmt, lint, typecheck, 116 unit tests pass; `cargo check` passes. Manual tests still pending.
