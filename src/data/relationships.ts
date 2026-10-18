@@ -1,3 +1,5 @@
+import { dateFromInput, formatDate, isCertainlyBefore, UNKNOWN_DATE } from "./dates.ts";
+import type { PartialDateInput } from "./dates.ts";
 import { PersonNotFoundError } from "./errors.ts";
 import {
   createUuidId,
@@ -7,21 +9,18 @@ import {
   type Relationship,
   type RelationshipFamilial,
   type RelationshipFamilialPermanent,
+  type RelationshipFamilialTemporary,
   type RelationshipId,
   type RelationshipSocial,
+  type VariablePrecisionDate,
 } from "./types.ts";
 
-// Dates are not edited in the UI yet; the model still requires them on partnerships.
-const UNKNOWN_START_DATE = {
-  raw: "9999-01-01T00:00",
-  yearKnown: false,
-  monthKnown: false,
-  dayKnown: false,
-  hourKnown: false,
-  minuteKnown: false,
-};
+// Partnership dates are not edited in the UI yet; the model still requires them.
+const UNKNOWN_START_DATE = UNKNOWN_DATE;
 
 export type ParentChildNature = RelationshipFamilialPermanent["nature"];
+export type TemporaryNature = RelationshipFamilialTemporary["nature"];
+export type TemporaryStatus = RelationshipFamilialTemporary["status"];
 export type PartnerStatus = RelationshipSocial["status"];
 
 export const PARENT_CHILD_NATURES: readonly ParentChildNature[] = [
@@ -29,6 +28,8 @@ export const PARENT_CHILD_NATURES: readonly ParentChildNature[] = [
   "biological-presumed",
   "adoptive",
 ];
+export const TEMPORARY_NATURES: readonly TemporaryNature[] = ["step", "foster", "guardian"];
+export const TEMPORARY_STATUSES: readonly TemporaryStatus[] = ["ongoing", "ended", "unknown"];
 export const PARTNER_STATUSES: readonly PartnerStatus[] = ["ongoing", "ended", "unknown"];
 
 export class RelationshipError extends Error {
@@ -80,10 +81,31 @@ function isDescendant(data: FamilyData, start: PersonId, target: PersonId): bool
   return false;
 }
 
-export interface ParentChildInput {
+export interface PermanentParentChildInput {
   parentId: PersonId;
   childId: PersonId;
   nature: ParentChildNature;
+}
+
+export interface TemporaryParentChildInput {
+  parentId: PersonId;
+  childId: PersonId;
+  nature: TemporaryNature;
+  status: TemporaryStatus;
+  /** Any part may be blank; all blank means unknown. */
+  start: PartialDateInput;
+  /** Only used when status is "ended". */
+  end: PartialDateInput;
+}
+
+export type ParentChildInput = PermanentParentChildInput | TemporaryParentChildInput;
+
+function isTemporaryInput(input: ParentChildInput): input is TemporaryParentChildInput {
+  return (TEMPORARY_NATURES as readonly string[]).includes(input.nature);
+}
+
+function isTemporary(r: Relationship): r is RelationshipFamilialTemporary {
+  return isParentChild(r) && (TEMPORARY_NATURES as readonly string[]).includes(r.nature);
 }
 
 export function addParentChild(data: FamilyData, input: ParentChildInput): FamilyData {
@@ -92,8 +114,15 @@ export function addParentChild(data: FamilyData, input: ParentChildInput): Famil
   if (input.parentId === input.childId) {
     throw new RelationshipError("A person cannot be their own parent.");
   }
+  const samePair = (r: Relationship): r is RelationshipFamilial =>
+    isParentChild(r) && r.parentId === input.parentId && r.childId === input.childId;
+  // Permanent links: one per pair. Temporary links: one per pair and nature.
   const exists = data.relationships.some(
-    (r) => isParentChild(r) && r.parentId === input.parentId && r.childId === input.childId,
+    (r) =>
+      samePair(r) &&
+      (isTemporaryInput(input)
+        ? r.nature === input.nature
+        : !TEMPORARY_NATURES.includes(r.nature as TemporaryNature)),
   );
   if (exists) throw new RelationshipError("This parent-child relationship already exists.");
   if (isDescendant(data, input.childId, input.parentId)) {
@@ -101,12 +130,26 @@ export function addParentChild(data: FamilyData, input: ParentChildInput): Famil
       "This would create a cycle: the parent is a descendant of the child.",
     );
   }
-  const relationship: RelationshipFamilialPermanent = {
+  const base = {
     id: createUuidId<"RelationshipId">(),
     parentId: input.parentId,
     childId: input.childId,
-    nature: input.nature,
   };
+  let relationship: RelationshipFamilial;
+  if (isTemporaryInput(input)) {
+    const startDate = dateFromInput(input.start, "Start date") ?? UNKNOWN_DATE;
+    if (input.status === "ended") {
+      const endDate = dateFromInput(input.end, "End date") ?? UNKNOWN_DATE;
+      if (isCertainlyBefore(endDate, startDate)) {
+        throw new RelationshipError("The end date cannot be before the start date.");
+      }
+      relationship = { ...base, nature: input.nature, status: "ended", startDate, endDate };
+    } else {
+      relationship = { ...base, nature: input.nature, status: input.status, startDate };
+    }
+  } else {
+    relationship = { ...base, nature: input.nature };
+  }
   return { ...data, relationships: [...data.relationships, relationship] };
 }
 
@@ -162,10 +205,27 @@ export function natureLabel(nature: RelationshipFamilial["nature"]): string {
   return NATURE_LABEL[nature];
 }
 
-/** e.g. "Ada is parent of Byron (biological, confirmed)". */
+function periodText(start: VariablePrecisionDate, end?: VariablePrecisionDate): string {
+  const known = (d: VariablePrecisionDate) => d.yearKnown || d.monthKnown || d.dayKnown;
+  if (end) {
+    if (!known(start) && !known(end)) return "";
+    return `${known(start) ? formatDate(start) : "?"}–${known(end) ? formatDate(end) : "?"}`;
+  }
+  return known(start) ? `from ${formatDate(start)}` : "";
+}
+
+/** e.g. "Ada is parent of Byron (biological, confirmed)" or "(foster, 1990–1995)". */
 export function describeRelationship(r: Relationship, nameOf: (id: PersonId) => string): string {
   if (isParentChild(r)) {
-    return `${nameOf(r.parentId)} is parent of ${nameOf(r.childId)} (${natureLabel(r.nature)})`;
+    const parts = [natureLabel(r.nature)];
+    if (isTemporary(r)) {
+      const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
+      if (period) parts.push(period);
+      if (r.status === "ended" && !period) parts.push("ended");
+      else if (r.status === "unknown") parts.push("status unknown");
+      else if (r.status === "ongoing" && !period) parts.push("ongoing");
+    }
+    return `${nameOf(r.parentId)} is parent of ${nameOf(r.childId)} (${parts.join(", ")})`;
   }
   return `${nameOf(r.personAId)} and ${nameOf(r.personBId)} are partners (${r.status})`;
 }

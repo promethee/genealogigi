@@ -140,7 +140,7 @@ function fullName(id: PersonId): string {
                 stroke-dasharray="5 3"
               />
             </svg>
-            presumed or adoptive
+            presumed, adoptive, step, foster or guardian
           </span>
         </p>
       </div>

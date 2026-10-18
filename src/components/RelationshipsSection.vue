@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { emptyDateInput } from "../data/dates.ts";
 import { displayName } from "../data/people.ts";
 import {
   describeRelationship,
   natureLabel,
   PARENT_CHILD_NATURES,
   PARTNER_STATUSES,
+  TEMPORARY_NATURES,
+  TEMPORARY_STATUSES,
   type ParentChildNature,
   type PartnerStatus,
+  type TemporaryNature,
+  type TemporaryStatus,
 } from "../data/relationships.ts";
 import type { PersonId } from "../data/types.ts";
+import DateFields from "./DateFields.vue";
 import { useFamilyStore } from "../store/index.ts";
 
 const family = useFamilyStore();
@@ -17,11 +23,18 @@ const family = useFamilyStore();
 const kind = ref<"parent" | "partner">("parent");
 const firstId = ref<PersonId | "">("");
 const secondId = ref<PersonId | "">("");
-const nature = ref<ParentChildNature>("biological-confirmed");
+const nature = ref<ParentChildNature | TemporaryNature>("biological-confirmed");
+const linkStatus = ref<TemporaryStatus>("ongoing");
+const start = ref(emptyDateInput());
+const end = ref(emptyDateInput());
 const status = ref<PartnerStatus>("ongoing");
 
 const people = computed(() => family.data?.people ?? []);
 const relationships = computed(() => family.data?.relationships ?? []);
+const allNatures = [...PARENT_CHILD_NATURES, ...TEMPORARY_NATURES];
+const isTemporary = computed(
+  () => kind.value === "parent" && (TEMPORARY_NATURES as readonly string[]).includes(nature.value),
+);
 const canAdd = computed(() => people.value.length >= 2);
 
 function nameOf(id: PersonId): string {
@@ -34,13 +47,20 @@ async function add(): Promise<void> {
     family.error = "Choose two people.";
     return;
   }
+  const parent = { parentId: firstId.value, childId: secondId.value };
   const ok =
     kind.value === "parent"
-      ? await family.addParentChild({
-          parentId: firstId.value,
-          childId: secondId.value,
-          nature: nature.value,
-        })
+      ? await family.addParentChild(
+          isTemporary.value
+            ? {
+                ...parent,
+                nature: nature.value as TemporaryNature,
+                status: linkStatus.value,
+                start: start.value,
+                end: end.value,
+              }
+            : { ...parent, nature: nature.value as ParentChildNature },
+        )
       : await family.addPartners({
           personAId: firstId.value,
           personBId: secondId.value,
@@ -49,6 +69,8 @@ async function add(): Promise<void> {
   if (ok) {
     firstId.value = "";
     secondId.value = "";
+    start.value = emptyDateInput();
+    end.value = emptyDateInput();
   }
 }
 </script>
@@ -106,12 +128,31 @@ async function add(): Promise<void> {
           :disabled="!canAdd"
           class="rounded border border-gray-300 px-2 py-1"
         >
-          <option v-for="n in PARENT_CHILD_NATURES" :key="n" :value="n">
+          <option v-for="n in allNatures" :key="n" :value="n">
             {{ natureLabel(n) }}
           </option>
         </select>
       </label>
-      <label v-else class="flex flex-col text-sm">
+      <template v-if="isTemporary">
+        <label class="flex flex-col text-sm">
+          Status
+          <select
+            v-model="linkStatus"
+            data-testid="rel-link-status"
+            class="rounded border border-gray-300 px-2 py-1"
+          >
+            <option v-for="s in TEMPORARY_STATUSES" :key="s" :value="s">{{ s }}</option>
+          </select>
+        </label>
+        <DateFields v-model="start" label="Start (optional)" test-prefix="rel-start" />
+        <DateFields
+          v-if="linkStatus === 'ended'"
+          v-model="end"
+          label="End (optional)"
+          test-prefix="rel-end"
+        />
+      </template>
+      <label v-else-if="kind === 'partner'" class="flex flex-col text-sm">
         Status
         <select
           v-model="status"

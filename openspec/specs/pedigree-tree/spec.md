@@ -74,12 +74,18 @@ generations (2 to 6, default 4), with each generation in its own column.
 ### Requirement: Certainty of parent links
 
 The app SHALL draw parent links solid for biological-confirmed and dashed for
-biological-presumed and adoptive, and SHALL explain the styles in a legend.
+every other nature (biological-presumed, adoptive, step, foster, guardian),
+and SHALL explain the styles in a legend.
 
 #### Scenario: Dashed adoptive link
 
 - **WHEN** a parent link has nature adoptive
 - **THEN** its line is dashed
+
+#### Scenario: Dashed foster link
+
+- **WHEN** a parent link has nature foster
+- **THEN** its line is dashed and the parent appears in the chart
 
 ### Requirement: Robust against bad data
 

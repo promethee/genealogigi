@@ -111,6 +111,103 @@ describe("addParentChild", () => {
   });
 });
 
+const blank = { year: "", month: "", day: "" };
+const year = (y: string) => ({ ...blank, year: y });
+
+describe("addParentChild (temporary natures)", () => {
+  const base = (ids: PersonId[]) => ({ parentId: id(ids, 0), childId: id(ids, 1) });
+
+  it("adds an ongoing foster link with a start date", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const next = addParentChild(data, {
+      ...base(ids),
+      nature: "foster",
+      status: "ongoing",
+      start: year("1990"),
+      end: blank,
+    });
+    expect(next.relationships[0]).toMatchObject({ nature: "foster", status: "ongoing" });
+    const text = describeRelationship(next.relationships[0]!, (p) =>
+      displayName(next.people.find((x) => x.id === p)!),
+    );
+    expect(text).toBe("Ada is parent of Byron (foster, from 1990)");
+  });
+
+  it("adds an ended step link with a period", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const next = addParentChild(data, {
+      ...base(ids),
+      nature: "step",
+      status: "ended",
+      start: year("1990"),
+      end: year("1995"),
+    });
+    const text = describeRelationship(next.relationships[0]!, () => "X");
+    expect(text).toBe("X is parent of X (step, 1990–1995)");
+  });
+
+  it("stores unknown dates when left blank", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const next = addParentChild(data, {
+      ...base(ids),
+      nature: "guardian",
+      status: "ended",
+      start: blank,
+      end: blank,
+    });
+    const r = next.relationships[0];
+    expect(r).toMatchObject({ startDate: { yearKnown: false }, endDate: { yearKnown: false } });
+    expect(describeRelationship(r!, () => "X")).toContain("(guardian, ended)");
+  });
+
+  it("rejects an end before the start and invalid dates", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const input = { ...base(ids), nature: "step" as const, status: "ended" as const };
+    expect(() =>
+      addParentChild(data, { ...input, start: year("1995"), end: year("1990") }),
+    ).toThrow("end date cannot be before");
+    expect(() =>
+      addParentChild(data, { ...input, start: { year: "", month: "4", day: "31" }, end: blank }),
+    ).toThrow("Start date");
+  });
+
+  it("allows the same end and start year", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const input = { ...base(ids), nature: "step" as const, status: "ended" as const };
+    expect(() =>
+      addParentChild(data, { ...input, start: year("1990"), end: year("1990") }),
+    ).not.toThrow();
+  });
+
+  it("rejects the same temporary nature twice but allows another nature or a permanent link", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const foster = {
+      ...base(ids),
+      nature: "foster" as const,
+      status: "ongoing" as const,
+      start: blank,
+      end: blank,
+    };
+    const once = addParentChild(data, foster);
+    expect(() => addParentChild(once, foster)).toThrow(RelationshipError);
+    const twice = addParentChild(once, { ...foster, nature: "step" });
+    const thrice = addParentChild(twice, { ...base(ids), nature: "biological-confirmed" });
+    expect(thrice.relationships).toHaveLength(3);
+  });
+
+  it("still applies cycle and self-link rules", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const step = { nature: "step" as const, status: "ongoing" as const, start: blank, end: blank };
+    expect(() =>
+      addParentChild(data, { parentId: id(ids, 0), childId: id(ids, 0), ...step }),
+    ).toThrow(RelationshipError);
+    const once = addParentChild(data, { ...base(ids), ...step });
+    expect(() =>
+      addParentChild(once, { parentId: id(ids, 1), childId: id(ids, 0), ...step }),
+    ).toThrow("cycle");
+  });
+});
+
 describe("addPartners", () => {
   it("adds partners of any status, including ended (with an end date)", () => {
     const { data, ids } = family("Ada", "Byron");

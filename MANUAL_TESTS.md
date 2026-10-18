@@ -111,3 +111,16 @@ Start from an open family with at least one person.
 | 8   | Enter an impossible name date (31 April)                                                            | Error naming the name field. Nothing saved.                                                      |
 | 9   | Open the file in a text editor                                                                      | Each name has `kind`, `date`, and exactly one entry per list has `"primary": true`.              |
 | 10  | Edit only the birth date of a person with a nickname, then reopen the file                          | The nickname, its kind and date are unchanged.                                                   |
+
+## Step, foster and guardian parents
+
+| #   | Action                                                                                      | Expected                                                                 |
+| --- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 1   | Add Ada and Byron. Parent of: Ada -> Byron, nature Step, status Ended, start 1990, end 1995 | Row "Ada is parent of Byron (step, 1990–1995)".                          |
+| 2   | Switch nature to Biological, confirmed                                                      | Status and date fields disappear.                                        |
+| 3   | Add Foster, status Ongoing, start year 2000                                                 | Row shows "(foster, from 2000)".                                         |
+| 4   | Add Foster again for the same pair                                                          | Error "already exists".                                                  |
+| 5   | Step, Ended, start 1995, end 1990                                                           | Error "end date cannot be before the start date."                        |
+| 6   | Start 31 April                                                                              | Error naming the start date.                                             |
+| 7   | Tree tab, root Byron                                                                        | Ada appears with dashed lines; legend mentions step, foster or guardian. |
+| 8   | Open the file in a text editor                                                              | Temporary links have `status`, `startDate` and (if ended) `endDate`.     |
