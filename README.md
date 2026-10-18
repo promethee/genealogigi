@@ -8,13 +8,13 @@ visualizing family relationships. Built with Vue + Tauri.
 Early development. Working today:
 
 - Create, open and resume a family file (a single JSON file you choose).
-- Add, edit and delete people (names only for now).
+- Add, edit and delete people: names, birth date, life status and death date (dates may be partial).
 - Save a copy of the open family to another file.
 - Link people as parent-child (biological confirmed or presumed, adoptive) or
   as partners, with validation against duplicates and cycles.
 - Pedigree chart of a person and their ancestors.
 
-Not yet: birth/death dates in the UI, step/foster/guardian parents,
+Not yet: multiple names per person, step/foster/guardian parents,
 descendant charts, other export formats. See [TODO.md](./TODO.md).
 
 ## Stack

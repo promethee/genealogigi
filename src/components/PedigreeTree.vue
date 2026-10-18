@@ -8,14 +8,14 @@ import {
   MIN_GENERATIONS,
   truncateName,
 } from "../data/pedigree.ts";
-import { displayName } from "../data/people.ts";
+import { displayName, lifespan } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
 
 const COLUMN_WIDTH = 210;
 const BOX_WIDTH = 170;
-const BOX_HEIGHT = 36;
-const ROW_HEIGHT = 56;
+const BOX_HEIGHT = 48;
+const ROW_HEIGHT = 64;
 const PADDING = 16;
 
 const family = useFamilyStore();
@@ -82,6 +82,8 @@ const edgePaths = computed(() =>
     ];
   }),
 );
+
+const lifespans = computed(() => new Map(people.value.map((p) => [p.id, lifespan(p)])));
 
 function fullName(id: PersonId): string {
   return names.value.get(id) ?? "Unknown person";
@@ -181,12 +183,23 @@ function fullName(id: PersonId): string {
             />
             <text
               :x="BOX_WIDTH / 2"
-              :y="BOX_HEIGHT / 2 + 5"
+              :y="lifespans.get(node.personId) ? 20 : BOX_HEIGHT / 2 + 5"
               text-anchor="middle"
               font-size="14"
               fill="#111827"
             >
               {{ truncateName(fullName(node.personId)) }}
+            </text>
+            <text
+              v-if="lifespans.get(node.personId)"
+              data-testid="tree-lifespan"
+              :x="BOX_WIDTH / 2"
+              y="38"
+              text-anchor="middle"
+              font-size="11"
+              fill="#6b7280"
+            >
+              {{ lifespans.get(node.personId) }}
             </text>
           </g>
         </svg>

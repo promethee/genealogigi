@@ -203,7 +203,7 @@ describe("family store: people", () => {
     await store.addPerson({ firstName: "Ada", lastName: "Byron" });
     const id = store.data?.people[0]?.id;
     if (!id) throw new Error("no person");
-    expect(await store.renamePerson(id, { firstName: "Ada", lastName: "Lovelace" })).toBe(true);
+    expect(await store.editPerson(id, { firstName: "Ada", lastName: "Lovelace" })).toBe(true);
     expect(store.data?.people[0]?.id).toBe(id);
     expect(store.data?.people[0]?.names?.lastNames?.[0]?.value).toBe("Lovelace");
   });
@@ -372,5 +372,45 @@ describe("family store: save a copy", () => {
     expect(store.notice).not.toBeNull();
     await store.addPerson({ firstName: "Byron", lastName: "" });
     expect(store.notice).toBeNull();
+  });
+});
+
+describe("family store: person dates", () => {
+  it("saves dates through add and edit, and reports invalid dates without saving", async () => {
+    const made = makeStore({ saveResult: "/d/family.json" });
+    const { store, save } = made;
+    await store.createNew();
+    const d = (year: string, month = "", day = "") => ({ year, month, day });
+
+    expect(
+      await store.addPerson({
+        firstName: "Ada",
+        lastName: "",
+        birth: d("1815", "12", "10"),
+        status: "living",
+      }),
+    ).toBe(true);
+    const id = store.data?.people[0]?.id;
+    if (!id) throw new Error("no person");
+    expect(store.data?.people[0]?.born?.birthDate.raw).toBe("1815-12-10T00:00");
+
+    save.mockClear();
+    expect(await store.editPerson(id, { firstName: "Ada", lastName: "", birth: d("abc") })).toBe(
+      false,
+    );
+    expect(store.error).toContain("Birth date: Year must be a number");
+    expect(save).not.toHaveBeenCalled();
+    expect(store.data?.people[0]?.born?.birthDate.raw).toBe("1815-12-10T00:00");
+
+    expect(
+      await store.editPerson(id, {
+        firstName: "Ada",
+        lastName: "",
+        birth: d("1815"),
+        status: "deceased",
+        death: d("1800"),
+      }),
+    ).toBe(false);
+    expect(store.error).toBe("Death cannot be before birth.");
   });
 });

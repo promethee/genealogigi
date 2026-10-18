@@ -82,3 +82,17 @@ Start from an open family with at least one person.
 | 6   | Click **Save a copy…**, choose an existing other file, confirm replace | The file is replaced. Green message shown.                                      |
 | 7   | With the green message showing, add a person                           | The green message disappears.                                                   |
 | 8   | Quit and relaunch, click Resume                                        | The original file opens, not the copy.                                          |
+
+## Person dates and life status
+
+| #   | Action                                                                          | Expected                                                                                                           |
+| --- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | Add person Ada, birth 10 December 1815, status Deceased, death 27 November 1852 | List shows "b. 10 Dec 1815 · d. 27 Nov 1852".                                                                      |
+| 2   | Edit Ada                                                                        | All fields are pre-filled with the saved values.                                                                   |
+| 3   | Add person with only birth year 1900                                            | List shows "b. 1900".                                                                                              |
+| 4   | Enter a day but no month                                                        | Error "A day needs a month." Nothing saved.                                                                        |
+| 5   | Enter 31 April                                                                  | Error that the day does not exist in that month.                                                                   |
+| 6   | Enter death year earlier than birth year                                        | Error "Death cannot be before birth."                                                                              |
+| 7   | Status Deceased with empty death date                                           | Saved. List shows "deceased".                                                                                      |
+| 8   | Open the file in a text editor                                                  | Dates have `raw` plus `yearKnown`/`monthKnown`/`dayKnown` flags. A partial date has `false` for the missing parts. |
+| 9   | Tree tab, root Ada                                                              | The box shows "1815–1852" under the name.                                                                          |

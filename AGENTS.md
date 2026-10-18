@@ -65,7 +65,8 @@ asked), you:
    append a dated entry to the Checkpoint log.
 2. Propose a git commit message (conventional-commits style preferred:
    `feat:`, `chore:`, `test:`, etc.) for the user to review and run themselves.
-   Do not run `git commit` yourself unless explicitly told to.
+   After each finished feature, run the checkpoint yourself: commit (without
+unfinished drafts) and `git push` to origin/main. Never force-push.
 
 When presenting a checkpoint, clearly separate the two: label the Checkpoint
 log text and the proposed commit message as distinct items, don't blend them

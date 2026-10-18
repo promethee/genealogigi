@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { addPerson, removePerson, updatePerson, type PersonNameInput } from "../data/people.ts";
+import { addPerson, removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
 import {
   addParentChild,
   addPartners,
@@ -160,10 +160,10 @@ export function defineFamilyStore(platform: PlatformAPI) {
       return result;
     }
 
-    const addPersonNamed = (input: PersonNameInput) =>
+    const addPersonNamed = (input: PersonFormInput) =>
       mutate((current) => addPerson(current, input));
 
-    const renamePerson = (id: PersonId, input: PersonNameInput) =>
+    const editPerson = (id: PersonId, input: PersonFormInput) =>
       mutate((current) => updatePerson(current, id, input));
 
     /** Asks for confirmation first; returns true only if the person was deleted. */
@@ -199,7 +199,7 @@ export function defineFamilyStore(platform: PlatformAPI) {
       openExisting,
       createNew,
       addPerson: addPersonNamed,
-      renamePerson,
+      editPerson,
       deletePerson,
       addParentChild: addParentChildLink,
       addPartners: addPartnersLink,

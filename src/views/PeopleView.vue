@@ -7,7 +7,10 @@ import {
   canEditNames,
   displayName,
   inputFromPerson,
-  type PersonNameInput,
+  emptyPersonForm,
+  lifeSummary,
+  type PersonFormInput,
+  type PersonFormValues,
 } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
@@ -19,17 +22,17 @@ const tab = ref<"list" | "tree">("list");
 /** "new" = add form open, a PersonId = editing that person, null = form closed. */
 const formTarget = ref<"new" | PersonId | null>(null);
 
-function initialInput(): PersonNameInput {
+function initialInput(): PersonFormValues {
   const target = formTarget.value;
   const person = family.data?.people.find((p) => p.id === target);
-  return person ? inputFromPerson(person) : { firstName: "", lastName: "" };
+  return person ? inputFromPerson(person) : emptyPersonForm();
 }
 
-async function submit(input: PersonNameInput): Promise<void> {
+async function submit(input: PersonFormInput): Promise<void> {
   const target = formTarget.value;
   if (!target) return;
   const ok =
-    target === "new" ? await family.addPerson(input) : await family.renamePerson(target, input);
+    target === "new" ? await family.addPerson(input) : await family.editPerson(target, input);
   if (ok) formTarget.value = null;
 }
 </script>
@@ -108,7 +111,15 @@ async function submit(input: PersonNameInput): Promise<void> {
           data-testid="person-row"
           class="flex items-center justify-between py-2"
         >
-          <span data-testid="person-name">{{ displayName(person) }}</span>
+          <span>
+            <span data-testid="person-name">{{ displayName(person) }}</span>
+            <span
+              v-if="lifeSummary(person)"
+              data-testid="person-life"
+              class="ml-2 text-sm text-gray-500"
+              >{{ lifeSummary(person) }}</span
+            >
+          </span>
           <span class="flex gap-2">
             <button
               data-testid="edit-person"

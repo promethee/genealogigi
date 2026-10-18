@@ -28,6 +28,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 
 - [~] Feature: define + persist a person record (names only) — OpenSpec change `person-record`; archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [~] Feature: welcome screen (resume / open / create) — OpenSpec change `welcome-screen`; archived 2026-10-18; manual run of MANUAL_TESTS.md still unconfirmed
+- [x] Feature: birth date, life status and death date (OpenSpec `person-dates`, archived 2026-10-18)
 - [~] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [~] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [x] Feature: save a copy of the open family (OpenSpec `save-copy`, archived 2026-10-18) — covers the JSON-export need, since the file is already JSON
@@ -87,3 +88,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (save-copy)** — Implemented and archived `save-copy`: store `saveCopy` + `notice` (serialized with other saves, same-file guard ignoring case/slash style), Save a copy button in `PeopleView`. Unit tests 73 total, e2e 24 total. Real app (native dialogs): cancel, successful copy (file identical, no .tmp, notice, snapshot semantics) verified. NOT verified in the real app: same-file refusal and notice-clearing, because the harness could not answer Windows replace-existing-file prompt (covered by unit + e2e only). See MANUAL_TESTS.md Save a copy 5-7.
 
 - **2026-10-18 (checkpoint)** — Tauri 2 + Node migration done; features archived in OpenSpec: welcome-screen, person-record (names only), relationship-record, pedigree-tree, save-copy. 73 unit + 24 e2e tests, lint, typecheck, build, cargo check all pass. Manual tests deferred to the end (see Testing policy); real-app run covered the main flows. Next candidate: birth/death dates in the UI.
+
+- **2026-10-18 (person-dates)** — Implemented and archived `person-dates`: pure `src/data/dates.ts` (partial dates, validation, formatting, certainly-before comparison), people module handles birth/life status/death with keep-unsent-facets update semantics, form fields, list summary, tree lifespan line. Store action `renamePerson` renamed `editPerson`. Unit tests 99 total, e2e 29 total. Manual steps added to MANUAL_TESTS.md (run at the end per Testing policy). Next candidates: multiple names per person, step/foster/guardian parents.
