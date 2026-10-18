@@ -212,6 +212,11 @@ export const fr: Record<MessageKey, string> = {
   "photo.of": "{n} / {total}",
   "tree.empty":
     "Personne à afficher pour l’instant. Ajoutez d’abord des personnes et des relations parent-enfant.",
+  "search.placeholder": "Rechercher un nom ou un lieu…",
+  "search.label": "Rechercher une personne",
+  "search.none": "Aucune personne trouvée.",
+  "search.more.one": "{count} autre résultat, continuez à taper",
+  "search.more.other": "{count} autres résultats, continuez à taper",
   "tree.root": "Personne ciblée",
   "tree.generations.all": "Toutes",
   "tree.stats.title": "{name} : place dans la famille",

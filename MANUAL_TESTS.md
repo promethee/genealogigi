@@ -414,3 +414,12 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 1   | Launch with a newer release published (or click Check for updates) | Banner: "Download version X" button, the release link, Dismiss.      |
 | 2   | Click the button, then the link                                    | Your browser opens the release page each time. Nothing is installed. |
 | 3   | Block the browser opening (if possible)                            | The banner shows "Could not open your browser. Copy this link: ...". |
+
+## Search
+
+| #   | Action                                                   | Expected                                                                                    |
+| --- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1   | People tab: type part of a name, a maiden name or a town | The list shows only matches; accents and case are ignored.                                  |
+| 2   | Press Enter, or click a result                           | The person's card opens.                                                                    |
+| 3   | Tree tab: type a name                                    | Matching boxes get an amber outline. Clicking a result centres the tree and opens the card. |
+| 4   | Press Escape in the box                                  | The search clears; everyone is back.                                                        |

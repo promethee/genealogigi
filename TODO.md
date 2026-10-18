@@ -164,3 +164,7 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (website)** — New landing page `docs/index.html` (hero, download CTA to Releases, tree/card/list screenshots in light+dark JPEGs from a seeded demo family, feature tiles, `.gigi` privacy section, FAQ). NOT public: GitHub Pages stays off until the owner reviews it (Settings → Pages, `main` `/docs`).
 
 - **2026-10-18 (update-invitation)** — Update banner now invites with the version ("Download version X"), shows the release link (click opens it through the shell), and shows the link to copy if the browser cannot be opened. Archived `update-invitation`.
+
+- **2026-10-18 (people-search)** — Search box above the tabs (names incl. maiden/married/nickname, birth/death places; accent/case-insensitive; all words must match). List view filters, tree view highlights matches in amber, a result focuses the tree on the person. Landing page rewritten shorter and aimed at non-technical users (no file-format talk). Archived `people-search`.
+
+- **2026-10-18 (landing page v3)** — Page cut to: hero, three benefits (Simple / Free / Yours), "Every person has a story" card section, final call to action. No FAQ, no file-format talk, no name story. Still not public (Pages off).

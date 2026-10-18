@@ -38,6 +38,8 @@ const PADDING = 16;
 /** The tree shrinks to fit the panel, but never below this fraction (then it scrolls). */
 const MIN_SCALE = 0.45;
 
+const props = defineProps<{ highlightIds?: ReadonlySet<PersonId> }>();
+
 const family = useFamilyStore();
 
 const chosenRoot = ref<PersonId | "">("");
@@ -100,6 +102,13 @@ const pedigree = computed(() =>
 );
 
 const selected = computed(() => people.value.find((p) => p.id === selectedId.value));
+
+/** Centres the chart on a person and opens their card (used by the search box). */
+function focusPerson(id: PersonId): void {
+  chosenRoot.value = id;
+  select(id);
+}
+defineExpose({ focusPerson });
 
 function select(id: PersonId | null): void {
   selectedId.value = id;
@@ -314,6 +323,7 @@ function fullName(id: PersonId): string {
             v-for="node in pedigree.nodes"
             :key="node.key"
             data-testid="tree-node"
+            :data-highlight="props.highlightIds?.has(node.personId) ? true : undefined"
             :data-root="node.generation === 0 && !node.sibling"
             class="cursor-pointer"
             :data-selected="node.personId === selectedId"
@@ -330,18 +340,22 @@ function fullName(id: PersonId): string {
                 node.generation === 0 && !node.sibling ? 'var(--tree-root)' : 'var(--tree-node)'
               "
               :stroke="
-                node.personId === selectedId
-                  ? '#0ea5e9'
-                  : node.generation === 0 && !node.sibling
-                    ? 'var(--tree-root-stroke)'
-                    : 'var(--tree-node-stroke)'
+                props.highlightIds?.has(node.personId)
+                  ? '#f59e0b'
+                  : node.personId === selectedId
+                    ? '#0ea5e9'
+                    : node.generation === 0 && !node.sibling
+                      ? 'var(--tree-root-stroke)'
+                      : 'var(--tree-node-stroke)'
               "
               :stroke-width="
-                node.personId === selectedId
-                  ? 2.5
-                  : node.generation === 0 && !node.sibling
-                    ? 1.5
-                    : 1
+                props.highlightIds?.has(node.personId)
+                  ? 4
+                  : node.personId === selectedId
+                    ? 2.5
+                    : node.generation === 0 && !node.sibling
+                      ? 1.5
+                      : 1
               "
               filter="url(#node-shadow)"
             />

@@ -1,0 +1,3 @@
+- [x] searchPeople + tests
+- [x] Search box, results dropdown, list filter, tree highlight, focus
+- [x] i18n en/fr, e2e

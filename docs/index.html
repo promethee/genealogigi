@@ -6,7 +6,7 @@
     <title>Genealogigi — your family's story, your data</title>
     <meta
       name="description"
-      content="Genealogigi is a free desktop app to build your family tree: portraits, timelines, name changes, step and adoptive parents. No account, no cloud. Your whole family lives in one file you own."
+      content="Genealogigi is a free, simple app to build your family tree on your own computer. No account, no cloud: your family stays yours."
     />
     <meta property="og:title" content="Genealogigi — your family's story, your data" />
     <meta
@@ -224,6 +224,11 @@
         border-radius: 50%;
         background: var(--line);
       }
+      .frame img {
+        aspect-ratio: 2880 / 1960;
+        object-fit: cover;
+        object-position: top;
+      }
       .frame img,
       .shot img {
         display: block;
@@ -246,7 +251,7 @@
         margin-right: 0.45rem;
       }
       section {
-        padding: 5.5rem 0 0;
+        padding: 3.5rem 0 0;
       }
       .eyebrow {
         color: var(--accent);
@@ -330,19 +335,14 @@
         border-radius: 50%;
         background: linear-gradient(135deg, var(--accent), var(--accent-2));
       }
-      .bento {
+      .trio {
         display: grid;
         gap: 1rem;
         margin-top: 3rem;
         grid-template-columns: repeat(3, 1fr);
       }
-      @media (max-width: 900px) {
-        .bento {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      @media (max-width: 560px) {
-        .bento {
+      @media (max-width: 700px) {
+        .trio {
           grid-template-columns: 1fr;
         }
       }
@@ -457,7 +457,7 @@
       }
       .final {
         text-align: center;
-        margin-top: 6rem;
+        margin-top: 4rem;
         padding: 4.5rem 1.5rem;
         border-radius: 1.6rem;
         background:
@@ -527,15 +527,12 @@
           Genealogigi
         </a>
         <div class="links">
-          <a class="hide-sm" href="#features">Features</a>
-          <a class="hide-sm" href="#privacy">Privacy</a>
-          <a class="hide-sm" href="#faq">FAQ</a>
-          <a href="https://github.com/promethee/genealogigi">GitHub</a>
+          <a href="https://github.com/promethee/genealogigi/releases/latest">Download</a>
         </div>
       </nav>
 
       <header class="hero" id="top">
-        <span class="pill"><b>Free forever</b> · open source · Windows</span>
+        <span class="pill"><b>Free forever</b> · for Windows</span>
         <h1>Your family's story. <span class="grad">Your data.</span></h1>
         <p class="lead">
           A free family tree for your computer. No account, no cloud, no subscription.
@@ -560,9 +557,8 @@
             </svg>
             Download for Windows
           </a>
-          <a class="btn big" href="#features">See what it does</a>
         </div>
-        <p class="fine">Free · no sign-up · installer on the GitHub Releases page</p>
+        <p class="fine">Free · nothing to sign up for</p>
 
         <div class="frame">
           <div class="bar"><i></i><i></i><i></i></div>
@@ -571,7 +567,7 @@
             src="screenshots/tree-light.jpg"
             width="2880"
             height="2360"
-            alt="Genealogigi showing a family tree from great-grandparents down to grandchildren, centred on one person, with counts of their relatives above the chart."
+            alt="A family tree in Genealogigi, from great-grandparents down to grandchildren."
           />
           <img
             class="dark-only"
@@ -581,61 +577,30 @@
             alt="The same family tree in the dark theme."
           />
         </div>
-
-        <div class="trust">
-          <span>100% free</span>
-          <span>Works offline</span>
-          <span>Your data never leaves your computer</span>
-          <span>English &amp; Français</span>
-          <span>Light &amp; dark</span>
-        </div>
       </header>
 
-      <section id="features">
-        <div class="split">
-          <div class="copy">
-            <div class="eyebrow">See the whole picture</div>
-            <h2>A tree that actually looks like your family.</h2>
-            <p class="sub">
-              Ancestors above, descendants below, anyone in the middle. Pick a person and the tree
-              redraws around them, with the numbers that matter.
+      <section id="why">
+        <div class="trio">
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🌱</div>
+            <h3>Simple</h3>
+            <p>
+              Add yourself, then your parents, then keep going. Everything is a plain form with
+              clear words. No manual needed.
             </p>
-            <ul class="ticks">
-              <li>
-                <b>Focus on anyone.</b> Their parents, grandparents, children, siblings and
-                partners, counted at a glance.
-              </li>
-              <li>
-                <b>Ancestors, descendants or both</b> in one hourglass. Show siblings with one
-                click.
-              </li>
-              <li>
-                <b>Real relationships.</b> Dashed lines mark step, foster, adoptive or presumed
-                links.
-              </li>
-              <li>
-                <b>It fits your screen.</b> The tree scales to the window instead of making you
-                scroll.
-              </li>
-            </ul>
           </div>
-          <div class="shot">
-            <img
-              class="light-only"
-              src="screenshots/people-light.jpg"
-              width="2880"
-              height="2360"
-              alt="The people list next to the relationships panel."
-              loading="lazy"
-            />
-            <img
-              class="dark-only"
-              src="screenshots/people-dark.jpg"
-              width="2880"
-              height="2360"
-              alt="The people list next to the relationships panel, dark theme."
-              loading="lazy"
-            />
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🎁</div>
+            <h3>Free</h3>
+            <p>No trial, no subscription, no ads. Genealogigi is free today and stays free.</p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🔒</div>
+            <h3>Yours</h3>
+            <p>
+              Your family stays on your computer, in a file you can copy like a photo. No account,
+              nothing uploaded, nobody watching.
+            </p>
           </div>
         </div>
       </section>
@@ -643,26 +608,16 @@
       <section>
         <div class="split flip">
           <div class="copy">
-            <div class="eyebrow">Every life, in order</div>
-            <h2>Open a person. Read their life.</h2>
+            <div class="eyebrow">Beyond names and dates</div>
+            <h2>Every person has a story.</h2>
             <p class="sub">
-              Each person has a card with a timeline built for you: birth, name changes, marriages,
-              the children they had, the places they lived.
+              Open anyone to see their whole life on one page, in order, with their close family
+              around them.
             </p>
             <ul class="ticks">
-              <li>
-                <b>Names that change.</b> Maiden name, married name, nickname, each with its date.
-                The tree shows “Jeanne Laurent (née Martin)” the way families say it.
-              </li>
-              <li><b>Honest dates.</b> Only know the year? Or the month? That is fine.</li>
-              <li>
-                <b>Events with other people.</b> Add a marriage or a move and it appears on everyone
-                involved.
-              </li>
-              <li>
-                <b>Portraits.</b> A round photo for each person, or tidy initials until you find
-                one.
-              </li>
+              <li><b>Photos</b> for everyone, or neat initials until you find one.</li>
+              <li><b>A timeline</b> of births, marriages, children and new names.</li>
+              <li><b>Add what you know.</b> A year is enough; fill in the rest later.</li>
             </ul>
           </div>
           <div class="shot">
@@ -671,7 +626,7 @@
               src="screenshots/card-light.jpg"
               width="1372"
               height="1536"
-              alt="A person card with names, life details, a small family tree and a timeline."
+              alt="A person's page with their names, a small family tree and a timeline of their life."
               loading="lazy"
             />
             <img
@@ -679,190 +634,27 @@
               src="screenshots/card-dark.jpg"
               width="1372"
               height="1536"
-              alt="A person card in the dark theme."
+              alt="A person's page in the dark theme."
               loading="lazy"
             />
           </div>
         </div>
       </section>
 
-      <section>
-        <div class="center">
-          <div class="eyebrow">And there's more</div>
-          <h2>Built for how families really are.</h2>
-          <p class="sub">Not just parents and children on paper: the messy, wonderful rest.</p>
-        </div>
-        <div class="bento">
-          <div class="tile">
-            <div class="ico" aria-hidden="true">👪</div>
-            <h3>Step, foster, adoptive</h3>
-            <p>
-              Biological (confirmed or presumed), adoptive, step, foster and guardian parents, with
-              start and end dates.
-            </p>
-          </div>
-          <div class="tile">
-            <div class="ico" aria-hidden="true">🛡️</div>
-            <h3>Mistake-proof</h3>
-            <p>
-              No duplicate links, no one their own ancestor. Every delete asks first. Every change
-              is saved at once.
-            </p>
-          </div>
-          <div class="tile">
-            <div class="ico" aria-hidden="true">🌗</div>
-            <h3>Light &amp; dark</h3>
-            <p>
-              Follows your system, or switch with one click. Even the tree is designed for both.
-            </p>
-          </div>
-          <div class="tile">
-            <div class="ico" aria-hidden="true">🇫🇷</div>
-            <h3>English &amp; Français</h3>
-            <p>Switch language at any time from the top bar. Plurals and months included.</p>
-          </div>
-          <div class="tile">
-            <div class="ico" aria-hidden="true">🔁</div>
-            <h3>Backup &amp; share</h3>
-            <p>
-              Export a copy, import one (the current file is backed up and verified first), or sync
-              the file with your own git.
-            </p>
-          </div>
-          <div class="tile">
-            <div class="ico" aria-hidden="true">🔔</div>
-            <h3>Stays up to date</h3>
-            <p>Tells you when a new version is out. Never installs anything behind your back.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="privacy">
-        <div class="split flip">
-          <div class="copy">
-            <div class="eyebrow">Your family, your file</div>
-            <h2>One file. Plain JSON. Forever readable.</h2>
-            <p class="sub">
-              Your whole family lives in a single <b>.gigi</b> file that you choose and you keep.
-              Open it in any text editor. Back it up like a photo. Hand it to a cousin. No lock-in,
-              no company in the middle, nothing to cancel.
-            </p>
-            <ul class="ticks">
-              <li><b>Private by design.</b> No account, no tracking, no upload.</li>
-              <li><b>Outlives the app.</b> Plain, human-readable JSON.</li>
-              <li>
-                <b>Safe imports.</b> Before anything is replaced, the previous file is saved next to
-                it with the date and a fingerprint.
-              </li>
-            </ul>
-          </div>
-          <pre aria-label="Excerpt of a .gigi file"><span class="c">// laurent.gigi</span>
-{
-  <span class="k">"schemaVersion"</span>: <span class="s">1</span>,
-  <span class="k">"people"</span>: [
-    {
-      <span class="k">"names"</span>: {
-        <span class="k">"lastNames"</span>: [
-          { <span class="k">"value"</span>: <span class="s">"Martin"</span>,  <span class="k">"kind"</span>: <span class="s">"birth"</span> },
-          { <span class="k">"value"</span>: <span class="s">"Laurent"</span>, <span class="k">"kind"</span>: <span class="s">"married"</span> }
-        ]
-      },
-      <span class="k">"born"</span>: { <span class="k">"birthPlace"</span>: <span class="s">"Grenoble"</span> }
-    }
-  ],
-  <span class="k">"relationships"</span>: [ <span class="c">/* … */</span> ]
-}</pre>
-        </div>
-      </section>
-
-      <section>
-        <div class="center">
-          <div class="eyebrow">Get started in minutes</div>
-          <h2>From first name to family tree.</h2>
-        </div>
-        <div class="steps">
-          <div class="step">
-            <h3>Install</h3>
-            <p>Download the Windows installer from the Releases page and run it.</p>
-          </div>
-          <div class="step">
-            <h3>Start a family</h3>
-            <p>
-              Create a file, add yourself, then your parents. Add both parents of a child in one
-              step.
-            </p>
-          </div>
-          <div class="step">
-            <h3>Watch it grow</h3>
-            <p>
-              Add photos, dates and stories whenever you learn something. The tree redraws itself.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="faq">
-        <div class="center">
-          <div class="eyebrow">Questions</div>
-          <h2>Good to know.</h2>
-        </div>
-        <div class="faq">
-          <details>
-            <summary>Is it really free?</summary>
-            <p>
-              Yes. Genealogigi is open source under the MIT license. There is no paid tier, no ads
-              and no account.
-            </p>
-          </details>
-          <details>
-            <summary>Where is my data stored?</summary>
-            <p>
-              In one <b>.gigi</b> file in the folder you choose, on your computer. The app only
-              contacts GitHub, once at start, to ask whether a newer version exists.
-            </p>
-          </details>
-          <details>
-            <summary>Which systems does it run on?</summary>
-            <p>
-              Windows is the main target today. The source is open (Tauri, Vue and TypeScript) if
-              you want to build it elsewhere.
-            </p>
-          </details>
-          <details>
-            <summary>Can I import my existing tree?</summary>
-            <p>
-              You can import a Genealogigi file. Other formats such as GEDCOM are not supported yet.
-            </p>
-          </details>
-          <details>
-            <summary>Can several relatives work on one family?</summary>
-            <p>
-              The file is easy to share, and you can sync it with your own git repository. Real-time
-              collaboration is not built.
-            </p>
-          </details>
-        </div>
-      </section>
-
       <div class="final">
-        <div class="eyebrow">Ready?</div>
-        <h2>Give your family the tree it deserves.</h2>
-        <p class="sub" style="margin: 0 auto 2rem">
-          Free, private and yours to keep. It takes a minute to install.
-        </p>
+        <h2>Your family tree starts here.</h2>
         <div class="cta">
           <a class="btn primary big" href="https://github.com/promethee/genealogigi/releases/latest"
             >Download Genealogigi</a
           >
-          <a class="btn big" href="https://github.com/promethee/genealogigi">Star on GitHub</a>
         </div>
       </div>
 
       <footer>
-        <span>Named after my grandmother, Gigi. Open source under the MIT license.</span>
+        <span>English &amp; Français</span>
         <span>
-          <a href="https://github.com/promethee/genealogigi">Source</a> ·
-          <a href="https://github.com/promethee/genealogigi/releases">Releases</a> ·
+          <a href="https://github.com/promethee/genealogigi/releases">All versions</a> ·
+          <a href="https://github.com/promethee/genealogigi">Open source</a> ·
           <a href="https://github.com/promethee/genealogigi/issues">Feedback</a>
         </span>
       </footer>

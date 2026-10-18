@@ -1,0 +1,92 @@
+import { expect, test, type Page } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    const read = (key: string) => localStorage.getItem(key);
+    (window as unknown as Record<string, unknown>).__GENEALOGIGI_PLATFORM__ = {
+      openFileDialog: async () => null,
+      saveFileDialog: async () => "C:/families/search.gigi",
+      confirm: async () => true,
+      data: {
+        exists: async (p: string) => read(`fake:file:${p}`) !== null,
+        load: async (p: string) => JSON.parse(read(`fake:file:${p}`) ?? "null"),
+        save: async (p: string, d: unknown) =>
+          localStorage.setItem(`fake:file:${p}`, JSON.stringify(d)),
+      },
+      settings: {
+        getLastFilePath: async () => read("fake:lastPath"),
+        setLastFilePath: async (p: string | null) =>
+          p === null
+            ? localStorage.removeItem("fake:lastPath")
+            : localStorage.setItem("fake:lastPath", p),
+      },
+      exit: async () => {},
+    };
+  });
+});
+
+async function build(page: Page): Promise<void> {
+  await page.goto("/");
+  await page.getByTestId("create").click();
+  for (const [first, last] of [
+    ["Léa", "Dubois"],
+    ["Jeanne", "Martin"],
+    ["Paul", "Laurent"],
+  ]) {
+    await page.getByTestId("add-person").click();
+    await page.getByTestId("first-name").fill(first!);
+    await page.getByTestId("last-name").fill(last!);
+    await page.getByTestId("submit-person").click();
+  }
+  await page.getByTestId("rel-kind").selectOption("parent");
+  await page.getByTestId("rel-first").selectOption({ label: "Paul Laurent" });
+  await page.getByTestId("rel-second").selectOption({ label: "Léa Dubois" });
+  await page.getByTestId("rel-add").click();
+}
+
+test("list view: the list shows only matches, accents and case ignored", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  await page.getByTestId("search").fill("LEA");
+  await expect(page.getByTestId("person-row")).toHaveCount(1);
+  await expect(page.getByTestId("person-row")).toContainText("Léa Dubois");
+  await page.getByTestId("search").fill("zzz");
+  await expect(page.getByTestId("search-none")).toBeVisible();
+  await expect(page.getByTestId("person-row")).toHaveCount(0);
+  await page.getByTestId("search").press("Escape");
+  await expect(page.getByTestId("person-row")).toHaveCount(3);
+});
+
+test("list view: Enter or a result opens the card", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  await page.getByTestId("search").fill("jeanne");
+  await page.getByTestId("search").press("Enter");
+  await expect(page.getByTestId("detail-name")).toContainText("Jeanne Martin");
+});
+
+test("tree view: matches are highlighted and a result focuses the tree on them", async ({
+  page,
+}) => {
+  await build(page);
+  await page.getByTestId("tab-tree").click();
+  await page.getByTestId("search").fill("dubois");
+  await expect(page.locator('[data-testid="tree-node"][data-highlight="true"]')).toHaveCount(1);
+  await page.getByTestId("search-result").first().click();
+  await expect(page.getByTestId("tree-root")).toHaveValue(/.+/);
+  await expect(page.getByTestId("detail-name")).toContainText("Léa Dubois");
+  await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText(
+    "Léa Dubois",
+  );
+});
+
+test("the search is in French too", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("search")).toHaveAttribute(
+    "placeholder",
+    "Rechercher un nom ou un lieu…",
+  );
+  await page.getByTestId("search").fill("zzz");
+  await expect(page.getByTestId("search-none")).toHaveText("Aucune personne trouvée.");
+});

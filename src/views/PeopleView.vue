@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { searchPeople } from "../data/search.ts";
 import type { NewPersonParents } from "../data/createPerson.ts";
 import { isParentChild } from "../data/relationships.ts";
 import AppIcon from "../components/AppIcon.vue";
@@ -33,6 +34,22 @@ const formTarget = ref<"new" | PersonId | null>(null);
 
 /** The person whose detail card is open (read-only), or null. */
 const viewing = ref<PersonId | null>(null);
+
+const search = ref("");
+const tree = ref<InstanceType<typeof PedigreeTree> | null>(null);
+const matches = computed(() => searchPeople(family.data?.people ?? [], search.value));
+const matchIds = computed(() => new Set(matches.value.map((p) => p.id)));
+/** The list shows only matches while searching (focus); the tree highlights them instead. */
+const listedPeople = computed(() =>
+  search.value.trim() ? matches.value : (family.data?.people ?? []),
+);
+const RESULTS_SHOWN = 8;
+
+/** List view: open the card. Tree view: centre the chart on them and open their card. */
+function pick(id: PersonId): void {
+  if (tab.value === "tree") tree.value?.focusPerson(id);
+  else viewing.value = id;
+}
 
 function initialInput(): PersonFormValues {
   const target = formTarget.value;
@@ -125,6 +142,45 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         </ul>
       </header>
 
+      <div class="relative max-w-md" data-testid="search-box">
+        <input
+          v-model="search"
+          type="search"
+          data-testid="search"
+          class="input w-full"
+          :placeholder="t('search.placeholder')"
+          :aria-label="t('search.label')"
+          @keydown.enter.prevent="matches[0] && pick(matches[0].id)"
+          @keydown.esc="search = ''"
+        />
+        <ul
+          v-if="search.trim() && matches.length"
+          data-testid="search-results"
+          class="card absolute z-20 mt-1 max-h-72 w-full overflow-auto py-1 text-sm"
+        >
+          <li v-for="p in matches.slice(0, RESULTS_SHOWN)" :key="p.id">
+            <button
+              data-testid="search-result"
+              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-slate-100"
+              @click="pick(p.id)"
+            >
+              {{ displayName(p) }}
+              <span class="text-xs text-slate-500">{{ lifeSummary(p) }}</span>
+            </button>
+          </li>
+          <li v-if="matches.length > RESULTS_SHOWN" class="px-3 py-1 text-xs text-slate-500">
+            {{ tn("search.more", matches.length - RESULTS_SHOWN) }}
+          </li>
+        </ul>
+        <p
+          v-else-if="search.trim()"
+          data-testid="search-none"
+          class="card absolute z-20 mt-1 w-full px-3 py-2 text-sm text-slate-500"
+        >
+          {{ t("search.none") }}
+        </p>
+      </div>
+
       <nav class="inline-flex self-start rounded-xl bg-slate-200/70 p-1 text-sm font-medium">
         <button
           data-testid="tab-list"
@@ -153,7 +209,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
       </nav>
 
       <div v-if="tab === 'tree'" class="card p-5">
-        <PedigreeTree />
+        <PedigreeTree ref="tree" :highlight-ids="search.trim() ? matchIds : undefined" />
       </div>
       <div v-else class="grid items-start gap-5 xl:grid-cols-2" data-testid="list-layout">
         <div class="flex min-w-0 flex-col gap-5">
@@ -210,7 +266,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           </p>
           <ul v-else class="card divide-y divide-slate-100 overflow-hidden">
             <li
-              v-for="person in family.data.people"
+              v-for="person in listedPeople"
               :key="person.id"
               data-testid="person-row"
               class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
