@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { TREE_ICON_PATH } from "../brand.ts";
 import AppIcon from "../components/AppIcon.vue";
 import { t } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
@@ -26,7 +27,7 @@ onMounted(() => family.init());
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M12 21v-6M12 15H6v-4M12 15h6v-4M6 11V6M18 11V6" />
+          <path :d="TREE_ICON_PATH" />
         </svg>
       </span>
       <div class="text-center">

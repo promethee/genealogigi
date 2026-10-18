@@ -1,0 +1,3 @@
+- [x] Shared path and icon files
+- [x] Native icons regenerated
+- [x] Test keeping page and app equal

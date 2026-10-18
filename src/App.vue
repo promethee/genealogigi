@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { TREE_ICON_PATH } from "./brand.ts";
 import AppIcon from "./components/AppIcon.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 import LanguageSwitch from "./components/LanguageSwitch.vue";
@@ -41,7 +42,7 @@ onMounted(async () => {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path d="M12 21v-6M12 15H6v-4M12 15h6v-4M6 11V6M18 11V6" />
+            <path :d="TREE_ICON_PATH" />
           </svg>
         </span>
         <span class="text-sm font-semibold tracking-tight text-slate-800">Genealogigi</span>

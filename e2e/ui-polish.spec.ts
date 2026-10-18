@@ -195,3 +195,9 @@ test("the card does not spell out 'living' or an unknown partner status", async 
   await expect(partners).not.toContainText("unknown");
   await expect(page.getByTestId("relationship-text")).toHaveText("Ada and Byron are partners");
 });
+
+test("the header logo draws the shared tree mark", async ({ page }) => {
+  await page.goto("/");
+  const d = await page.locator('[data-testid="brand"] path').getAttribute("d");
+  expect(d).toBe("M12 21v-6M12 15L7 10M12 15L17 10M7 10L4 4M7 10L10 4M17 10L14 4M17 10L20 4");
+});
