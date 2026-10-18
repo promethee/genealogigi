@@ -14,10 +14,10 @@ import { displayName, displayNameParts, lifespan } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
 
-const COLUMN_WIDTH = 210;
+const SLOT_WIDTH = 190;
 const BOX_WIDTH = 170;
 const BOX_HEIGHT = 48;
-const ROW_HEIGHT = 64;
+const LEVEL_HEIGHT = 96;
 const PADDING = 16;
 
 const family = useFamilyStore();
@@ -50,8 +50,8 @@ const positions = computed(() => {
   const map = new Map<string, { x: number; y: number }>();
   for (const node of pedigree.value?.nodes ?? []) {
     map.set(node.key, {
-      x: PADDING + node.column * COLUMN_WIDTH,
-      y: PADDING + node.row * ROW_HEIGHT,
+      x: PADDING + node.slot * SLOT_WIDTH,
+      y: PADDING + node.level * LEVEL_HEIGHT,
     });
   }
   return map;
@@ -61,8 +61,8 @@ const size = computed(() => {
   const p = pedigree.value;
   if (!p) return { width: 0, height: 0 };
   return {
-    width: PADDING * 2 + (p.columns - 1) * COLUMN_WIDTH + BOX_WIDTH,
-    height: PADDING * 2 + Math.max(0, p.rows - 1) * ROW_HEIGHT + BOX_HEIGHT,
+    width: PADDING * 2 + Math.max(0, p.slots - 1) * SLOT_WIDTH + BOX_WIDTH,
+    height: PADDING * 2 + Math.max(0, p.levels - 1) * LEVEL_HEIGHT + BOX_HEIGHT,
   };
 });
 
@@ -71,17 +71,17 @@ const edgePaths = computed(() =>
     const from = positions.value.get(edge.fromKey);
     const to = positions.value.get(edge.toKey);
     if (!from || !to) return [];
-    // Links run from the near side of one box to the near side of the other.
-    const rightward = to.x >= from.x;
-    const x1 = rightward ? from.x + BOX_WIDTH : from.x;
-    const y1 = from.y + BOX_HEIGHT / 2;
-    const x2 = rightward ? to.x : to.x + BOX_WIDTH;
-    const y2 = to.y + BOX_HEIGHT / 2;
-    const mid = (x1 + x2) / 2;
+    // Links run from the facing sides of the two boxes: up to ancestors, down to descendants.
+    const upward = to.y < from.y;
+    const x1 = from.x + BOX_WIDTH / 2;
+    const y1 = upward ? from.y : from.y + BOX_HEIGHT;
+    const x2 = to.x + BOX_WIDTH / 2;
+    const y2 = upward ? to.y + BOX_HEIGHT : to.y;
+    const mid = (y1 + y2) / 2;
     return [
       {
         key: `${edge.fromKey}>${edge.toKey}`,
-        d: `M ${x1} ${y1} H ${mid} V ${y2} H ${x2}`,
+        d: `M ${x1} ${y1} V ${mid} H ${x2} V ${y2}`,
         dashed: edge.nature !== "biological-confirmed",
       },
     ];
@@ -182,6 +182,7 @@ function fullName(id: PersonId): string {
       <div class="overflow-auto rounded border border-gray-200">
         <svg
           v-if="pedigree"
+          class="mx-auto"
           data-testid="tree-svg"
           :width="size.width"
           :height="size.height"

@@ -120,3 +120,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `i18n-en-fr`: hand-rolled typed i18n (`src/i18n`, English + French catalogs, plurals, French month names), EN/FR switch in a top bar on every screen, language remembered via `PlatformAPI.settings`, first launch follows the system language, every UI string, error, confirmation and relationship/life text translated, git sync results/errors are now codes from Rust translated in the UI. 159 unit, 7 cargo, 65 e2e. Website and OS dialog buttons not translated. Manual steps added.
 
+- **2026-10-18 (cont.)** — Implemented change `vertical-tree`: tree charts are vertical (ancestors above the root, oldest at the top; descendants below; hourglass both). Same layout algorithm with axes swapped (`level`/`slot`), vertical elbow links, centred and scrollable. Site screenshots and captions regenerated. 163 unit, 75 e2e. Manual steps added.
+

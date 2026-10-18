@@ -11,10 +11,10 @@ export interface PedigreeNode {
   personId: PersonId;
   /** 0 = root, 1 = parents (or children), 2 = grandparents (or grandchildren)... */
   generation: number;
-  /** Horizontal slot, 0 = leftmost. Equals `generation` except in hourglass charts. */
-  column: number;
-  /** Vertical slot; fractional because parents are centred on their children. */
-  row: number;
+  /** Vertical level, 0 = top. Ancestors sit above the root, descendants below it. */
+  level: number;
+  /** Horizontal slot, 0 = leftmost; fractional because parents are centred on their children. */
+  slot: number;
 }
 
 export type PedigreeDirection = "ancestors" | "descendants" | "hourglass";
@@ -28,10 +28,10 @@ export interface PedigreeEdge {
 export interface Pedigree {
   nodes: PedigreeNode[];
   edges: PedigreeEdge[];
-  /** Number of columns actually used (deepest generation + 1). */
-  columns: number;
-  /** Number of leaf rows used. */
-  rows: number;
+  /** Number of levels (rows of boxes) used. */
+  levels: number;
+  /** Number of leaf slots used (width of the chart in boxes). */
+  slots: number;
 }
 
 export function clampGenerations(value: number): number {
@@ -54,31 +54,31 @@ export function buildPedigree(
   return hourglass(data, rootId, maxGenerations);
 }
 
-/** Ancestors to the left of the root, descendants to the right, roots aligned. */
+/** Ancestors above the root, descendants below it, roots aligned. */
 function hourglass(data: FamilyData, rootId: PersonId, maxGenerations: number): Pedigree {
   const up = layout(data, rootId, maxGenerations, "ancestors");
   const down = layout(data, rootId, maxGenerations, "descendants");
   const upRoot = up.nodes.find((n) => n.generation === 0);
   const downRoot = down.nodes.find((n) => n.generation === 0);
-  if (!upRoot || !downRoot) return { nodes: [], edges: [], columns: 0, rows: 0 };
+  if (!upRoot || !downRoot) return { nodes: [], edges: [], levels: 0, slots: 0 };
 
-  const ancestorColumns = up.columns - 1;
-  const shift = upRoot.row - downRoot.row;
+  const rootLevel = up.levels - 1;
+  const shift = upRoot.slot - downRoot.slot;
   const nodes = [
-    ...up.nodes.map((n) => ({ ...n, column: ancestorColumns - n.generation })),
+    ...up.nodes,
     ...down.nodes
       .filter((n) => n.generation > 0)
-      .map((n) => ({ ...n, column: ancestorColumns + n.generation, row: n.row + shift })),
+      .map((n) => ({ ...n, level: rootLevel + n.generation, slot: n.slot + shift })),
   ];
-  // Descendant rows may now sit above row 0; move everything down so the top is 0.
-  const top = Math.min(...nodes.map((n) => n.row));
-  const placed = nodes.map((n) => ({ ...n, row: n.row - top }));
-  const bottom = Math.max(...placed.map((n) => n.row));
+  // Descendant slots may now sit left of slot 0; move everything right so the left edge is 0.
+  const top = Math.min(...nodes.map((n) => n.slot));
+  const placed = nodes.map((n) => ({ ...n, slot: n.slot - top }));
+  const bottom = Math.max(...placed.map((n) => n.slot));
   return {
     nodes: placed,
     edges: [...up.edges, ...down.edges],
-    columns: up.columns + down.columns - 1,
-    rows: Math.ceil(bottom) + 1,
+    levels: up.levels + down.levels - 1,
+    slots: Math.ceil(bottom) + 1,
   };
 }
 
@@ -94,14 +94,14 @@ function layout(
 
   const nodes: PedigreeNode[] = [];
   const edges: PedigreeEdge[] = [];
-  let nextRow = 0;
+  let nextSlot = 0;
   let deepest = 0;
 
   const ancestors = direction === "ancestors";
 
   function place(personId: PersonId, generation: number, path: PersonId[], key: string): number {
     deepest = Math.max(deepest, generation);
-    const parentRows: number[] = [];
+    const otherSlots: number[] = [];
     if (generation < limit) {
       const links = parentLinks
         .map((link) => ({ link, otherId: ancestors ? link.parentId : link.childId }))
@@ -113,27 +113,30 @@ function layout(
         );
       links.forEach(({ link, otherId }, index) => {
         const otherKey = `${key}/${index}:${otherId}`;
-        const row = place(otherId, generation + 1, [...path, otherId], otherKey);
-        parentRows.push(row);
+        const slot = place(otherId, generation + 1, [...path, otherId], otherKey);
+        otherSlots.push(slot);
         edges.push({ fromKey: key, toKey: otherKey, nature: link.nature });
       });
     }
 
-    let row: number;
-    if (parentRows.length === 0) {
-      row = nextRow++;
+    let slot: number;
+    if (otherSlots.length === 0) {
+      slot = nextSlot++;
     } else {
-      const first = parentRows[0] as number;
-      const last = parentRows[parentRows.length - 1] as number;
-      row = (first + last) / 2;
+      const first = otherSlots[0] as number;
+      const last = otherSlots[otherSlots.length - 1] as number;
+      slot = (first + last) / 2;
     }
-    nodes.push({ key, personId, generation, column: generation, row });
-    return row;
+    nodes.push({ key, personId, generation, level: generation, slot });
+    return slot;
   }
 
   if (known.has(rootId)) place(rootId, 0, [rootId], `0:${rootId}`);
 
-  return { nodes, edges, columns: nodes.length ? deepest + 1 : 0, rows: nextRow };
+  // Ancestors are drawn above the root, so flip their levels; descendants hang below it.
+  if (ancestors) for (const node of nodes) node.level = deepest - node.generation;
+
+  return { nodes, edges, levels: nodes.length ? deepest + 1 : 0, slots: nextSlot };
 }
 
 const MAX_NAME_LENGTH = 22;

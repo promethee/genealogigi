@@ -205,3 +205,14 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 8   | Quit and relaunch                                                         | The last chosen language is used.                                               |
 | 9   | Delete the app's saved settings and set the OS language to French         | First launch is in French.                                                      |
 | 10  | Open the family file in a text editor after using French                  | Same JSON structure as before: no French text added by the app.                 |
+
+## Vertical tree
+
+| #   | Action                                                          | Expected                                                                                        |
+| --- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 1   | Tree tab, Show: Ancestors, a root with parents and grandparents | Root at the bottom; parents on the row above, side by side; oldest at the top.                  |
+| 2   | Look at the links                                               | Vertical elbows from the top of a child to the bottom of each parent; dashed for non-confirmed. |
+| 3   | Show: Descendants                                               | Root at the top; children below, grandchildren below them.                                      |
+| 4   | Show: Hourglass                                                 | Ancestors above the root, descendants below, root in the middle.                                |
+| 5   | Generations 6 with a large family, or shrink the window         | The chart area scrolls horizontally and vertically; the page itself does not.                   |
+| 6   | Narrow chart (few ancestors)                                    | Centred in the chart area.                                                                      |

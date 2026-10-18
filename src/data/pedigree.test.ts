@@ -49,15 +49,15 @@ describe("buildPedigree", () => {
     const p = buildPedigree(data, id("Me"));
     expect(p.nodes).toHaveLength(1);
     expect(p.edges).toHaveLength(0);
-    expect(p.columns).toBe(1);
-    expect(p.rows).toBe(1);
+    expect(p.levels).toBe(1);
+    expect(p.slots).toBe(1);
   });
 
   it("returns an empty chart for an unknown root", () => {
     const { data } = build(["Me"], []);
     const p = buildPedigree(data, createUuidId<"PersonId">() as PersonId);
     expect(p.nodes).toHaveLength(0);
-    expect(p.columns).toBe(0);
+    expect(p.levels).toBe(0);
   });
 
   it("places two parents in the next column and centres the root", () => {
@@ -72,15 +72,15 @@ describe("buildPedigree", () => {
     expect(personsAt(p, 1, data)).toEqual(["Dad", "Mum"]);
     expect(p.edges).toHaveLength(2);
     const root = p.nodes.find((n) => n.generation === 0);
-    expect(root?.row).toBe(0.5); // between rows 0 and 1
-    expect(p.rows).toBe(2);
+    expect(root?.slot).toBe(0.5); // between rows 0 and 1
+    expect(p.slots).toBe(2);
   });
 
   it("handles a single known parent", () => {
     const { data, id } = build(["Me", "Mum"], [["Mum", "Me"]]);
     const p = buildPedigree(data, id("Me"));
     expect(personsAt(p, 1, data)).toEqual(["Mum"]);
-    expect(p.nodes.find((n) => n.generation === 0)?.row).toBe(0);
+    expect(p.nodes.find((n) => n.generation === 0)?.slot).toBe(0);
   });
 
   it("shows more than two parents", () => {
@@ -106,7 +106,7 @@ describe("buildPedigree", () => {
       ],
     );
     const p = buildPedigree(data, id("Me"), 2);
-    expect(p.columns).toBe(3);
+    expect(p.levels).toBe(3);
     expect(personsAt(p, 3, data)).toEqual([]);
     expect(personsAt(buildPedigree(data, id("Me"), 3), 3, data)).toEqual(["GreatGran"]);
   });
@@ -219,7 +219,7 @@ describe("buildPedigree descendants", () => {
     expect(personsAt(p, 0, data)).toEqual(["Gran"]);
     expect(personsAt(p, 1, data).sort()).toEqual(["Mum", "Uncle"]);
     expect(personsAt(p, 2, data).sort()).toEqual(["Me", "Sis"]);
-    expect(p.columns).toBe(3);
+    expect(p.levels).toBe(3);
     expect(p.edges).toHaveLength(4);
     expect(p.edges.find((e) => e.nature === "adoptive")).toBeDefined();
   });
@@ -234,16 +234,16 @@ describe("buildPedigree descendants", () => {
       ],
     );
     const p = buildPedigree(data, id("Gran"), 2, "descendants");
-    expect(p.columns).toBe(3);
+    expect(p.levels).toBe(3);
     expect(personsAt(p, 3, data)).toEqual([]);
   });
 
   it("centres a parent on their children", () => {
     const { data, id } = family();
     const p = buildPedigree(data, id("Mum"), 4, "descendants");
-    const rows = p.nodes.map((n) => n.row);
+    const slots = p.nodes.map((n) => n.slot);
     const root = p.nodes.find((n) => n.generation === 0);
-    expect(root?.row).toBe((Math.min(...rows) + Math.max(...rows)) / 2);
+    expect(root?.slot).toBe((Math.min(...slots) + Math.max(...slots)) / 2);
   });
 
   it("does not loop on a cycle", () => {
@@ -286,9 +286,9 @@ describe("buildPedigree hourglass", () => {
   it("puts ancestors left and descendants right of one shared root", () => {
     const { data, id } = family();
     const p = buildPedigree(data, id("Me"), 4, "hourglass");
-    const column = (name: string) => p.nodes.find((n) => n.personId === id(name))?.column;
+    const column = (name: string) => p.nodes.find((n) => n.personId === id(name))?.level;
     expect(p.nodes).toHaveLength(6);
-    expect(p.columns).toBe(4);
+    expect(p.levels).toBe(4);
     expect(column("Gran")).toBe(0);
     expect(column("Mum")).toBe(1);
     expect(column("Me")).toBe(2);
@@ -300,11 +300,11 @@ describe("buildPedigree hourglass", () => {
   it("aligns the root row and keeps rows non-negative", () => {
     const { data, id } = family();
     const p = buildPedigree(data, id("Me"), 4, "hourglass");
-    expect(Math.min(...p.nodes.map((n) => n.row))).toBe(0);
-    expect(p.rows).toBeGreaterThanOrEqual(Math.max(...p.nodes.map((n) => n.row)) + 1);
-    const kids = p.nodes.filter((n) => n.column === 3).map((n) => n.row);
+    expect(Math.min(...p.nodes.map((n) => n.slot))).toBe(0);
+    expect(p.slots).toBeGreaterThanOrEqual(Math.max(...p.nodes.map((n) => n.slot)) + 1);
+    const kids = p.nodes.filter((n) => n.level === 3).map((n) => n.slot);
     const root = p.nodes.find((n) => n.generation === 0);
-    expect(root?.row).toBe((Math.min(...kids) + Math.max(...kids)) / 2);
+    expect(root?.slot).toBe((Math.min(...kids) + Math.max(...kids)) / 2);
   });
 
   it("works with only one side and respects the limit per side", () => {
@@ -312,7 +312,7 @@ describe("buildPedigree hourglass", () => {
     const noKids = buildPedigree(data, id("Kid"), 2, "hourglass");
     expect(noKids.nodes.map((n) => n.personId)).toContain(id("Me"));
     const root = noKids.nodes.find((n) => n.generation === 0);
-    expect(root?.column).toBe(noKids.columns - 1);
+    expect(root?.level).toBe(noKids.levels - 1);
     const limited = buildPedigree(data, id("Me"), 2, "hourglass");
     expect(limited.nodes).toHaveLength(6);
     const tight = build(
@@ -323,12 +323,59 @@ describe("buildPedigree hourglass", () => {
         ["C", "D"],
       ],
     );
-    expect(buildPedigree(tight.data, tight.id("B"), 2, "hourglass").columns).toBe(4);
+    expect(buildPedigree(tight.data, tight.id("B"), 2, "hourglass").levels).toBe(4);
   });
 
   it("returns an empty chart for an unknown root", () => {
     const { data } = family();
     const p = buildPedigree(data, createUuidId<"PersonId">() as PersonId, 4, "hourglass");
     expect(p.nodes).toHaveLength(0);
+  });
+});
+
+describe("vertical levels", () => {
+  const links: [string, string][] = [
+    ["Gran", "Mum"],
+    ["Mum", "Me"],
+    ["Dad", "Me"],
+    ["Me", "Kid"],
+  ];
+  const family = () => build(["Gran", "Mum", "Dad", "Me", "Kid"], links);
+  const levelOf = (p: Pedigree, data: FamilyData, name: string) =>
+    p.nodes.find(
+      (n) => data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value === name,
+    )?.level;
+
+  it("puts ancestors above the root: the root is on the deepest level", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Me"), 4, "ancestors");
+    expect(p.levels).toBe(3);
+    expect(levelOf(p, data, "Gran")).toBe(0);
+    expect(levelOf(p, data, "Mum")).toBe(1);
+    expect(levelOf(p, data, "Dad")).toBe(1);
+    expect(levelOf(p, data, "Me")).toBe(2);
+  });
+
+  it("puts descendants below the root: the root is on level 0", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Gran"), 4, "descendants");
+    expect(levelOf(p, data, "Gran")).toBe(0);
+    expect(levelOf(p, data, "Mum")).toBe(1);
+    expect(levelOf(p, data, "Me")).toBe(2);
+    expect(levelOf(p, data, "Kid")).toBe(3);
+  });
+
+  it("puts a lone root on level 0", () => {
+    const { data, id } = family();
+    expect(buildPedigree(data, id("Kid"), 4, "descendants").nodes[0]?.level).toBe(0);
+    expect(buildPedigree(data, id("Gran"), 4, "ancestors").nodes[0]?.level).toBe(0);
+  });
+
+  it("spreads siblings of a level across slots, side by side", () => {
+    const { data, id } = family();
+    const p = buildPedigree(data, id("Me"), 4, "ancestors");
+    const slots = p.nodes.filter((n) => n.level === 1).map((n) => n.slot);
+    expect(new Set(slots).size).toBe(2);
+    expect(p.nodes.find((n) => n.generation === 0)?.slot).toBeCloseTo((slots[0]! + slots[1]!) / 2);
   });
 });

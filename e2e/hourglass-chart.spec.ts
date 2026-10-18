@@ -59,16 +59,16 @@ async function buildFamily(page: Page): Promise<void> {
 const box = async (page: Page, name: string) =>
   page.getByTestId("tree-node").filter({ hasText: name }).first().boundingBox();
 
-test("shows ancestors left and descendants right of the root", async ({ page }) => {
+test("shows ancestors above and descendants below the root", async ({ page }) => {
   await buildFamily(page);
   await expect(page.getByTestId("tree-node")).toHaveCount(5);
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toHaveCount(1);
   const [gran, mum, me, kid] = await Promise.all(
     ["Gran", "Mum", "Me", "Kid"].map((n) => box(page, n)),
   );
-  expect(gran!.x).toBeLessThan(mum!.x);
-  expect(mum!.x).toBeLessThan(me!.x);
-  expect(me!.x).toBeLessThan(kid!.x);
+  expect(gran!.y).toBeLessThan(mum!.y);
+  expect(mum!.y).toBeLessThan(me!.y);
+  expect(me!.y).toBeLessThan(kid!.y);
   await expect(page.getByTestId("tree-edge")).toHaveCount(4);
 });
 

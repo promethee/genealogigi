@@ -44,12 +44,13 @@ family, defaulting to the first person.
 ### Requirement: Show ancestors by generation
 
 The app SHALL show the root and their ancestors up to a chosen number of
-generations (2 to 6, default 4), with each generation in its own column.
+generations (2 to 6, default 4), with each generation on its own row, the
+root on the bottom row and older generations on the rows above.
 
 #### Scenario: Two known parents
 
 - **WHEN** the root has two recorded parents
-- **THEN** both are shown in the next column, linked to the root
+- **THEN** both are shown on the row above the root, side by side, linked to the root
 
 #### Scenario: Generation limit
 
@@ -70,6 +71,11 @@ generations (2 to 6, default 4), with each generation in its own column.
 
 - **WHEN** the same person is an ancestor through two different paths
 - **THEN** they appear once per path
+
+#### Scenario: Oldest at the top
+
+- **WHEN** the root has parents, grandparents and great-grandparents
+- **THEN** each generation is drawn above the previous one, great-grandparents at the top
 
 ### Requirement: Certainty of parent links
 
@@ -129,19 +135,20 @@ The app SHALL show each person's primary first and last name in the chart.
 ### Requirement: Show descendants
 
 The app SHALL let the user switch the Tree tab between ancestors and
-descendants of the root. In descendants mode the root and the people it is a
-parent of are shown, generation by generation, up to the chosen limit, with
-the same link styling and robustness as the ancestor chart.
+descendants of the root. In descendants mode the root is on the top row and
+the people it is a parent of are shown on the rows below, generation by
+generation, up to the chosen limit, with the same link styling and robustness
+as the ancestor chart.
 
 #### Scenario: Children and grandchildren
 
 - **WHEN** descendants mode is chosen and the root has a child who has a child
-- **THEN** the child is shown in the next column and the grandchild in the one after, linked
+- **THEN** the child is shown on the row below the root and the grandchild on the row after, linked
 
 #### Scenario: Several children
 
 - **WHEN** the root has three recorded children
-- **THEN** all three are shown
+- **THEN** all three are shown on the same row
 
 #### Scenario: Generation limit
 
@@ -165,18 +172,18 @@ the same link styling and robustness as the ancestor chart.
 
 ### Requirement: Hourglass chart
 
-The app SHALL offer an hourglass view that shows the root's ancestors to the
-left and descendants to the right of the root, with the root appearing once.
+The app SHALL offer an hourglass view that shows the root's ancestors above
+and descendants below the root, with the root appearing once.
 
 #### Scenario: Both sides
 
 - **WHEN** the root has a parent and a child and hourglass is chosen
-- **THEN** the parent is left of the root and the child is right of it, both linked to the root
+- **THEN** the parent is above the root and the child is below it, both linked to the root
 
 #### Scenario: Only one side
 
 - **WHEN** the root has no children
-- **THEN** only the root and its ancestors are shown, with the root in the rightmost column
+- **THEN** only the root and its ancestors are shown, with the root on the bottom row
 
 #### Scenario: Generation limit
 
@@ -213,3 +220,13 @@ second line.
 
 - **WHEN** a person is Marie Dubois, née Martin, born 1950
 - **THEN** her box shows "Marie Dubois" and "née Martin · 1950–"
+
+### Requirement: Scrollable chart
+
+The chart SHALL scroll horizontally and vertically when it is larger than the
+window, and SHALL be centred when it is narrower.
+
+#### Scenario: Wide family
+
+- **WHEN** the chart is wider than the window
+- **THEN** the chart area scrolls instead of the page or the chart being clipped
