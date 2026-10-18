@@ -9,6 +9,7 @@ import {
   type FirstNameKind,
   inputFromPerson,
   type LastNameKind,
+  lastNameSuggestions,
   lifeSummary,
   lifespan,
   type PersonFormInput,
@@ -530,5 +531,48 @@ describe("life status default", () => {
     expect(suggestedStatus("abc", 2026)).toBe("living");
     expect(suggestedStatus("0", 2026)).toBe("living");
     expect(suggestedStatus("12345", 2026)).toBe("living");
+  });
+});
+
+describe("lastNameSuggestions", () => {
+  const blank = { year: "", month: "", day: "" };
+  const withLast = (data: FamilyData, names: [string, "birth" | "married"][]) =>
+    addPerson(data, {
+      firstName: "X",
+      lastNames: names.map(([value, kind], i) => ({
+        value,
+        kind,
+        date: blank,
+        primary: i === 0,
+      })),
+    });
+
+  it("lists names most frequent first, then alphabetical", () => {
+    let data = EMPTY;
+    for (const name of ["Martin", "Dubois", "Dubois", "Abel"])
+      data = withLast(data, [[name, "birth"]]);
+    expect(lastNameSuggestions(data.people)).toEqual(["Dubois", "Abel", "Martin"]);
+  });
+
+  it("includes married names and ignores blanks", () => {
+    let data = withLast(EMPTY, [
+      ["Martin", "birth"],
+      ["Dubois", "married"],
+    ]);
+    data = addPerson(data, { firstName: "Solo", lastName: "" });
+    expect(lastNameSuggestions(data.people)).toEqual(["Dubois", "Martin"]);
+  });
+
+  it("merges spellings that differ only in case, keeping the most common one", () => {
+    let data = EMPTY;
+    for (const name of ["dubois", "Dubois", "Dubois"]) data = withLast(data, [[name, "birth"]]);
+    expect(lastNameSuggestions(data.people)).toEqual(["Dubois"]);
+  });
+
+  it("is empty when nobody has a last name", () => {
+    expect(lastNameSuggestions([])).toEqual([]);
+    expect(
+      lastNameSuggestions(addPerson(EMPTY, { firstName: "Ada", lastName: "" }).people),
+    ).toEqual([]);
   });
 });

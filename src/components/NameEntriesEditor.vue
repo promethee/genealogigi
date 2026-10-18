@@ -19,6 +19,8 @@ const props = defineProps<{
   addKind: K;
   /** Whether a changed name becomes the main name straight away. */
   newBecomesMain: boolean;
+  /** Names offered while typing (a native datalist); free typing is always allowed. */
+  suggestions?: string[];
 }>();
 
 const entries = defineModel<NameEntryInput<K>[]>({ required: true });
@@ -81,6 +83,9 @@ function makePrimary(index: number): void {
 
 <template>
   <fieldset class="flex flex-col gap-2" :data-testid="`${testPrefix}-list`">
+    <datalist v-if="suggestions?.length" :id="`${testPrefix}-suggestions`">
+      <option v-for="name in suggestions" :key="name" :value="name" />
+    </datalist>
     <legend class="mb-1 text-sm font-semibold text-slate-700">
       {{ detailed ? title : capitalise(noun) }}
     </legend>
@@ -95,6 +100,7 @@ function makePrimary(index: number): void {
         :data-testid="testPrefix"
         :placeholder="capitalise(noun)"
         autocomplete="off"
+        :list="suggestions?.length ? `${testPrefix}-suggestions` : undefined"
         :class="inputClass"
       />
       <select

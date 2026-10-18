@@ -231,3 +231,14 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 8   | Edit a person saved with status Unknown                      | The form shows Unknown.                                                                                                                 |
 | 9   | Add a confirmed biological parent link, then an adoptive one | "Ada is parent of Byron" (no parentheses) and "Ada is parent of Cleo (adoptive)".                                                       |
 | 10  | Tree tab                                                     | Soft dotted background, rounded boxes with a shadow, root in green.                                                                     |
+
+## Last-name suggestions
+
+| #   | Action                                                  | Expected                       |
+| --- | ------------------------------------------------------- | ------------------------------ |
+| 1   | Add Ada Martin, Byron Dubois and Cleo Dubois            | Saved.                         |
+| 2   | Add person, click into Last name and type "D"           | A popup suggests "Dubois".     |
+| 3   | Clear the field and click into it again                 | "Dubois" first, then "Martin". |
+| 4   | Click **+ Last name changed**, click into the new field | The same suggestions appear.   |
+| 5   | Type a name that is not suggested and save              | Saved exactly as typed.        |
+| 6   | Click into First name                                   | No suggestions.                |

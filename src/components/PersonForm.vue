@@ -15,6 +15,8 @@ const props = defineProps<{
   initial: PersonFormValues;
   /** True for a new person: the life status follows the birth year until the user picks one. */
   autoStatus?: boolean;
+  /** Last names already saved, offered as suggestions in the last-name fields. */
+  lastNameSuggestions?: string[];
 }>();
 const emit = defineEmits<{ submit: [input: PersonFormValues]; cancel: [] }>();
 
@@ -62,6 +64,7 @@ const inputClass = "input";
       :add-label="t('form.lastChanged')"
       add-kind="married"
       :new-becomes-main="true"
+      :suggestions="lastNameSuggestions"
     />
 
     <fieldset class="flex flex-wrap items-end gap-3">

@@ -256,6 +256,34 @@ export function displayName(person: Person): string {
   return birthName ? `${name} (${t("person.nee", { name: birthName })})` : name;
 }
 
+/**
+ * Every last name already saved, for suggestions: most frequent first, then alphabetical,
+ * one entry per name ignoring case (shown in its most common spelling).
+ */
+export function lastNameSuggestions(people: Person[]): string[] {
+  const groups = new Map<string, Map<string, number>>();
+  for (const person of people) {
+    for (const entry of person.names?.lastNames ?? []) {
+      const value = entry.value.trim();
+      if (value === "") continue;
+      const key = value.toLocaleLowerCase();
+      const spellings = groups.get(key) ?? new Map<string, number>();
+      spellings.set(value, (spellings.get(value) ?? 0) + 1);
+      groups.set(key, spellings);
+    }
+  }
+  const byCountThenName = (a: [string, number], b: [string, number]) =>
+    b[1] - a[1] || a[0].localeCompare(b[0]);
+  return [...groups.values()]
+    .map((spellings) => {
+      const total = [...spellings.values()].reduce((sum, n) => sum + n, 0);
+      const [spelling] = [...spellings.entries()].sort(byCountThenName)[0] as [string, number];
+      return [spelling, total] as [string, number];
+    })
+    .sort(byCountThenName)
+    .map(([name]) => name);
+}
+
 /** e.g. "b. 10 Dec 1815 · d. 27 Nov 1852", "living", or "" when nothing is known. */
 export function lifeSummary(person: Person): string {
   const pieces: string[] = [];

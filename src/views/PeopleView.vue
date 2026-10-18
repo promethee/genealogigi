@@ -10,6 +10,7 @@ import {
   displayNameParts,
   inputFromPerson,
   emptyPersonForm,
+  lastNameSuggestions,
   lifeSummary,
   type PersonFormInput,
   type PersonFormValues,
@@ -152,6 +153,7 @@ async function submit(input: PersonFormInput): Promise<void> {
             :key="formTarget"
             :initial="initialInput()"
             :auto-status="formTarget === 'new'"
+            :last-name-suggestions="lastNameSuggestions(family.data?.people ?? [])"
             @submit="submit"
             @cancel="formTarget = null"
           />

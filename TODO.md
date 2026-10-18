@@ -124,3 +124,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `ui-polish` after hands-on feedback: language switch with SVG flags and native names (English / Français); shared design system (`.btn`, `.input`, `.card`, `.chip`), top bar, welcome card, pill tabs, avatar initials, icon buttons (Edit/Delete now look like buttons), softer tree boxes; new people start as Living and switch to Deceased by themselves for birth years over 110 years back (until the user picks); confirmed biological parent links are shown unmarked in the relationships list. 167 unit, 84 e2e. Site screenshots to be regenerated.
 
+- **2026-10-18 (cont.)** — Implemented change `name-suggestions`: last-name fields suggest names already saved (most frequent first, case-insensitive) through a native datalist, including the married-name row; first names not suggested. Renamed `Icon.vue` to `AppIcon.vue` (lint rule). Manual steps added.
+
