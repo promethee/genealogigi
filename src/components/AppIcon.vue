@@ -18,6 +18,7 @@ export type IconName =
   | "upload"
   | "home"
   | "globe"
+  | "filter"
   | "x";
 
 defineProps<{ name: IconName }>();
@@ -43,6 +44,7 @@ const PATHS: Record<IconName, string> = {
   upload: "M12 15V3M7 8l5-5 5 5M4 20h16",
   globe:
     "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
+  filter: "M3 5h18l-7 8v6l-4 2v-8Z",
   home: "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10",
   x: "M6 6l12 12M18 6L6 18",
 };

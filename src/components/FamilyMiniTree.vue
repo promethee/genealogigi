@@ -91,6 +91,7 @@ const lines = computed(() => {
         class="mx-auto block"
         :width="size.w"
         :height="size.h"
+        :style="{ maxWidth: '100%', height: 'auto', minWidth: `${Math.round(size.w * 0.55)}px` }"
         :viewBox="`0 0 ${size.w} ${size.h}`"
         role="img"
         :aria-label="t('detail.family')"

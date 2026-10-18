@@ -175,3 +175,23 @@ test("the relationships list leaves confirmed biological unmarked and shows othe
     "Ada est parent de Cleo (adoptif)",
   ]);
 });
+
+test("the card does not spell out 'living' or an unknown partner status", async ({ page }) => {
+  await newFamily(page);
+  for (const name of ["Ada", "Byron"]) {
+    await page.getByTestId("add-person").click();
+    await page.getByTestId("first-name").fill(name);
+    await page.getByTestId("submit-person").click();
+  }
+  await page.getByTestId("rel-kind").selectOption("partner");
+  await page.getByTestId("rel-first").selectOption({ label: "Ada" });
+  await page.getByTestId("rel-second").selectOption({ label: "Byron" });
+  await page.getByTestId("rel-status").selectOption("unknown");
+  await page.getByTestId("rel-add").click();
+  await page.getByTestId("person-row").first().getByTestId("view-person").click();
+  await expect(page.getByTestId("detail-status")).toHaveCount(0); // living is not spelled out
+  const partners = page.getByTestId("detail-partners");
+  await expect(partners).toContainText("Byron");
+  await expect(partners).not.toContainText("unknown");
+  await expect(page.getByTestId("relationship-text")).toHaveText("Ada and Byron are partners");
+});

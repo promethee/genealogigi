@@ -184,3 +184,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (person-notes)** — Free-text Notes per person (form + card, line breaks kept, 20 000 chars max, searchable, sanitised on import; optional `notes` field, no schema bump). Archived `person-notes`.
 
 - **2026-10-18 (share-web-page, ui-polish-2)** — "Share as web page…" writes ONE offline HTML file (searchable list, person cards, clickable relatives, timeline, light/dark, print-friendly; DOM built with textContent so names cannot run code). Batch of polish: Add person on the toolbar line, neutral Confirm / red Cancel, no "main" badge or default "Birth" on names, singular "Sibling"/"Frère / sœur", removed the "place in the family" heading. Archived `share-web-page`, `ui-polish-2`.
+
+- **2026-10-18 (ui-polish-3)** — UI/UX pass: card hides "living" and an unknown partner status, mini family tree scales to its column, tree filters collapsed behind a Filters button, name rows wrap as groups. Archived `ui-polish-3`. Real-app (Linux, Xvfb + tauri-driver) test tooling installed in this environment; see the exploration notes below.

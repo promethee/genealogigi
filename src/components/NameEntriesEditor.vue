@@ -113,77 +113,81 @@ function makePrimary(index: number): void {
           {{ t(`kind.${kind}` as MessageKey) }}
         </option>
       </select>
-      <input
-        v-if="detailed"
-        v-model="entry.date.year"
-        :data-testid="`${testPrefix}-year`"
-        :placeholder="index === 0 ? t('form.year') : t('form.sinceYear')"
-        autocomplete="off"
-        inputmode="numeric"
-        :class="[inputClass, index === 0 ? 'w-20' : 'w-36']"
-      />
-      <select
-        v-if="detailed"
-        v-model="entry.date.month"
-        :data-testid="`${testPrefix}-month`"
-        :class="inputClass"
-      >
-        <option value="">{{ t("form.month") }}</option>
-        <option v-for="(name, i) in monthNames()" :key="name" :value="String(i + 1)">
-          {{ name }}
-        </option>
-      </select>
-      <input
-        v-if="detailed"
-        v-model="entry.date.day"
-        :data-testid="`${testPrefix}-day`"
-        :placeholder="t('form.day')"
-        autocomplete="off"
-        inputmode="numeric"
-        :class="[inputClass, 'w-16']"
-      />
-      <label v-if="detailed" class="flex items-center gap-1 text-sm">
+      <div v-if="detailed" class="flex items-center gap-2">
         <input
-          type="radio"
-          :name="`${testPrefix}-primary`"
-          :checked="entry.primary"
-          :data-testid="`${testPrefix}-primary`"
-          @change="makePrimary(index)"
+          v-if="detailed"
+          v-model="entry.date.year"
+          :data-testid="`${testPrefix}-year`"
+          :placeholder="index === 0 ? t('form.year') : t('form.sinceYear')"
+          autocomplete="off"
+          inputmode="numeric"
+          :class="[inputClass, index === 0 ? 'w-20' : 'w-36']"
         />
-        {{ t("form.mainName") }}
-      </label>
-      <button
-        v-if="detailed"
-        type="button"
-        :data-testid="`${testPrefix}-up`"
-        :aria-label="t('form.moveUp', { noun })"
-        :disabled="index === 0"
-        class="btn btn-secondary btn-sm px-2"
-        @click="move(index, -1)"
-      >
-        ↑
-      </button>
-      <button
-        v-if="detailed"
-        type="button"
-        :data-testid="`${testPrefix}-down`"
-        :aria-label="t('form.moveDown', { noun })"
-        :disabled="index === entries.length - 1"
-        class="btn btn-secondary btn-sm px-2"
-        @click="move(index, 1)"
-      >
-        ↓
-      </button>
-      <button
-        v-if="detailed"
-        type="button"
-        :data-testid="`${testPrefix}-remove`"
-        :aria-label="t('form.remove', { noun })"
-        class="btn btn-danger btn-sm px-2"
-        @click="remove(index)"
-      >
-        ✕
-      </button>
+        <select
+          v-if="detailed"
+          v-model="entry.date.month"
+          :data-testid="`${testPrefix}-month`"
+          :class="inputClass"
+        >
+          <option value="">{{ t("form.month") }}</option>
+          <option v-for="(name, i) in monthNames()" :key="name" :value="String(i + 1)">
+            {{ name }}
+          </option>
+        </select>
+        <input
+          v-if="detailed"
+          v-model="entry.date.day"
+          :data-testid="`${testPrefix}-day`"
+          :placeholder="t('form.day')"
+          autocomplete="off"
+          inputmode="numeric"
+          :class="[inputClass, 'w-16']"
+        />
+      </div>
+      <div v-if="detailed" class="flex items-center gap-2">
+        <label v-if="detailed" class="flex items-center gap-1 text-sm">
+          <input
+            type="radio"
+            :name="`${testPrefix}-primary`"
+            :checked="entry.primary"
+            :data-testid="`${testPrefix}-primary`"
+            @change="makePrimary(index)"
+          />
+          {{ t("form.mainName") }}
+        </label>
+        <button
+          v-if="detailed"
+          type="button"
+          :data-testid="`${testPrefix}-up`"
+          :aria-label="t('form.moveUp', { noun })"
+          :disabled="index === 0"
+          class="btn btn-secondary btn-sm px-2"
+          @click="move(index, -1)"
+        >
+          ↑
+        </button>
+        <button
+          v-if="detailed"
+          type="button"
+          :data-testid="`${testPrefix}-down`"
+          :aria-label="t('form.moveDown', { noun })"
+          :disabled="index === entries.length - 1"
+          class="btn btn-secondary btn-sm px-2"
+          @click="move(index, 1)"
+        >
+          ↓
+        </button>
+        <button
+          v-if="detailed"
+          type="button"
+          :data-testid="`${testPrefix}-remove`"
+          :aria-label="t('form.remove', { noun })"
+          class="btn btn-danger btn-sm px-2"
+          @click="remove(index)"
+        >
+          ✕
+        </button>
+      </div>
     </div>
     <button
       type="button"

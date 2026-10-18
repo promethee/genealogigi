@@ -301,13 +301,21 @@ export function describeRelationship(r: Relationship, nameOf: (id: PersonId) => 
       ? t("rel.describe.parentPlain", names)
       : t("rel.describe.parent", { ...names, details: parts.join(", ") });
   }
+  const names = { a: nameOf(r.personAId), b: nameOf(r.personBId) };
+  const detail = partnerNote(r);
+  return detail
+    ? t("rel.describe.partners", { ...names, details: detail })
+    : t("rel.describe.partnersPlain", names);
+}
+
+/**
+ * What to say next to a partner: the status and period when they mean something, and nothing
+ * when the status is unknown and undated ("unknown" would only confuse).
+ */
+export function partnerNote(r: RelationshipSocial): string {
   const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
-  const detail = period ? `${statusLabel(r.status)}, ${period}` : statusLabel(r.status);
-  return t("rel.describe.partners", {
-    a: nameOf(r.personAId),
-    b: nameOf(r.personBId),
-    details: detail,
-  });
+  if (r.status === "unknown") return period;
+  return period ? `${statusLabel(r.status)}, ${period}` : statusLabel(r.status);
 }
 
 export interface RelationshipEditValues {

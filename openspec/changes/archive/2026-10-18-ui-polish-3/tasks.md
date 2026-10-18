@@ -1,0 +1,2 @@
+- [x] Card wording, mini tree, filters toggle, name rows
+- [x] Tests

@@ -122,7 +122,7 @@ test("optionally records the parents as partners, only when they are not yet", a
   await page.getByTestId("new-parent-partners").check();
   await page.getByTestId("submit-person").click();
   expect((await texts(page)).sort()).toEqual([
-    "Ada and Cleo are partners (unknown)",
+    "Ada and Cleo are partners",
     "Ada is parent of Byron",
     "Cleo is parent of Byron",
   ]);

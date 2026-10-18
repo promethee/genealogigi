@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { formatDate } from "../data/dates.ts";
 import { displayName, lifeSummary } from "../data/people.ts";
 import { relativesOf } from "../data/relatives.ts";
-import { natureLabel, statusLabel } from "../data/relationships.ts";
+import { natureLabel, partnerNote } from "../data/relationships.ts";
 import type { PersonId } from "../data/types.ts";
 import { t, tn, type MessageKey } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
@@ -73,7 +73,8 @@ const bornText = computed(() => {
 const lifeText = computed(() => {
   const status = person.value?.lifeStatus;
   if (!status) return "";
-  if (status.living) return t("person.living");
+  // "Living" is the usual case, so only other statuses are spelled out.
+  if (status.living) return "";
   const d = status.dateOfDeath;
   const known = d.yearKnown || d.monthKnown || d.dayKnown;
   const date = known ? t("person.deathShort", { date: formatDate(d) }) : t("person.deceased");
@@ -208,7 +209,9 @@ async function remove(): Promise<void> {
               >
                 {{ nameOf(p.personId) }}
               </button>
-              <span class="ml-2 text-slate-500">{{ statusLabel(p.link.status) }}</span>
+              <span v-if="partnerNote(p.link)" class="ml-2 text-slate-500">{{
+                partnerNote(p.link)
+              }}</span>
             </li>
           </ul>
         </div>

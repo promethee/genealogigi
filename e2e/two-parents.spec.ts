@@ -120,7 +120,7 @@ test("optionally records the parents as partners, once", async ({ page }) => {
   await expect(page.getByTestId("relationship-text")).toHaveText([
     "Ada is parent of Byron",
     "Cleo is parent of Byron",
-    "Ada and Cleo are partners (unknown)",
+    "Ada and Cleo are partners",
   ]);
 
   // Already partners: the checkbox disappears for that couple.

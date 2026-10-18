@@ -8,6 +8,7 @@ import {
   describeRelationship,
   involvesPerson,
   isParentChild,
+  partnerNote,
   relationshipsOf,
   RelationshipError,
   RelationshipNotFoundError,
@@ -575,5 +576,29 @@ describe("addParentsOfChild", () => {
       recordPartners: true,
     });
     expect(second.relationships.filter((r) => !isParentChild(r))).toHaveLength(1);
+  });
+});
+
+describe("partner wording", () => {
+  const { data, ids } = family("Ada", "Byron");
+  const nameOf = (pid: PersonId) =>
+    displayName(data.people.find((p) => p.id === pid) ?? { id: pid });
+  const partnership = (status: "ongoing" | "ended" | "unknown", start?: string) =>
+    addPartners(data, {
+      personAId: id(ids, 0),
+      personBId: id(ids, 1),
+      status,
+      ...(start ? { start: { year: start, month: "", day: "" } } : {}),
+    }).relationships[0] as never;
+
+  it("says nothing about an unknown, undated status", () => {
+    expect(partnerNote(partnership("unknown"))).toBe("");
+    expect(describeRelationship(partnership("unknown"), nameOf)).toBe("Ada and Byron are partners");
+  });
+
+  it("keeps meaningful statuses and dates", () => {
+    expect(partnerNote(partnership("ongoing"))).toBe("ongoing");
+    expect(partnerNote(partnership("unknown", "1990"))).toBe("from 1990");
+    expect(partnerNote(partnership("ongoing", "1990"))).toBe("ongoing, from 1990");
   });
 });

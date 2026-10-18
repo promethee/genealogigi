@@ -29,6 +29,7 @@ import {
 } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
+import AppIcon from "./AppIcon.vue";
 import PersonDetail from "./PersonDetail.vue";
 import TreeAvatar from "./TreeAvatar.vue";
 import PersonForm from "./PersonForm.vue";
@@ -63,6 +64,14 @@ const people = computed(() => family.data?.people ?? []);
 
 const filters = ref<TreeFilters>({ ...NO_FILTERS });
 const filterCount = computed(() => activeFilterCount(filters.value));
+/** Collapsed until needed; stays open while a filter is on so its effect is never a mystery. */
+const filtersOpenChoice = ref(false);
+const filtersOpen = computed({
+  get: () => filtersOpenChoice.value || filterCount.value > 0,
+  set: (open: boolean) => {
+    filtersOpenChoice.value = open;
+  },
+});
 const places = computed(() => filterPlaces(people.value));
 const lastNames = computed(() =>
   lastNameSuggestions(people.value).sort((a, b) => a.localeCompare(b)),
@@ -293,8 +302,17 @@ function fullName(id: PersonId): string {
       </div>
 
       <div class="mb-3 rounded-lg border border-slate-200 px-3 py-2" data-testid="filters">
-        <div class="mb-2 flex flex-wrap items-center gap-3 text-sm">
-          <span class="font-medium text-slate-800">{{ t("filter.title") }}</span>
+        <div class="flex flex-wrap items-center gap-3 text-sm">
+          <button
+            data-testid="filters-toggle"
+            class="btn btn-secondary btn-sm"
+            :aria-expanded="filtersOpen"
+            @click="filtersOpen = !filtersOpen"
+          >
+            <AppIcon name="filter" />
+            {{ t("filter.toggle") }}
+            <span v-if="filterCount" class="chip">{{ filterCount }}</span>
+          </button>
           <span v-if="filterCount" data-testid="filter-count" class="chip">
             {{ tn("filter.matches", matching.size) }}
           </span>
@@ -306,8 +324,9 @@ function fullName(id: PersonId): string {
           >
             {{ t("filter.reset") }}
           </button>
+          <span v-if="filtersOpen" class="text-slate-500">{{ t("filter.title") }}</span>
         </div>
-        <div class="flex flex-wrap items-end gap-3">
+        <div v-if="filtersOpen" class="mt-2 flex flex-wrap items-end gap-3">
           <label class="label">
             {{ t("filter.status") }}
             <select v-model="filters.status" data-testid="filter-status" class="input">

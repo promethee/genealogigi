@@ -86,11 +86,23 @@ async function build(page: Page): Promise<void> {
   }
   await page.getByTestId("tab-tree").click();
   await page.getByTestId("tree-root").selectOption({ label: "Léa Dubois" });
+  await page.getByTestId("filters-toggle").click();
 }
 
 const faded = (page: Page) => page.locator('[data-testid="tree-node"][data-faded="true"]');
 const node = (page: Page, name: string) =>
   page.getByTestId("tree-node").filter({ hasText: new RegExp(`^${name}`) });
+
+test("filters are collapsed by default and stay open while one is on", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("filters-toggle").click(); // collapse again
+  await expect(page.getByTestId("filter-status")).toHaveCount(0);
+  await page.getByTestId("filters-toggle").click();
+  await page.getByTestId("filter-status").selectOption("living");
+  await page.getByTestId("filters-toggle").click(); // cannot hide an active filter
+  await expect(page.getByTestId("filter-status")).toBeVisible();
+  await expect(page.getByTestId("filters-toggle")).toContainText("1");
+});
 
 test("nothing is faded until a filter is chosen", async ({ page }) => {
   await build(page);

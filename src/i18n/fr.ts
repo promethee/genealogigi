@@ -145,6 +145,7 @@ export const fr: Record<MessageKey, string> = {
   "rel.describe.parent": "{parent} est parent de {child} ({details})",
   "rel.describe.parentPlain": "{parent} est parent de {child}",
   "rel.describe.partners": "{a} et {b} sont partenaires ({details})",
+  "rel.describe.partnersPlain": "{a} et {b} sont partenaires",
 
   "nature.biological-confirmed": "biologique, confirmé",
   "nature.biological-presumed": "biologique, présumé",
@@ -217,6 +218,7 @@ export const fr: Record<MessageKey, string> = {
   "search.none": "Aucune personne trouvée.",
   "search.more.one": "{count} autre résultat, continuez à taper",
   "search.more.other": "{count} autres résultats, continuez à taper",
+  "filter.toggle": "Filtres",
   "filter.title": "Estomper les personnes qui ne correspondent pas",
   "filter.status": "Statut",
   "filter.any": "Tous",

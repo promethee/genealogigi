@@ -143,6 +143,7 @@ export const en = {
   "rel.describe.parent": "{parent} is parent of {child} ({details})",
   "rel.describe.parentPlain": "{parent} is parent of {child}",
   "rel.describe.partners": "{a} and {b} are partners ({details})",
+  "rel.describe.partnersPlain": "{a} and {b} are partners",
 
   "nature.biological-confirmed": "biological, confirmed",
   "nature.biological-presumed": "biological, presumed",
@@ -214,6 +215,7 @@ export const en = {
   "search.none": "Nobody found.",
   "search.more.one": "{count} more result, keep typing",
   "search.more.other": "{count} more results, keep typing",
+  "filter.toggle": "Filters",
   "filter.title": "Fade people who do not match",
   "filter.status": "Life status",
   "filter.any": "Any",
