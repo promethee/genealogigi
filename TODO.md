@@ -172,3 +172,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (tree-filters)** — Tree tab filters (life status, birth/death place, birth/death month, last name), cumulative; non-matching people and their links are faded (opacity), still clickable; match count and Reset. Pure `treeFilters.ts` with tests. Archived `tree-filters`. CI run #54 went red on a Windows page-load timeout in a docs-only commit (not a test failure); failed job re-run once.
 
 - **2026-10-18 (list polish)** — People list is a titled card with the users icon (like Relationships); the search box sits on the same line as the People/Tree switch.
+
+- **2026-10-18 (tree-defaults)** — Tree opens as Hourglass with siblings on; search suggestions close on Enter/Escape/choice/leaving the box; French "Personne centrale". Archived `tree-defaults`.

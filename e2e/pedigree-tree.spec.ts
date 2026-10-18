@@ -87,12 +87,12 @@ test("clicking a person re-roots the chart", async ({ page }) => {
   await buildFamily(page);
   await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
-  await expect(page.getByTestId("tree-node")).toHaveCount(3); // Mum, Gran, GreatGran
+  await expect(page.getByTestId("tree-node")).toHaveCount(4); // hourglass: Mum, Gran, GreatGran above, Me below
 });
 
 test("the root can be chosen from the list", async ({ page }) => {
   await buildFamily(page);
   await page.getByTestId("tree-root").selectOption({ label: "Gran" });
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Gran");
-  await expect(page.getByTestId("tree-node")).toHaveCount(2);
+  await expect(page.getByTestId("tree-node")).toHaveCount(4); // GreatGran above; Mum and Me below
 });

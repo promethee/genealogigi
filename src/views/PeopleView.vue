@@ -46,7 +46,11 @@ const listedPeople = computed(() =>
 const RESULTS_SHOWN = 8;
 
 /** List view: open the card. Tree view: centre the chart on them and open their card. */
+/** The suggestions dropdown opens while typing and closes on a choice, Enter, Escape or leaving the box. */
+const resultsOpen = ref(false);
+
 function pick(id: PersonId): void {
+  resultsOpen.value = false;
   if (tab.value === "tree") tree.value?.focusPerson(id);
   else viewing.value = id;
 }
@@ -169,7 +173,16 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ t("tab.tree") }}
           </button>
         </nav>
-        <div class="relative min-w-56 max-w-md flex-1" data-testid="search-box">
+        <div
+          class="relative min-w-56 max-w-md flex-1"
+          data-testid="search-box"
+          @focusout="
+            (e: FocusEvent) => {
+              if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node | null))
+                resultsOpen = false;
+            }
+          "
+        >
           <input
             v-model="search"
             type="search"
@@ -177,11 +190,13 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             class="input w-full"
             :placeholder="t('search.placeholder')"
             :aria-label="t('search.label')"
-            @keydown.enter.prevent="matches[0] && pick(matches[0].id)"
-            @keydown.esc="search = ''"
+            @input="resultsOpen = true"
+            @focus="resultsOpen = !!search.trim()"
+            @keydown.enter.prevent="matches[0] ? pick(matches[0].id) : (resultsOpen = false)"
+            @keydown.esc="((search = ''), (resultsOpen = false))"
           />
           <ul
-            v-if="search.trim() && matches.length"
+            v-if="resultsOpen && search.trim() && matches.length"
             data-testid="search-results"
             class="card absolute z-20 mt-1 max-h-72 w-full overflow-auto py-1 text-sm"
           >
@@ -200,7 +215,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             </li>
           </ul>
           <p
-            v-else-if="search.trim()"
+            v-else-if="resultsOpen && search.trim()"
             data-testid="search-none"
             class="card absolute z-20 mt-1 w-full px-3 py-2 text-sm text-slate-500"
           >

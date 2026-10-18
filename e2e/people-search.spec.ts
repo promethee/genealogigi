@@ -106,3 +106,29 @@ test("the people list has a title with an icon, like the relationships", async (
   await expect(section.locator("h2")).toHaveText("People");
   await expect(section.locator("h2 svg")).toBeVisible();
 });
+
+test("Enter closes the suggestions, and typing opens them again", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  await page.getByTestId("search").fill("l");
+  await expect(page.getByTestId("search-results")).toBeVisible();
+  await page.getByTestId("search").press("Enter");
+  await expect(page.getByTestId("search-results")).toHaveCount(0);
+  await page.getByTestId("search").pressSequentially("e"); // "le" still matches Léa
+  await expect(page.getByTestId("search-results")).toBeVisible();
+  await page.getByTestId("search").press("Enter");
+  await expect(page.getByTestId("search-results")).toHaveCount(0);
+});
+
+test("Escape and clicking elsewhere also close the suggestions", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  await page.getByTestId("search").fill("a");
+  await expect(page.getByTestId("search-results")).toBeVisible();
+  await page.getByTestId("search").press("Escape");
+  await expect(page.getByTestId("search-results")).toHaveCount(0);
+  await expect(page.getByTestId("search")).toHaveValue("");
+  await page.getByTestId("search").fill("a");
+  await page.getByTestId("people-section").click({ position: { x: 5, y: 5 } });
+  await expect(page.getByTestId("search-results")).toHaveCount(0);
+});

@@ -1,0 +1,4 @@
+- [x] Defaults hourglass + siblings
+- [x] Dropdown closes
+- [x] fr wording
+- [x] e2e updated

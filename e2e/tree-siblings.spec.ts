@@ -68,19 +68,19 @@ const node = (page: Page, text: string) =>
   page.getByTestId("tree-node").filter({ hasText: new RegExp(`^${text}`) });
 const box = async (page: Page, text: string) => (await node(page, text).first().boundingBox())!;
 
-test("siblings are off by default, then shown on the root's row when ticked", async ({ page }) => {
+test("siblings are shown by default, and can be switched off", async ({ page }) => {
   await build(page);
-  await expect(page.getByTestId("tree-siblings")).not.toBeChecked();
-  await expect(page.getByTestId("tree-node")).toHaveCount(3); // Me, Mum, Dad
-
-  await page.getByTestId("tree-siblings").check();
-  await expect(page.getByTestId("tree-node")).toHaveCount(6); // + Older, Younger, Half
+  await expect(page.getByTestId("tree-direction")).toHaveValue("hourglass");
+  await expect(page.getByTestId("tree-siblings")).toBeChecked();
+  await expect(page.getByTestId("tree-node")).toHaveCount(6); // Me, Mum, Dad + Older, Younger, Half
   const me = await box(page, "Me");
   for (const name of ["Older", "Younger", "Half"]) {
     expect((await box(page, name)).y).toBeCloseTo(me.y, 0);
   }
   await page.getByTestId("tree-siblings").uncheck();
   await expect(page.getByTestId("tree-node")).toHaveCount(3);
+  await page.getByTestId("tree-siblings").check();
+  await expect(page.getByTestId("tree-node")).toHaveCount(6);
 });
 
 test("older siblings are on the left, younger or unknown on the right", async ({ page }) => {
@@ -134,8 +134,9 @@ test("the option is not offered in the descendants view, but is in the hourglass
 
 test("a root without parents shows no siblings and nothing breaks", async ({ page }) => {
   await build(page);
+  await page.getByTestId("tree-direction").selectOption("ancestors");
   await page.getByTestId("tree-root").selectOption({ label: "Mum" });
-  await page.getByTestId("tree-siblings").check();
+  await expect(page.getByTestId("tree-siblings")).toBeChecked();
   await expect(page.getByTestId("tree-node")).toHaveCount(1);
 });
 
