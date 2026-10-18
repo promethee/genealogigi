@@ -69,7 +69,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
 
 <template>
   <main class="h-full w-full overflow-auto">
-    <div class="mx-auto flex max-w-5xl flex-col gap-5 px-6 py-6">
+    <div class="mx-auto flex max-w-[120rem] flex-col gap-5 px-6 py-6">
       <header class="card p-5">
         <p data-testid="loaded-path" class="truncate font-mono text-xs text-slate-400">
           {{ family.filePath }}
@@ -155,100 +155,102 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
       <div v-if="tab === 'tree'" class="card p-5">
         <PedigreeTree />
       </div>
-      <template v-else>
-        <div v-if="!formTarget">
-          <button
-            data-testid="add-person"
-            class="btn btn-primary px-4 py-2"
-            @click="formTarget = 'new'"
+      <div v-else class="grid items-start gap-5 xl:grid-cols-2" data-testid="list-layout">
+        <div class="flex min-w-0 flex-col gap-5">
+          <div v-if="!formTarget">
+            <button
+              data-testid="add-person"
+              class="btn btn-primary px-4 py-2"
+              @click="formTarget = 'new'"
+            >
+              <AppIcon name="plus" />
+              {{ t("person.add") }}
+            </button>
+          </div>
+
+          <div v-if="viewing && !formTarget" class="card p-5" data-testid="person-card">
+            <PersonDetail
+              :key="viewing"
+              :person-id="viewing"
+              @edit="formTarget = viewing"
+              @close="viewing = null"
+              @select="viewing = $event"
+              @deleted="viewing = null"
+            />
+          </div>
+
+          <div v-if="formTarget" class="card p-5">
+            <PersonForm
+              :key="formTarget"
+              :initial="initialInput()"
+              :auto-status="formTarget === 'new'"
+              :last-name-suggestions="lastNameSuggestions(family.data?.people ?? [])"
+              :place-suggestions="placeSuggestions(family.data?.people ?? [])"
+              :parent-choices="parentChoices"
+              :are-partners="arePartners"
+              @submit="submit"
+              @cancel="formTarget = null"
+            />
+          </div>
+
+          <p
+            v-if="family.error"
+            data-testid="error"
+            class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300"
           >
-            <AppIcon name="plus" />
-            {{ t("person.add") }}
-          </button>
-        </div>
+            {{ family.error }}
+          </p>
 
-        <div v-if="viewing && !formTarget" class="card p-5" data-testid="person-card">
-          <PersonDetail
-            :key="viewing"
-            :person-id="viewing"
-            @edit="formTarget = viewing"
-            @close="viewing = null"
-            @select="viewing = $event"
-            @deleted="viewing = null"
-          />
-        </div>
-
-        <div v-if="formTarget" class="card p-5">
-          <PersonForm
-            :key="formTarget"
-            :initial="initialInput()"
-            :auto-status="formTarget === 'new'"
-            :last-name-suggestions="lastNameSuggestions(family.data?.people ?? [])"
-            :place-suggestions="placeSuggestions(family.data?.people ?? [])"
-            :parent-choices="parentChoices"
-            :are-partners="arePartners"
-            @submit="submit"
-            @cancel="formTarget = null"
-          />
-        </div>
-
-        <p
-          v-if="family.error"
-          data-testid="error"
-          class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300"
-        >
-          {{ family.error }}
-        </p>
-
-        <p
-          v-if="!family.data?.people.length"
-          data-testid="empty-state"
-          class="card px-5 py-8 text-center text-sm text-slate-400"
-        >
-          {{ t("person.empty") }}
-        </p>
-        <ul v-else class="card divide-y divide-slate-100 overflow-hidden">
-          <li
-            v-for="person in family.data.people"
-            :key="person.id"
-            data-testid="person-row"
-            class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
+          <p
+            v-if="!family.data?.people.length"
+            data-testid="empty-state"
+            class="card px-5 py-8 text-center text-sm text-slate-400"
           >
-            <span class="flex min-w-0 items-center gap-3">
-              <PersonAvatar :person="person" size="md" />
-              <span class="min-w-0">
+            {{ t("person.empty") }}
+          </p>
+          <ul v-else class="card divide-y divide-slate-100 overflow-hidden">
+            <li
+              v-for="person in family.data.people"
+              :key="person.id"
+              data-testid="person-row"
+              class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
+            >
+              <span class="flex min-w-0 items-center gap-3">
+                <PersonAvatar :person="person" size="md" />
+                <span class="min-w-0">
+                  <button
+                    data-testid="person-name"
+                    class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
+                    :title="t('detail.open', { name: displayName(person) })"
+                    @click="viewing = person.id"
+                  >
+                    {{ displayName(person) }}
+                  </button>
+                  <span
+                    v-if="lifeSummary(person)"
+                    data-testid="person-life"
+                    class="block text-xs text-slate-500"
+                    >{{ lifeSummary(person) }}</span
+                  >
+                </span>
+              </span>
+              <span class="flex shrink-0 gap-2">
                 <button
-                  data-testid="person-name"
-                  class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
-                  :title="t('detail.open', { name: displayName(person) })"
+                  data-testid="view-person"
+                  class="btn btn-secondary btn-sm"
                   @click="viewing = person.id"
                 >
-                  {{ displayName(person) }}
+                  <AppIcon name="eye" />
+                  {{ t("common.view") }}
                 </button>
-                <span
-                  v-if="lifeSummary(person)"
-                  data-testid="person-life"
-                  class="block text-xs text-slate-500"
-                  >{{ lifeSummary(person) }}</span
-                >
               </span>
-            </span>
-            <span class="flex shrink-0 gap-2">
-              <button
-                data-testid="view-person"
-                class="btn btn-secondary btn-sm"
-                @click="viewing = person.id"
-              >
-                <AppIcon name="eye" />
-                {{ t("common.view") }}
-              </button>
-            </span>
-          </li>
-        </ul>
-        <div class="card p-5">
+            </li>
+          </ul>
+        </div>
+        <div class="card min-w-0 p-5">
           <RelationshipsSection />
         </div>
-      </template>
+      </div>
     </div>
   </main>
 </template>

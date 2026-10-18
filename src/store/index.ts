@@ -1,4 +1,5 @@
 import { createPinia } from "pinia";
+import { askConfirm } from "../lib/confirmDialog.ts";
 import type { PlatformAPI } from "../platform/PlatformAPI.ts";
 import { createPlatformAPI } from "../platform/tauri.ts";
 import { defineAppStore } from "./app.ts";
@@ -11,9 +12,13 @@ declare global {
     /** Dev-only seam: lets Playwright run the UI in a plain browser with a fake shell. */
     __GENEALOGIGI_PLATFORM__?: PlatformAPI;
     /** Dev-only seam: the e2e fake shell never touches the network unless a test provides this. */
+    /** Dev-only seam: lets a fake shell show the real in-app confirmation dialog. */
+    __GENEALOGIGI_CONFIRM__?: typeof askConfirm;
     __GENEALOGIGI_FETCH__?: Parameters<typeof defineAppStore>[1];
   }
 }
+
+if (import.meta.env.DEV) window.__GENEALOGIGI_CONFIRM__ = askConfirm;
 
 export const pinia = createPinia();
 const platform =

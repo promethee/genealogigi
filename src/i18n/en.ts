@@ -31,6 +31,7 @@ export const en = {
   "common.delete": "Delete",
   "common.save": "Save",
   "common.cancel": "Cancel",
+  "confirm.ok": "Confirm",
 
   "git.sync": "Sync with Git",
   "git.syncing": "Syncing…",

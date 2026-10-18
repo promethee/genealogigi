@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { confirm, open, save } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { exists, readFile, readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
@@ -14,6 +14,8 @@ import {
 } from "../data/store.ts";
 import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
 import type { GitStatus, PickedImage, PlatformAPI } from "./PlatformAPI.ts";
+
+import { askConfirm } from "../lib/confirmDialog.ts";
 
 const FAMILY_FILE_FILTER_NAME = "Genealogigi family";
 const OPEN_EXTENSIONS = ["gigi", "json"];
@@ -69,7 +71,7 @@ export function createPlatformAPI(): PlatformAPI {
         defaultPath: options?.defaultName,
         filters: [{ name: FAMILY_FILE_FILTER_NAME, extensions: SAVE_EXTENSIONS }],
       }),
-    confirm: (message) => confirm(message, { title: "Genealogigi", kind: "warning" }),
+    confirm: askConfirm,
     data: {
       exists: (filePath) => exists(filePath),
       load: (filePath) => loadFamilyData(tauriFileIO, filePath),

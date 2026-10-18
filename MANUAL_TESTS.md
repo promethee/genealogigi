@@ -387,3 +387,14 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 3   | A deceased person                        | "born … · died …" (or "deceased").                                                                                       |
 | 4   | Open a living person's card              | The Life section says "living".                                                                                          |
 | 5   | Switch to French                         | The card says "vivant(e)" and the form's status choice says "Vivant(e)"; the list still shows nothing for living people. |
+
+## Confirmation dialog and wide layout
+
+| #   | Action                                   | Expected                                                                                    |
+| --- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1   | Delete a person from its card            | An in-app dialog (app colours, theme, language) asks; Cancel is focused. Not a Windows box. |
+| 2   | Press Escape, click outside, then Cancel | Each closes the dialog and keeps the person.                                                |
+| 3   | Confirm                                  | The person is deleted.                                                                      |
+| 4   | Maximise the window (≥1280px wide)       | People list and Relationships sit side by side; little empty space at the sides.            |
+| 5   | Narrow the window                        | They stack again.                                                                           |
+| 6   | French: open a card and the tree option  | "Fratrie / sororité" and "Afficher la fratrie / sororité".                                  |

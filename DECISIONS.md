@@ -270,3 +270,7 @@ awaits pending saves, then shows the welcome screen (Resume still offers the clo
 ## File extension (2026-10-18)
 
 Decision: family files are `.gigi` with JSON content; `.json` stays readable. Reason: recognisable, associable file type without a format change (no schema bump). Backups keep the source extension so they open as family files.
+
+## In-app confirmation and wide layout (2026-10-18)
+
+Decision: `PlatformAPI.confirm` is unchanged but the Tauri shell answers it with a Vue modal (`ConfirmDialog`), so it follows theme and language; Cancel is the default focus. The people tab uses two columns from `xl`.

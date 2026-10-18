@@ -1,0 +1,4 @@
+- [x] confirmDialog service + ConfirmDialog.vue in App.vue, themed, i18n
+- [x] Tauri confirm uses it
+- [x] fr "Fratrie / sororité"
+- [x] Tests (unit service, e2e dialog), docs

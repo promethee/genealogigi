@@ -143,7 +143,7 @@ test("French label, and the card has an explicit Close button", async ({ page })
   await build(page);
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("tree-siblings").locator("xpath=..")).toContainText(
-    "Afficher la fratrie",
+    "Afficher la fratrie / sororité",
   );
   await node(page, "Mum").click();
   await expect(page.getByTestId("detail-close")).toHaveText("Fermer");

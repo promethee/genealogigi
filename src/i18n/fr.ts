@@ -32,6 +32,7 @@ export const fr: Record<MessageKey, string> = {
   "common.view": "Voir",
   "common.delete": "Supprimer",
   "common.save": "Enregistrer",
+  "confirm.ok": "Confirmer",
   "common.cancel": "Annuler",
 
   "git.sync": "Synchroniser avec Git",
@@ -93,7 +94,7 @@ export const fr: Record<MessageKey, string> = {
   "detail.parents": "Parents",
   "detail.partners": "Partenaires",
   "detail.children": "Enfants",
-  "detail.siblings": "Fratrie",
+  "detail.siblings": "Fratrie / sororité",
   "detail.halfSibling": "demi-frère ou demi-sœur",
   "detail.close": "Fermer",
   "detail.showTree": "Afficher l’arbre depuis ici",
@@ -216,7 +217,7 @@ export const fr: Record<MessageKey, string> = {
   "tree.descendants": "Descendants",
   "tree.hourglass": "Sablier (les deux)",
   "tree.generations": "Générations",
-  "tree.siblings": "Afficher la fratrie",
+  "tree.siblings": "Afficher la fratrie / sororité",
   "tree.legend.confirmed": "biologique, confirmé",
   "tree.legend.other": "présumé, adoptif, beau-parent, famille d’accueil ou tuteur",
 

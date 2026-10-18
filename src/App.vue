@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import AppIcon from "./components/AppIcon.vue";
+import ConfirmDialog from "./components/ConfirmDialog.vue";
 import LanguageSwitch from "./components/LanguageSwitch.vue";
 import ThemeSwitch from "./components/ThemeSwitch.vue";
 import UpdateBanner from "./components/UpdateBanner.vue";
@@ -60,6 +61,7 @@ onMounted(async () => {
       </div>
     </header>
     <UpdateBanner />
+    <ConfirmDialog />
     <div class="min-h-0 flex-1">
       <PeopleView v-if="family.filePath" />
       <WelcomeView v-else />

@@ -1,0 +1,2 @@
+- [x] Wider container and two-column people tab
+- [x] e2e wide/narrow
