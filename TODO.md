@@ -140,3 +140,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `person-timeline`: the person card has a **Timeline** (birth, dated names, partnerships, children's births, fixed-period parent links, user events, death; date order, undated last) and **Add event** (marriage, divorce, baptism, residence, occupation, education, military, emigration, immigration, other; partial date, place, description, other people involved). User events are editable/deletable; deleting a person updates events. Stored as optional `events` in the file. 261 unit, ~150 e2e. The small family tree in the card is the next change.
 
+- **2026-10-18 (cont.)** — Implemented change `person-mini-tree`: the card shows a small tree of the immediate family (parents above, partners beside, children below; dashed + noted for non-confirmed natures; boxes open cards; hidden when empty). Pure layout in `miniTree.ts`. 269 unit, 154 e2e.
+

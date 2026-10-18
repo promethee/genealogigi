@@ -8,6 +8,7 @@ import type { PersonId } from "../data/types.ts";
 import { t, type MessageKey } from "../i18n/index.ts";
 import { useFamilyStore } from "../store/index.ts";
 import AppIcon from "./AppIcon.vue";
+import FamilyMiniTree from "./FamilyMiniTree.vue";
 import PersonTimeline from "./PersonTimeline.vue";
 
 const props = defineProps<{
@@ -188,6 +189,7 @@ async function remove(): Promise<void> {
       </div>
 
       <div v-if="relatives" class="flex flex-col gap-4" data-testid="detail-relatives">
+        <FamilyMiniTree :person-id="personId" @select="emit('select', $event)" />
         <div v-if="relatives.parents.length" data-testid="detail-parents">
           <h3 class="mb-1.5 text-xs font-semibold tracking-wide text-slate-400 uppercase">
             {{ t("detail.parents") }}

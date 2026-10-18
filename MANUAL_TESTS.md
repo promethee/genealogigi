@@ -330,3 +330,15 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 9   | Look at the birth, name and child entries                                             | No Edit/Delete on them (they come from the person and relationships).                   |
 | 10  | Delete Paul (card, Delete)                                                            | The marriage stays on Marie's timeline without Paul.                                    |
 | 11  | Quit, relaunch, reopen the card                                                       | Events are still there; open the JSON: an `events` list with `personIds`.               |
+
+## Small family tree on the card
+
+| #   | Action                                                           | Expected                                                                                                          |
+| --- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 1   | Open the card of someone with two parents, a partner and a child | **Immediate family**: parents above (side by side), the person in green with the partner beside, the child below. |
+| 2   | Make the child link adoptive                                     | A dashed line to the child and the word "adoptive" in the box.                                                    |
+| 3   | Click the child's box                                            | The child's card opens; the small tree is redrawn around them.                                                    |
+| 4   | Open the card of someone with no parent, partner or child        | No small tree.                                                                                                    |
+| 5   | Open the card of someone with only children                      | No row above; children below.                                                                                     |
+| 6   | Many children                                                    | The little tree scrolls sideways inside its frame.                                                                |
+| 7   | Open a card from the Tree tab                                    | The small tree is there too.                                                                                      |

@@ -86,6 +86,7 @@ export const en = {
   "detail.bornIn": "born in {place}",
   "detail.diedIn": "died in {place}",
   "detail.nothingKnown": "No birth or life details recorded.",
+  "detail.family": "Immediate family",
   "detail.parents": "Parents",
   "detail.partners": "Partners",
   "detail.children": "Children",

@@ -1,0 +1,147 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import { miniTreeOf } from "../data/miniTree.ts";
+import { displayNameParts } from "../data/people.ts";
+import { natureLabel } from "../data/relationships.ts";
+import { relativesOf } from "../data/relatives.ts";
+import type { PersonId } from "../data/types.ts";
+import { truncateName } from "../data/pedigree.ts";
+import { t } from "../i18n/index.ts";
+import { useFamilyStore } from "../store/index.ts";
+
+const props = defineProps<{ personId: PersonId }>();
+const emit = defineEmits<{ select: [id: PersonId] }>();
+
+const BOX_W = 132;
+const BOX_H = 38;
+const GAP_X = 16;
+const ROW_H = 68;
+const PAD = 8;
+
+const family = useFamilyStore();
+
+const tree = computed(() =>
+  family.data ? miniTreeOf(props.personId, relativesOf(family.data, props.personId)) : null,
+);
+
+const nameOf = (id: PersonId): string => {
+  const person = family.data?.people.find((p) => p.id === id);
+  return person ? displayNameParts(person).name : t("rel.unknownPerson");
+};
+
+const pos = (slot: number, row: number) => ({
+  x: PAD + slot * (BOX_W + GAP_X),
+  y: PAD + row * ROW_H,
+});
+
+const size = computed(() => {
+  const tr = tree.value;
+  if (!tr) return { w: 0, h: 0 };
+  return {
+    w: PAD * 2 + tr.slots * BOX_W + (tr.slots - 1) * GAP_X,
+    h: PAD * 2 + (tr.rows - 1) * ROW_H + BOX_H,
+  };
+});
+
+const boxes = computed(() =>
+  (tree.value?.nodes ?? []).map((n) => ({ ...n, ...pos(n.slot, n.row) })),
+);
+
+const lines = computed(() => {
+  const byKey = new Map(boxes.value.map((b) => [b.key, b]));
+  return (tree.value?.edges ?? []).flatMap((e) => {
+    const a = byKey.get(e.fromKey);
+    const b = byKey.get(e.toKey);
+    if (!a || !b) return [];
+    if (e.kind === "partner") {
+      const y = a.y + BOX_H / 2;
+      return [
+        { key: `${e.fromKey}>${e.toKey}`, d: `M ${a.x + BOX_W} ${y} H ${b.x}`, dashed: e.dashed },
+      ];
+    }
+    const down = b.y > a.y;
+    const x1 = a.x + BOX_W / 2;
+    const y1 = down ? a.y + BOX_H : a.y;
+    const x2 = b.x + BOX_W / 2;
+    const y2 = down ? b.y : b.y + BOX_H;
+    const mid = (y1 + y2) / 2;
+    return [
+      {
+        key: `${e.fromKey}>${e.toKey}`,
+        d: `M ${x1} ${y1} V ${mid} H ${x2} V ${y2}`,
+        dashed: e.dashed,
+      },
+    ];
+  });
+});
+</script>
+
+<template>
+  <div v-if="tree" data-testid="mini-tree">
+    <h3 class="mb-1.5 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+      {{ t("detail.family") }}
+    </h3>
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-slate-50/70 py-1">
+      <svg
+        class="mx-auto block"
+        :width="size.w"
+        :height="size.h"
+        :viewBox="`0 0 ${size.w} ${size.h}`"
+        role="img"
+        :aria-label="t('detail.family')"
+      >
+        <path
+          v-for="line in lines"
+          :key="line.key"
+          data-testid="mini-edge"
+          :data-dashed="line.dashed"
+          :d="line.d"
+          fill="none"
+          stroke="#94a3b8"
+          stroke-width="1.5"
+          :stroke-dasharray="line.dashed ? '4 3' : undefined"
+        />
+        <g
+          v-for="box in boxes"
+          :key="box.key"
+          data-testid="mini-node"
+          :data-role="box.role"
+          :class="box.role === 'self' ? '' : 'cursor-pointer'"
+          :transform="`translate(${box.x} ${box.y})`"
+          @click="box.role !== 'self' && emit('select', box.personId)"
+        >
+          <title>{{ nameOf(box.personId) }}</title>
+          <rect
+            :width="BOX_W"
+            :height="BOX_H"
+            rx="8"
+            :fill="box.role === 'self' ? '#ecfdf5' : '#ffffff'"
+            :stroke="box.role === 'self' ? '#059669' : '#cbd5e1'"
+            :stroke-width="box.role === 'self' ? 1.5 : 1"
+          />
+          <text
+            :x="BOX_W / 2"
+            :y="box.nature ? 16 : BOX_H / 2 + 4"
+            text-anchor="middle"
+            font-size="12"
+            font-weight="500"
+            fill="#0f172a"
+          >
+            {{ truncateName(nameOf(box.personId)) }}
+          </text>
+          <text
+            v-if="box.nature"
+            data-testid="mini-nature"
+            :x="BOX_W / 2"
+            y="30"
+            text-anchor="middle"
+            font-size="9"
+            fill="#64748b"
+          >
+            {{ natureLabel(box.nature) }}
+          </text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</template>

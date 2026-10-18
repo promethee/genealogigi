@@ -88,6 +88,7 @@ export const fr: Record<MessageKey, string> = {
   "detail.bornIn": "né(e) à {place}",
   "detail.diedIn": "décédé(e) à {place}",
   "detail.nothingKnown": "Aucun détail de naissance ou de vie enregistré.",
+  "detail.family": "Famille proche",
   "detail.parents": "Parents",
   "detail.partners": "Partenaires",
   "detail.children": "Enfants",
