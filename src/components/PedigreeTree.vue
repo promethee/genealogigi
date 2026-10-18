@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { t, tn } from "../i18n/index.ts";
+import { monthName, t, tn } from "../i18n/index.ts";
+import {
+  activeFilterCount,
+  filterPlaces,
+  matchesFilters,
+  NO_FILTERS,
+  type TreeFilters,
+} from "../data/treeFilters.ts";
 import { focusStats } from "../data/focusStats.ts";
 import {
   ALL_GENERATIONS,
@@ -52,6 +59,25 @@ const direction = ref<PedigreeDirection>("ancestors");
 const showSiblings = ref(false);
 
 const people = computed(() => family.data?.people ?? []);
+
+const filters = ref<TreeFilters>({ ...NO_FILTERS });
+const filterCount = computed(() => activeFilterCount(filters.value));
+const places = computed(() => filterPlaces(people.value));
+const lastNames = computed(() =>
+  lastNameSuggestions(people.value).sort((a, b) => a.localeCompare(b)),
+);
+const matching = computed(
+  () => new Set(people.value.filter((p) => matchesFilters(p, filters.value)).map((p) => p.id)),
+);
+/** True when a filter is on and this person does not satisfy all of them. */
+const isFaded = (id: PersonId): boolean => filterCount.value > 0 && !matching.value.has(id);
+const personOfKey = computed(
+  () => new Map((pedigree.value?.nodes ?? []).map((n) => [n.key, n.personId])),
+);
+function resetFilters(): void {
+  filters.value = { ...NO_FILTERS };
+}
+const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const generationOptions = Array.from(
   { length: MAX_GENERATIONS - MIN_GENERATIONS + 1 },
   (_, i) => MIN_GENERATIONS + i,
@@ -161,6 +187,9 @@ const edgePaths = computed(() =>
         key: `${edge.fromKey}>${edge.toKey}`,
         d: `M ${x1} ${y1} V ${mid} H ${x2} V ${y2}`,
         dashed: edge.nature !== "biological-confirmed",
+        faded:
+          isFaded(personOfKey.value.get(edge.fromKey) as PersonId) ||
+          isFaded(personOfKey.value.get(edge.toKey) as PersonId),
       },
     ];
   }),
@@ -262,6 +291,76 @@ function fullName(id: PersonId): string {
         </p>
       </div>
 
+      <div class="mb-3 rounded-lg border border-slate-200 px-3 py-2" data-testid="filters">
+        <div class="mb-2 flex flex-wrap items-center gap-3 text-sm">
+          <span class="font-medium text-slate-800">{{ t("filter.title") }}</span>
+          <span v-if="filterCount" data-testid="filter-count" class="chip">
+            {{ tn("filter.matches", matching.size) }}
+          </span>
+          <button
+            v-if="filterCount"
+            data-testid="filter-reset"
+            class="btn btn-secondary btn-sm"
+            @click="resetFilters()"
+          >
+            {{ t("filter.reset") }}
+          </button>
+        </div>
+        <div class="flex flex-wrap items-end gap-3">
+          <label class="label">
+            {{ t("filter.status") }}
+            <select v-model="filters.status" data-testid="filter-status" class="input">
+              <option value="any">{{ t("filter.any") }}</option>
+              <option value="living">{{ t("filter.living") }}</option>
+              <option value="deceased">{{ t("filter.deceased") }}</option>
+            </select>
+          </label>
+          <label class="label">
+            {{ t("filter.birthPlace") }}
+            <select v-model="filters.birthPlace" data-testid="filter-birth-place" class="input">
+              <option value="">{{ t("filter.any") }}</option>
+              <option v-for="p in places.birth" :key="p" :value="p">{{ p }}</option>
+            </select>
+          </label>
+          <label class="label">
+            {{ t("filter.deathPlace") }}
+            <select v-model="filters.deathPlace" data-testid="filter-death-place" class="input">
+              <option value="">{{ t("filter.any") }}</option>
+              <option v-for="p in places.death" :key="p" :value="p">{{ p }}</option>
+            </select>
+          </label>
+          <label class="label">
+            {{ t("filter.birthMonth") }}
+            <select
+              v-model.number="filters.birthMonth"
+              data-testid="filter-birth-month"
+              class="input"
+            >
+              <option :value="0">{{ t("filter.any") }}</option>
+              <option v-for="m in MONTHS" :key="m" :value="m">{{ monthName(m) }}</option>
+            </select>
+          </label>
+          <label class="label">
+            {{ t("filter.deathMonth") }}
+            <select
+              v-model.number="filters.deathMonth"
+              data-testid="filter-death-month"
+              class="input"
+            >
+              <option :value="0">{{ t("filter.any") }}</option>
+              <option v-for="m in MONTHS" :key="m" :value="m">{{ monthName(m) }}</option>
+            </select>
+          </label>
+          <label class="label">
+            {{ t("filter.lastName") }}
+            <select v-model="filters.lastName" data-testid="filter-last-name" class="input">
+              <option value="">{{ t("filter.any") }}</option>
+              <option v-for="n in lastNames" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
       <div
         class="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600"
         data-testid="focus-stats"
@@ -312,6 +411,7 @@ function fullName(id: PersonId): string {
             :key="edge.key"
             data-testid="tree-edge"
             :data-dashed="edge.dashed"
+            :opacity="edge.faded ? 0.25 : undefined"
             :d="edge.d"
             fill="none"
             stroke="var(--tree-edge)"
@@ -323,6 +423,8 @@ function fullName(id: PersonId): string {
             v-for="node in pedigree.nodes"
             :key="node.key"
             data-testid="tree-node"
+            :data-faded="isFaded(node.personId) ? true : undefined"
+            :opacity="isFaded(node.personId) ? 0.3 : undefined"
             :data-highlight="props.highlightIds?.has(node.personId) ? true : undefined"
             :data-root="node.generation === 0 && !node.sibling"
             class="cursor-pointer"

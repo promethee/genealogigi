@@ -423,3 +423,13 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 2   | Press Enter, or click a result                           | The person's card opens.                                                                    |
 | 3   | Tree tab: type a name                                    | Matching boxes get an amber outline. Clicking a result centres the tree and opens the card. |
 | 4   | Press Escape in the box                                  | The search clears; everyone is back.                                                        |
+
+## Tree filters
+
+| #   | Action                                                    | Expected                                                                                  |
+| --- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Tree tab: choose Life status = Living                     | Deceased and unknown-status boxes (and their links) fade; the count shows how many match. |
+| 2   | Add Born in = a town, then Born in the month of = a month | Only people matching all of them stay normal.                                             |
+| 3   | Click a faded person                                      | Their card opens as usual.                                                                |
+| 4   | Click Reset filters                                       | Everyone is back to normal; the count and button disappear.                               |
+| 5   | Use search and filters together                           | Matches get the amber outline, even when faded.                                           |

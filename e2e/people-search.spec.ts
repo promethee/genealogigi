@@ -90,3 +90,19 @@ test("the search is in French too", async ({ page }) => {
   await page.getByTestId("search").fill("zzz");
   await expect(page.getByTestId("search-none")).toHaveText("Aucune personne trouvée.");
 });
+
+test("the search box sits on the same line as the People/Tree switch", async ({ page }) => {
+  await build(page);
+  const tab = (await page.getByTestId("tab-list").boundingBox())!;
+  const box = (await page.getByTestId("search").boundingBox())!;
+  expect(Math.abs(tab.y + tab.height / 2 - (box.y + box.height / 2))).toBeLessThan(20);
+  expect(box.x).toBeGreaterThan(tab.x + tab.width);
+});
+
+test("the people list has a title with an icon, like the relationships", async ({ page }) => {
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  const section = page.getByTestId("people-section");
+  await expect(section.locator("h2")).toHaveText("People");
+  await expect(section.locator("h2 svg")).toBeVisible();
+});

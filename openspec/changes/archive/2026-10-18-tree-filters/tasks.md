@@ -1,0 +1,3 @@
+- [x] treeFilters module + tests
+- [x] Filter bar, fading, count, reset
+- [x] i18n en/fr, e2e

@@ -87,7 +87,7 @@ test("a person with no relatives says so, and French is used", async ({ page }) 
   await expect(page.getByTestId("focus-stats")).toContainText("No known relatives yet.");
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("focus-stats")).toContainText("Aucun proche connu");
-  await expect(page.getByText("Personne ciblée")).toBeVisible();
+  await expect(page.getByText("Personne centrale")).toBeVisible();
 });
 
 test("the Generations choice can still limit the chart", async ({ page }) => {

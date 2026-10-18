@@ -142,71 +142,72 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         </ul>
       </header>
 
-      <div class="relative max-w-md" data-testid="search-box">
-        <input
-          v-model="search"
-          type="search"
-          data-testid="search"
-          class="input w-full"
-          :placeholder="t('search.placeholder')"
-          :aria-label="t('search.label')"
-          @keydown.enter.prevent="matches[0] && pick(matches[0].id)"
-          @keydown.esc="search = ''"
-        />
-        <ul
-          v-if="search.trim() && matches.length"
-          data-testid="search-results"
-          class="card absolute z-20 mt-1 max-h-72 w-full overflow-auto py-1 text-sm"
-        >
-          <li v-for="p in matches.slice(0, RESULTS_SHOWN)" :key="p.id">
-            <button
-              data-testid="search-result"
-              class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-slate-100"
-              @click="pick(p.id)"
-            >
-              {{ displayName(p) }}
-              <span class="text-xs text-slate-500">{{ lifeSummary(p) }}</span>
-            </button>
-          </li>
-          <li v-if="matches.length > RESULTS_SHOWN" class="px-3 py-1 text-xs text-slate-500">
-            {{ tn("search.more", matches.length - RESULTS_SHOWN) }}
-          </li>
-        </ul>
-        <p
-          v-else-if="search.trim()"
-          data-testid="search-none"
-          class="card absolute z-20 mt-1 w-full px-3 py-2 text-sm text-slate-500"
-        >
-          {{ t("search.none") }}
-        </p>
+      <div class="flex flex-wrap items-center gap-3">
+        <nav class="inline-flex rounded-xl bg-slate-200/70 p-1 text-sm font-medium">
+          <button
+            data-testid="tab-list"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'list'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'list'"
+          >
+            {{ t("tab.people") }}
+          </button>
+          <button
+            data-testid="tab-tree"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'tree'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'tree'"
+          >
+            {{ t("tab.tree") }}
+          </button>
+        </nav>
+        <div class="relative min-w-56 max-w-md flex-1" data-testid="search-box">
+          <input
+            v-model="search"
+            type="search"
+            data-testid="search"
+            class="input w-full"
+            :placeholder="t('search.placeholder')"
+            :aria-label="t('search.label')"
+            @keydown.enter.prevent="matches[0] && pick(matches[0].id)"
+            @keydown.esc="search = ''"
+          />
+          <ul
+            v-if="search.trim() && matches.length"
+            data-testid="search-results"
+            class="card absolute z-20 mt-1 max-h-72 w-full overflow-auto py-1 text-sm"
+          >
+            <li v-for="p in matches.slice(0, RESULTS_SHOWN)" :key="p.id">
+              <button
+                data-testid="search-result"
+                class="block w-full cursor-pointer px-3 py-1.5 text-left hover:bg-slate-100"
+                @click="pick(p.id)"
+              >
+                {{ displayName(p) }}
+                <span class="text-xs text-slate-500">{{ lifeSummary(p) }}</span>
+              </button>
+            </li>
+            <li v-if="matches.length > RESULTS_SHOWN" class="px-3 py-1 text-xs text-slate-500">
+              {{ tn("search.more", matches.length - RESULTS_SHOWN) }}
+            </li>
+          </ul>
+          <p
+            v-else-if="search.trim()"
+            data-testid="search-none"
+            class="card absolute z-20 mt-1 w-full px-3 py-2 text-sm text-slate-500"
+          >
+            {{ t("search.none") }}
+          </p>
+        </div>
       </div>
-
-      <nav class="inline-flex self-start rounded-xl bg-slate-200/70 p-1 text-sm font-medium">
-        <button
-          data-testid="tab-list"
-          class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-          :class="
-            tab === 'list'
-              ? 'bg-surface text-slate-900 shadow-sm'
-              : 'text-slate-500 hover:text-slate-800'
-          "
-          @click="tab = 'list'"
-        >
-          {{ t("tab.people") }}
-        </button>
-        <button
-          data-testid="tab-tree"
-          class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-          :class="
-            tab === 'tree'
-              ? 'bg-surface text-slate-900 shadow-sm'
-              : 'text-slate-500 hover:text-slate-800'
-          "
-          @click="tab = 'tree'"
-        >
-          {{ t("tab.tree") }}
-        </button>
-      </nav>
 
       <div v-if="tab === 'tree'" class="card p-5">
         <PedigreeTree ref="tree" :highlight-ids="search.trim() ? matchIds : undefined" />
@@ -257,51 +258,57 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ family.error }}
           </p>
 
-          <p
-            v-if="!family.data?.people.length"
-            data-testid="empty-state"
-            class="card px-5 py-8 text-center text-sm text-slate-400"
-          >
-            {{ t("person.empty") }}
-          </p>
-          <ul v-else class="card divide-y divide-slate-100 overflow-hidden">
-            <li
-              v-for="person in listedPeople"
-              :key="person.id"
-              data-testid="person-row"
-              class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
+          <section class="card p-5" data-testid="people-section">
+            <h2 class="mb-4 flex items-center gap-2 text-base font-semibold text-slate-900">
+              <AppIcon name="users" class="text-link" />
+              {{ t("tab.people") }}
+            </h2>
+            <p
+              v-if="!family.data?.people.length"
+              data-testid="empty-state"
+              class="py-4 text-sm text-slate-400"
             >
-              <span class="flex min-w-0 items-center gap-3">
-                <PersonAvatar :person="person" size="md" />
-                <span class="min-w-0">
+              {{ t("person.empty") }}
+            </p>
+            <ul v-else class="divide-y divide-slate-100">
+              <li
+                v-for="person in listedPeople"
+                :key="person.id"
+                data-testid="person-row"
+                class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
+              >
+                <span class="flex min-w-0 items-center gap-3">
+                  <PersonAvatar :person="person" size="md" />
+                  <span class="min-w-0">
+                    <button
+                      data-testid="person-name"
+                      class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
+                      :title="t('detail.open', { name: displayName(person) })"
+                      @click="viewing = person.id"
+                    >
+                      {{ displayName(person) }}
+                    </button>
+                    <span
+                      v-if="lifeSummary(person)"
+                      data-testid="person-life"
+                      class="block text-xs text-slate-500"
+                      >{{ lifeSummary(person) }}</span
+                    >
+                  </span>
+                </span>
+                <span class="flex shrink-0 gap-2">
                   <button
-                    data-testid="person-name"
-                    class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
-                    :title="t('detail.open', { name: displayName(person) })"
+                    data-testid="view-person"
+                    class="btn btn-secondary btn-sm"
                     @click="viewing = person.id"
                   >
-                    {{ displayName(person) }}
+                    <AppIcon name="eye" />
+                    {{ t("common.view") }}
                   </button>
-                  <span
-                    v-if="lifeSummary(person)"
-                    data-testid="person-life"
-                    class="block text-xs text-slate-500"
-                    >{{ lifeSummary(person) }}</span
-                  >
                 </span>
-              </span>
-              <span class="flex shrink-0 gap-2">
-                <button
-                  data-testid="view-person"
-                  class="btn btn-secondary btn-sm"
-                  @click="viewing = person.id"
-                >
-                  <AppIcon name="eye" />
-                  {{ t("common.view") }}
-                </button>
-              </span>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </section>
         </div>
         <div class="card min-w-0 p-5">
           <RelationshipsSection />

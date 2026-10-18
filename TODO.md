@@ -168,3 +168,7 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (people-search)** — Search box above the tabs (names incl. maiden/married/nickname, birth/death places; accent/case-insensitive; all words must match). List view filters, tree view highlights matches in amber, a result focuses the tree on the person. Landing page rewritten shorter and aimed at non-technical users (no file-format talk). Archived `people-search`.
 
 - **2026-10-18 (landing page v3)** — Page cut to: hero, three benefits (Simple / Free / Yours), "Every person has a story" card section, final call to action. No FAQ, no file-format talk, no name story. Still not public (Pages off).
+
+- **2026-10-18 (tree-filters)** — Tree tab filters (life status, birth/death place, birth/death month, last name), cumulative; non-matching people and their links are faded (opacity), still clickable; match count and Reset. Pure `treeFilters.ts` with tests. Archived `tree-filters`. CI run #54 went red on a Windows page-load timeout in a docs-only commit (not a test failure); failed job re-run once.
+
+- **2026-10-18 (list polish)** — People list is a titled card with the users icon (like Relationships); the search box sits on the same line as the People/Tree switch.
