@@ -42,12 +42,12 @@ Legend: [ ] not started · [~] in progress · [x] done
 
 Do this once the app has enough working, screenshot/demo-worthy features to show (revisit timing after Phase 2's first few features land).
 
-- [ ] Draft site copy — commercial-landing-page tone (hero pitch, key benefits, feature highlights) while clearly and persuasively framing it as free (not "free version of a paid thing" — free as the actual pitch)
-- [ ] Write the "named after my grandma Gigi" story section (personal detail reserved for this site, not the repo description)
-- [ ] Capture polished screenshots/GIFs of the app in use (tree visualization is the priority visual — it's the most demo-able feature)
-- [ ] Build the page (static, consistent with existing portfolio project pages — check fountain-editor's docs/index.html approach for style consistency)
-- [ ] Add download/install instructions (or a direct download link once releases exist)
-- [ ] Link the GitHub Pages site from the repo README and GitHub repo settings ("Website" field)
+- [x] Draft site copy — commercial-landing-page tone (hero pitch, key benefits, feature highlights) while clearly and persuasively framing it as free (not "free version of a paid thing" — free as the actual pitch)
+- [x] Write the "named after my grandma Gigi" story section (two sentences; the author may extend it) (personal detail reserved for this site, not the repo description)
+- [x] Capture polished screenshots (fictional family; no GIFs) of the app in use (tree visualization is the priority visual — it's the most demo-able feature)
+- [x] Build the page (`docs/index.html`; neutral style, fountain-editor alignment not checked) (static, consistent with existing portfolio project pages — check fountain-editor's docs/index.html approach for style consistency)
+- [x] Add download/install instructions (build from source; releases page linked) (or a direct download link once releases exist)
+- [~] Link the GitHub Pages site: README done; still to do in GitHub: Settings → Pages → deploy from `main` `/docs`, then set the repo "Website" field
 
 ## Testing policy
 
@@ -113,4 +113,6 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (cont.)** — Implemented change `tree-default` after asking the user: the Tree tab opens first when the family has relationships; the People tab otherwise. Relationships list stays a list. 3 existing e2e fixed to click the People tab after resume; 2 new e2e. 135 unit, 53 e2e.
 
 - **2026-10-18 (cont.)** — Implemented change `git-sync`: Rust `git.rs` (status, commit+pull --rebase+push, abort on conflict; 7 cargo tests on temporary local repos), `PlatformAPI.git`, store `gitStatus`/`syncGit` queued with saves, header button or reason hint. CI runs `cargo test`. 141 unit, 7 cargo, 57 e2e. Manual steps added (needs a real remote). Not automatic: manual button only.
+
+- **2026-10-18 (cont.)** — Implemented change `portfolio-site`: static `docs/index.html` (free-as-the-pitch hero, feature cards, 3 screenshots of a fictional family, name note, build-from-source steps), screenshots in `docs/screenshots/`, README status and link. Checked at 1280 and 375 px, no horizontal overflow. Left for the user: enable GitHub Pages and set the "Website" field.
 

@@ -5,17 +5,18 @@ visualizing family relationships. Built with Vue + Tauri.
 
 ## Status
 
-Early development. Working today:
+Early development. Website: <https://promethee.github.io/genealogigi/>.
+Working today:
 
 - Create, open and resume a family file (a single JSON file you choose).
 - Add, edit and delete people: several names (nickname, married...) with a primary, birth date, life status and death date (dates may be partial).
 - Save a copy of the open family to another file.
-- Link people as parent-child (biological confirmed or presumed, adoptive) or
-  as partners, with validation against duplicates and cycles.
-- Pedigree chart of a person and their ancestors.
+- Link people as parent-child (biological confirmed or presumed, adoptive, step, foster, guardian with status and dates) or as partners, with validation against duplicates and cycles. Relationships can be edited.
+- Tree charts: pedigree (ancestors), descendants and hourglass; opens on the tree when the family has relationships.
+- Sync the family file through git (commit, pull --rebase, push) with one button.
 
-Not yet: step/foster/guardian parents,
-descendant charts, other export formats. See [TODO.md](./TODO.md).
+Not yet: installers (build from source for now), other export formats.
+See [TODO.md](./TODO.md).
 
 ## Stack
 

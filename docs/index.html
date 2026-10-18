@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Genealogigi — your family tree, free</title>
+    <meta
+      name="description"
+      content="Genealogigi is a free desktop app for recording one family's ancestry and seeing it as a tree. Your data stays in a single JSON file you own."
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #1f2937;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --card: #f9fafb;
+        --accent: #047857;
+        --accent-fg: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111827;
+          --fg: #e5e7eb;
+          --muted: #9ca3af;
+          --line: #374151;
+          --card: #1f2937;
+          --accent: #34d399;
+          --accent-fg: #064e3b;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          17px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      .wrap {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      header.hero {
+        padding: 4rem 0 2rem;
+        text-align: center;
+      }
+      h1 {
+        font-size: clamp(2.2rem, 6vw, 3.4rem);
+        line-height: 1.1;
+        margin: 0 0 1rem;
+      }
+      h2 {
+        font-size: 1.6rem;
+        margin: 3rem 0 1rem;
+      }
+      .lead {
+        font-size: 1.25rem;
+        color: var(--muted);
+        max-width: 40rem;
+        margin: 0 auto 1.5rem;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.7rem 1.4rem;
+        border-radius: 0.5rem;
+        background: var(--accent);
+        color: var(--accent-fg);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .btn.secondary {
+        background: transparent;
+        color: var(--fg);
+        border: 1px solid var(--line);
+        margin-left: 0.5rem;
+      }
+      figure {
+        margin: 2rem 0;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+        display: block;
+      }
+      figcaption {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin-top: 0.5rem;
+      }
+      .grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+        padding: 1rem 1.2rem;
+      }
+      .card h3 {
+        margin: 0 0 0.3rem;
+        font-size: 1.05rem;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.97rem;
+      }
+      pre {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 0.6rem;
+        padding: 1rem;
+        overflow-x: auto;
+        font-size: 0.9rem;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        margin-top: 4rem;
+        padding: 1.5rem 0 3rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <h1>Your family tree.<br />Free, and yours to keep.</h1>
+        <p class="lead">
+          Genealogigi is a desktop app for recording one family's ancestry and seeing it as a tree.
+          No subscription, no account, no upload: it is free because it is meant to be.
+        </p>
+        <a class="btn" href="#get">Get Genealogigi</a>
+        <a class="btn secondary" href="https://github.com/promethee/genealogigi">View the code</a>
+      </header>
+
+      <figure>
+        <img
+          src="screenshots/pedigree.png"
+          alt="A pedigree chart: Léa Dubois on the left with her parents, grandparents and great-grandparents to the right, joined by lines."
+        />
+        <figcaption>
+          The pedigree chart: pick anyone, see their ancestors generation by generation. Dashed
+          lines mark links that are not biological and confirmed.
+        </figcaption>
+      </figure>
+
+      <h2>What you get</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Your data is one file</h3>
+          <p>
+            Everything lives in a single JSON file you choose. Back it up, copy it, keep it in git.
+            Nothing leaves your computer unless you send it.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Honest about what you don't know</h3>
+          <p>
+            Dates can be partial: just a year, or a month and year. Several names per person (birth,
+            married, nickname) with one marked as primary.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Real family relationships</h3>
+          <p>
+            Biological (confirmed or presumed), adoptive, step, foster and guardian parents, with
+            start and end dates. Partners of any kind.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Trees that open first</h3>
+          <p>
+            Ancestors, descendants, or an hourglass of both around one person. Click anyone to
+            re-centre the tree on them.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Sync with git</h3>
+          <p>
+            One button commits, pulls and pushes the family file using your own git and credentials.
+            Conflicts are never silently merged.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Safe by design</h3>
+          <p>
+            Duplicate links and loops (someone being their own ancestor) are refused. Every change
+            is saved at once, and undone if saving fails.
+          </p>
+        </div>
+      </div>
+
+      <figure>
+        <img
+          src="screenshots/hourglass.png"
+          alt="An hourglass chart: Odile Laurent in the middle, her parents on the left and her daughter and grandchildren on the right."
+        />
+        <figcaption>The hourglass: ancestors on the left, descendants on the right.</figcaption>
+      </figure>
+
+      <figure>
+        <img
+          src="screenshots/people.png"
+          alt="The people list with birth and death years, and the form for adding relationships below it."
+        />
+        <figcaption>People and relationships are added with plain forms. No jargon.</figcaption>
+      </figure>
+
+      <h2>The name</h2>
+      <p>
+        Genealogigi is named after my grandmother, Gigi. A family's story is worth keeping in a form
+        that outlasts any one app, so the file is plain JSON and the app is free.
+      </p>
+
+      <h2 id="get">Get it</h2>
+      <p>
+        There is no installer to download yet. Genealogigi is built with Tauri, Vue and TypeScript,
+        and runs on Windows (the main target). To try it today:
+      </p>
+      <pre>
+git clone https://github.com/promethee/genealogigi
+cd genealogigi
+npm install
+npm run tauri:dev     # run it
+npm run tauri:build   # make an installer</pre>
+      <p>
+        You need Node.js 24+ and Rust, see the
+        <a href="https://tauri.app/start/prerequisites/">Tauri prerequisites</a>. Installers will
+        appear on the
+        <a href="https://github.com/promethee/genealogigi/releases">releases page</a> once there are
+        releases.
+      </p>
+
+      <footer>
+        Genealogigi is open source under the MIT license.
+        <a href="https://github.com/promethee/genealogigi">Source on GitHub</a>.
+      </footer>
+    </div>
+  </body>
+</html>
