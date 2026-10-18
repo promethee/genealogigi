@@ -3,254 +3,870 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Genealogigi — your family tree, free</title>
+    <title>Genealogigi — your family tree, free and yours to keep</title>
     <meta
       name="description"
-      content="Genealogigi is a free desktop app for recording one family's ancestry and seeing it as a tree. Your data stays in a single JSON file you own."
+      content="Genealogigi is a free desktop app to build your family tree: portraits, timelines, name changes, step and adoptive parents. No account, no cloud. Your whole family lives in one file you own."
+    />
+    <meta property="og:title" content="Genealogigi — your family tree, free and yours to keep" />
+    <meta
+      property="og:description"
+      content="Build your family tree on your own computer. Free, private, in English and French."
+    />
+    <meta property="og:image" content="screenshots/tree-dark.jpg" />
+    <meta name="theme-color" content="#0b1220" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310b981'/%3E%3Cpath d='M16 26V12M16 18l-6-6M16 15l6-6' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"
     />
     <style>
       :root {
-        --bg: #ffffff;
-        --fg: #1f2937;
-        --muted: #6b7280;
-        --line: #e5e7eb;
-        --card: #f9fafb;
+        --bg: #f7f8fb;
+        --surface: #ffffff;
+        --fg: #0f172a;
+        --muted: #55627a;
+        --line: #e3e7ef;
         --accent: #047857;
-        --accent-fg: #ffffff;
+        --accent-2: #0284c7;
+        --glow: rgba(16, 185, 129, 0.18);
+        --shadow: 0 30px 80px -30px rgba(15, 23, 42, 0.35), 0 8px 24px -12px rgba(15, 23, 42, 0.2);
       }
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #111827;
-          --fg: #e5e7eb;
-          --muted: #9ca3af;
-          --line: #374151;
-          --card: #1f2937;
+          --bg: #070d19;
+          --surface: #0e1627;
+          --fg: #eef2f9;
+          --muted: #98a4bb;
+          --line: #1c2740;
           --accent: #34d399;
-          --accent-fg: #064e3b;
+          --accent-2: #38bdf8;
+          --glow: rgba(52, 211, 153, 0.16);
+          --shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
       }
       * {
         box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
       }
       body {
         margin: 0;
         background: var(--bg);
         color: var(--fg);
         font:
-          17px/1.6 system-ui,
+          17px/1.65 "Inter",
+          system-ui,
           -apple-system,
           "Segoe UI",
           Roboto,
           sans-serif;
-      }
-      .wrap {
-        max-width: 60rem;
-        margin: 0 auto;
-        padding: 0 1rem;
-      }
-      header.hero {
-        padding: 4rem 0 2rem;
-        text-align: center;
-      }
-      h1 {
-        font-size: clamp(2.2rem, 6vw, 3.4rem);
-        line-height: 1.1;
-        margin: 0 0 1rem;
-      }
-      h2 {
-        font-size: 1.6rem;
-        margin: 3rem 0 1rem;
-      }
-      .lead {
-        font-size: 1.25rem;
-        color: var(--muted);
-        max-width: 40rem;
-        margin: 0 auto 1.5rem;
-      }
-      .btn {
-        display: inline-block;
-        padding: 0.7rem 1.4rem;
-        border-radius: 0.5rem;
-        background: var(--accent);
-        color: var(--accent-fg);
-        text-decoration: none;
-        font-weight: 600;
-      }
-      .btn.secondary {
-        background: transparent;
-        color: var(--fg);
-        border: 1px solid var(--line);
-        margin-left: 0.5rem;
-      }
-      figure {
-        margin: 2rem 0;
-      }
-      figure img {
-        width: 100%;
-        height: auto;
-        border: 1px solid var(--line);
-        border-radius: 0.6rem;
-        display: block;
-      }
-      figcaption {
-        color: var(--muted);
-        font-size: 0.95rem;
-        margin-top: 0.5rem;
-      }
-      .grid {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 0.6rem;
-        padding: 1rem 1.2rem;
-      }
-      .card h3 {
-        margin: 0 0 0.3rem;
-        font-size: 1.05rem;
-      }
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 0.97rem;
-      }
-      pre {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 0.6rem;
-        padding: 1rem;
-        overflow-x: auto;
-        font-size: 0.9rem;
-      }
-      footer {
-        border-top: 1px solid var(--line);
-        margin-top: 4rem;
-        padding: 1.5rem 0 3rem;
-        color: var(--muted);
-        font-size: 0.9rem;
+        -webkit-font-smoothing: antialiased;
       }
       a {
+        color: inherit;
+      }
+      .wrap {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+      }
+      nav.top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+      }
+      .logo {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.55rem;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #10b981, #047857);
+        box-shadow: 0 6px 18px -6px #10b981;
+      }
+      .links {
+        display: flex;
+        gap: 1.4rem;
+        align-items: center;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .links a {
+        text-decoration: none;
+      }
+      .links a:hover {
+        color: var(--fg);
+      }
+      @media (max-width: 640px) {
+        .links .hide-sm {
+          display: none;
+        }
+      }
+      .hero {
+        position: relative;
+        text-align: center;
+        padding: 4.5rem 0 1rem;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: -6rem 0 auto;
+        height: 36rem;
+        background:
+          radial-gradient(40rem 22rem at 50% 20%, var(--glow), transparent 70%),
+          radial-gradient(28rem 16rem at 85% 10%, rgba(14, 165, 233, 0.12), transparent 70%);
+        z-index: -1;
+        pointer-events: none;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.3rem 0.85rem;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: 999px;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .pill b {
         color: var(--accent);
+      }
+      h1 {
+        font-size: clamp(2.5rem, 7.2vw, 5rem);
+        line-height: 1.03;
+        letter-spacing: -0.04em;
+        margin: 1.3rem auto 1.2rem;
+        max-width: 16ch;
+      }
+      .grad {
+        background: linear-gradient(100deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .lead {
+        font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+        color: var(--muted);
+        max-width: 40rem;
+        margin: 0 auto 2rem;
+      }
+      .cta {
+        display: flex;
+        gap: 0.8rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.95rem 1.6rem;
+        border-radius: 0.85rem;
+        font-weight: 650;
+        text-decoration: none;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #fff;
+        border-color: transparent;
+        box-shadow: 0 14px 34px -12px #059669;
+      }
+      .btn.primary:hover {
+        box-shadow: 0 20px 40px -12px #059669;
+      }
+      .btn.big {
+        font-size: 1.1rem;
+        padding: 1.1rem 2rem;
+      }
+      .fine {
+        margin-top: 0.9rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+      .frame {
+        margin: 3.5rem auto 0;
+        max-width: 66rem;
+        border-radius: 1.1rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        text-align: left;
+      }
+      .frame .bar {
+        display: flex;
+        gap: 0.4rem;
+        padding: 0.7rem 0.9rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .frame .bar i {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        background: var(--line);
+      }
+      .frame img,
+      .shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .trust {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.6rem 1.8rem;
+        padding: 2.2rem 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .trust span::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 800;
+        margin-right: 0.45rem;
+      }
+      section {
+        padding: 5.5rem 0 0;
+      }
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h2 {
+        font-size: clamp(1.9rem, 4.4vw, 3rem);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        margin: 0.5rem 0 1rem;
+        max-width: 22ch;
+      }
+      .sub {
+        color: var(--muted);
+        max-width: 38rem;
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      .center {
+        text-align: center;
+      }
+      .center h2,
+      .center .sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .split {
+        display: grid;
+        gap: 3rem;
+        align-items: center;
+        grid-template-columns: 1fr 1.15fr;
+      }
+      .split.flip {
+        grid-template-columns: 1.15fr 1fr;
+      }
+      .split.flip .copy {
+        order: 2;
+      }
+      @media (max-width: 860px) {
+        .split,
+        .split.flip {
+          grid-template-columns: 1fr;
+          gap: 1.8rem;
+        }
+        .split.flip .copy {
+          order: 0;
+        }
+      }
+      .shot {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        background: var(--surface);
+      }
+      ul.ticks {
+        list-style: none;
+        padding: 0;
+        margin: 1.4rem 0 0;
+        display: grid;
+        gap: 0.7rem;
+      }
+      ul.ticks li {
+        padding-left: 1.8rem;
+        position: relative;
+        color: var(--muted);
+      }
+      ul.ticks li b {
+        color: var(--fg);
+      }
+      ul.ticks li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55em;
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      }
+      .bento {
+        display: grid;
+        gap: 1rem;
+        margin-top: 3rem;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      @media (max-width: 900px) {
+        .bento {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 560px) {
+        .bento {
+          grid-template-columns: 1fr;
+        }
+      }
+      .tile {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        padding: 1.4rem;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .tile:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+      }
+      .tile .ico {
+        font-size: 1.6rem;
+        line-height: 1;
+      }
+      .tile h3 {
+        margin: 0.8rem 0 0.35rem;
+        font-size: 1.1rem;
+        letter-spacing: -0.01em;
+      }
+      .tile p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.96rem;
+        line-height: 1.55;
+      }
+      pre {
+        margin: 0;
+        padding: 1.3rem 1.4rem;
+        border-radius: 1rem;
+        background: #0b1220;
+        color: #c9d6ee;
+        border: 1px solid #1c2740;
+        box-shadow: var(--shadow);
+        font:
+          0.88rem/1.6 ui-monospace,
+          "Cascadia Code",
+          Consolas,
+          monospace;
+        overflow-x: auto;
+      }
+      pre .k {
+        color: #7dd3fc;
+      }
+      pre .s {
+        color: #86efac;
+      }
+      pre .c {
+        color: #8493ad;
+      }
+      .steps {
+        display: grid;
+        gap: 1rem;
+        margin-top: 3rem;
+        grid-template-columns: repeat(3, 1fr);
+        counter-reset: s;
+      }
+      @media (max-width: 760px) {
+        .steps {
+          grid-template-columns: 1fr;
+        }
+      }
+      .step {
+        counter-increment: s;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        padding: 1.5rem;
+      }
+      .step::before {
+        content: counter(s);
+        display: grid;
+        place-items: center;
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 50%;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(135deg, #059669, #0369a1);
+        margin-bottom: 0.9rem;
+      }
+      .step h3 {
+        margin: 0 0 0.3rem;
+      }
+      .step p {
+        margin: 0;
+        color: var(--muted);
+      }
+      details {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 0.9rem;
+        padding: 1rem 1.3rem;
+        margin-top: 0.7rem;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 650;
+      }
+      details p {
+        color: var(--muted);
+        margin: 0.7rem 0 0;
+      }
+      .faq {
+        max-width: 46rem;
+        margin: 2.5rem auto 0;
+      }
+      .final {
+        text-align: center;
+        margin-top: 6rem;
+        padding: 4.5rem 1.5rem;
+        border-radius: 1.6rem;
+        background:
+          radial-gradient(30rem 14rem at 50% 0%, var(--glow), transparent 70%), var(--surface);
+        border: 1px solid var(--line);
+      }
+      .final h2 {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 18ch;
+      }
+      footer {
+        margin-top: 4rem;
+        padding: 2rem 0 3rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.9rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem 2rem;
+        justify-content: space-between;
+      }
+      footer a {
+        color: var(--accent);
+      }
+      .dark-only {
+        display: none !important;
+      }
+      @media (prefers-color-scheme: dark) {
+        .light-only {
+          display: none !important;
+        }
+        .dark-only {
+          display: block !important;
+        }
+      }
+      a:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid var(--accent-2);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          scroll-behavior: auto !important;
+        }
       }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <header class="hero">
-        <h1>Your family tree.<br />Free, and yours to keep.</h1>
+      <nav class="top" aria-label="Main">
+        <a class="brand" href="#top">
+          <span class="logo" aria-hidden="true">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2.4"
+              stroke-linecap="round"
+            >
+              <path d="M12 21V9M12 15 6 9M12 12l6-6" />
+            </svg>
+          </span>
+          Genealogigi
+        </a>
+        <div class="links">
+          <a class="hide-sm" href="#features">Features</a>
+          <a class="hide-sm" href="#privacy">Privacy</a>
+          <a class="hide-sm" href="#faq">FAQ</a>
+          <a href="https://github.com/promethee/genealogigi">GitHub</a>
+        </div>
+      </nav>
+
+      <header class="hero" id="top">
+        <span class="pill"><b>Free forever</b> · open source · Windows</span>
+        <h1>Your family's story. <span class="grad">In a file you own.</span></h1>
         <p class="lead">
-          Genealogigi is a desktop app for recording one family's ancestry and seeing it as a tree.
-          No subscription, no account, no upload: it is free because it is meant to be.
+          Genealogigi turns what you know about your family into a beautiful, living tree.
+          Portraits, timelines, maiden names, step and adoptive parents. No account. No cloud. No
+          subscription.
         </p>
-        <a class="btn" href="#get">Get Genealogigi</a>
-        <a class="btn secondary" href="https://github.com/promethee/genealogigi">View the code</a>
+        <div class="cta">
+          <a
+            class="btn primary big"
+            href="https://github.com/promethee/genealogigi/releases/latest"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3v12M7 10l5 5 5-5M4 20h16" />
+            </svg>
+            Download for Windows
+          </a>
+          <a class="btn big" href="#features">See what it does</a>
+        </div>
+        <p class="fine">Free · no sign-up · installer on the GitHub Releases page</p>
+
+        <div class="frame">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <img
+            class="light-only"
+            src="screenshots/tree-light.jpg"
+            width="2880"
+            height="2360"
+            alt="Genealogigi showing a family tree from great-grandparents down to grandchildren, centred on one person, with counts of their relatives above the chart."
+          />
+          <img
+            class="dark-only"
+            src="screenshots/tree-dark.jpg"
+            width="2880"
+            height="2360"
+            alt="The same family tree in the dark theme."
+          />
+        </div>
+
+        <div class="trust">
+          <span>100% free</span>
+          <span>Works offline</span>
+          <span>Your data never leaves your computer</span>
+          <span>English &amp; Français</span>
+          <span>Light &amp; dark</span>
+        </div>
       </header>
 
-      <figure>
-        <img
-          src="screenshots/pedigree.png"
-          alt="A pedigree chart: Léa Dubois at the bottom, with her parents, grandparents and great-grandparents on the rows above, joined by lines."
-        />
-        <figcaption>
-          The pedigree chart: pick anyone, see their ancestors generation by generation, oldest at
-          the top. Dashed lines mark links that are not biological and confirmed.
-        </figcaption>
-      </figure>
+      <section id="features">
+        <div class="split">
+          <div class="copy">
+            <div class="eyebrow">See the whole picture</div>
+            <h2>A tree that actually looks like your family.</h2>
+            <p class="sub">
+              Ancestors above, descendants below, anyone in the middle. Pick a person and the tree
+              redraws around them, with the numbers that matter.
+            </p>
+            <ul class="ticks">
+              <li>
+                <b>Focus on anyone.</b> Their parents, grandparents, children, siblings and
+                partners, counted at a glance.
+              </li>
+              <li>
+                <b>Ancestors, descendants or both</b> in one hourglass. Show siblings with one
+                click.
+              </li>
+              <li>
+                <b>Real relationships.</b> Dashed lines mark step, foster, adoptive or presumed
+                links.
+              </li>
+              <li>
+                <b>It fits your screen.</b> The tree scales to the window instead of making you
+                scroll.
+              </li>
+            </ul>
+          </div>
+          <div class="shot">
+            <img
+              class="light-only"
+              src="screenshots/people-light.jpg"
+              width="2880"
+              height="2360"
+              alt="The people list next to the relationships panel."
+              loading="lazy"
+            />
+            <img
+              class="dark-only"
+              src="screenshots/people-dark.jpg"
+              width="2880"
+              height="2360"
+              alt="The people list next to the relationships panel, dark theme."
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
 
-      <h2>What you get</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Your data is one file</h3>
-          <p>
-            Everything lives in a single JSON file you choose. Back it up, copy it, keep it in git.
-            Your family data never leaves your computer unless you send it. The app only asks
-            GitHub, on start, whether a newer version exists.
-          </p>
+      <section>
+        <div class="split flip">
+          <div class="copy">
+            <div class="eyebrow">Every life, in order</div>
+            <h2>Open a person. Read their life.</h2>
+            <p class="sub">
+              Each person has a card with a timeline built for you: birth, name changes, marriages,
+              the children they had, the places they lived.
+            </p>
+            <ul class="ticks">
+              <li>
+                <b>Names that change.</b> Maiden name, married name, nickname, each with its date.
+                The tree shows “Jeanne Laurent (née Martin)” the way families say it.
+              </li>
+              <li><b>Honest dates.</b> Only know the year? Or the month? That is fine.</li>
+              <li>
+                <b>Events with other people.</b> Add a marriage or a move and it appears on everyone
+                involved.
+              </li>
+              <li>
+                <b>Portraits.</b> A round photo for each person, or tidy initials until you find
+                one.
+              </li>
+            </ul>
+          </div>
+          <div class="shot">
+            <img
+              class="light-only"
+              src="screenshots/card-light.jpg"
+              width="1372"
+              height="1536"
+              alt="A person card with names, life details, a small family tree and a timeline."
+              loading="lazy"
+            />
+            <img
+              class="dark-only"
+              src="screenshots/card-dark.jpg"
+              width="1372"
+              height="1536"
+              alt="A person card in the dark theme."
+              loading="lazy"
+            />
+          </div>
         </div>
-        <div class="card">
-          <h3>Honest about what you don't know</h3>
-          <p>
-            Dates can be partial: just a year, or a month and year. Several names per person (birth,
-            married, nickname) with one marked as primary.
-          </p>
+      </section>
+
+      <section>
+        <div class="center">
+          <div class="eyebrow">And there's more</div>
+          <h2>Built for how families really are.</h2>
+          <p class="sub">Not just parents and children on paper: the messy, wonderful rest.</p>
         </div>
-        <div class="card">
-          <h3>Real family relationships</h3>
-          <p>
-            Biological (confirmed or presumed), adoptive, step, foster and guardian parents, with
-            start and end dates. Partners of any kind.
-          </p>
+        <div class="bento">
+          <div class="tile">
+            <div class="ico" aria-hidden="true">👪</div>
+            <h3>Step, foster, adoptive</h3>
+            <p>
+              Biological (confirmed or presumed), adoptive, step, foster and guardian parents, with
+              start and end dates.
+            </p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🛡️</div>
+            <h3>Mistake-proof</h3>
+            <p>
+              No duplicate links, no one their own ancestor. Every delete asks first. Every change
+              is saved at once.
+            </p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🌗</div>
+            <h3>Light &amp; dark</h3>
+            <p>
+              Follows your system, or switch with one click. Even the tree is designed for both.
+            </p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🇫🇷</div>
+            <h3>English &amp; Français</h3>
+            <p>Switch language at any time from the top bar. Plurals and months included.</p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🔁</div>
+            <h3>Backup &amp; share</h3>
+            <p>
+              Export a copy, import one (the current file is backed up and verified first), or sync
+              the file with your own git.
+            </p>
+          </div>
+          <div class="tile">
+            <div class="ico" aria-hidden="true">🔔</div>
+            <h3>Stays up to date</h3>
+            <p>Tells you when a new version is out. Never installs anything behind your back.</p>
+          </div>
         </div>
-        <div class="card">
-          <h3>Trees that open first</h3>
-          <p>
-            Ancestors, descendants, or an hourglass of both around one person. Click anyone to
-            re-centre the tree on them.
-          </p>
+      </section>
+
+      <section id="privacy">
+        <div class="split flip">
+          <div class="copy">
+            <div class="eyebrow">Your family, your file</div>
+            <h2>One file. Plain JSON. Forever readable.</h2>
+            <p class="sub">
+              Your whole family lives in a single <b>.gigi</b> file that you choose and you keep.
+              Open it in any text editor. Back it up like a photo. Hand it to a cousin. No lock-in,
+              no company in the middle, nothing to cancel.
+            </p>
+            <ul class="ticks">
+              <li><b>Private by design.</b> No account, no tracking, no upload.</li>
+              <li><b>Outlives the app.</b> Plain, human-readable JSON.</li>
+              <li>
+                <b>Safe imports.</b> Before anything is replaced, the previous file is saved next to
+                it with the date and a fingerprint.
+              </li>
+            </ul>
+          </div>
+          <pre aria-label="Excerpt of a .gigi file"><span class="c">// laurent.gigi</span>
+{
+  <span class="k">"schemaVersion"</span>: <span class="s">1</span>,
+  <span class="k">"people"</span>: [
+    {
+      <span class="k">"names"</span>: {
+        <span class="k">"lastNames"</span>: [
+          { <span class="k">"value"</span>: <span class="s">"Martin"</span>,  <span class="k">"kind"</span>: <span class="s">"birth"</span> },
+          { <span class="k">"value"</span>: <span class="s">"Laurent"</span>, <span class="k">"kind"</span>: <span class="s">"married"</span> }
+        ]
+      },
+      <span class="k">"born"</span>: { <span class="k">"birthPlace"</span>: <span class="s">"Grenoble"</span> }
+    }
+  ],
+  <span class="k">"relationships"</span>: [ <span class="c">/* … */</span> ]
+}</pre>
         </div>
-        <div class="card">
-          <h3>Sync with git</h3>
-          <p>
-            One button commits, pulls and pushes the family file using your own git and credentials.
-            Conflicts are never silently merged.
-          </p>
+      </section>
+
+      <section>
+        <div class="center">
+          <div class="eyebrow">Get started in minutes</div>
+          <h2>From first name to family tree.</h2>
         </div>
-        <div class="card">
-          <h3>Safe by design</h3>
-          <p>
-            Duplicate links and loops (someone being their own ancestor) are refused. Every change
-            is saved at once, and undone if saving fails.
-          </p>
+        <div class="steps">
+          <div class="step">
+            <h3>Install</h3>
+            <p>Download the Windows installer from the Releases page and run it.</p>
+          </div>
+          <div class="step">
+            <h3>Start a family</h3>
+            <p>
+              Create a file, add yourself, then your parents. Add both parents of a child in one
+              step.
+            </p>
+          </div>
+          <div class="step">
+            <h3>Watch it grow</h3>
+            <p>
+              Add photos, dates and stories whenever you learn something. The tree redraws itself.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq">
+        <div class="center">
+          <div class="eyebrow">Questions</div>
+          <h2>Good to know.</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is it really free?</summary>
+            <p>
+              Yes. Genealogigi is open source under the MIT license. There is no paid tier, no ads
+              and no account.
+            </p>
+          </details>
+          <details>
+            <summary>Where is my data stored?</summary>
+            <p>
+              In one <b>.gigi</b> file in the folder you choose, on your computer. The app only
+              contacts GitHub, once at start, to ask whether a newer version exists.
+            </p>
+          </details>
+          <details>
+            <summary>Which systems does it run on?</summary>
+            <p>
+              Windows is the main target today. The source is open (Tauri, Vue and TypeScript) if
+              you want to build it elsewhere.
+            </p>
+          </details>
+          <details>
+            <summary>Can I import my existing tree?</summary>
+            <p>
+              You can import a Genealogigi file. Other formats such as GEDCOM are not supported yet.
+            </p>
+          </details>
+          <details>
+            <summary>Can several relatives work on one family?</summary>
+            <p>
+              The file is easy to share, and you can sync it with your own git repository. Real-time
+              collaboration is not built.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <div class="final">
+        <div class="eyebrow">Ready?</div>
+        <h2>Give your family the tree it deserves.</h2>
+        <p class="sub" style="margin: 0 auto 2rem">
+          Free, private and yours to keep. It takes a minute to install.
+        </p>
+        <div class="cta">
+          <a class="btn primary big" href="https://github.com/promethee/genealogigi/releases/latest"
+            >Download Genealogigi</a
+          >
+          <a class="btn big" href="https://github.com/promethee/genealogigi">Star on GitHub</a>
         </div>
       </div>
 
-      <figure>
-        <img
-          src="screenshots/hourglass.png"
-          alt="An hourglass chart: Odile Laurent in the middle, her parents above her and her daughter and grandchildren below."
-        />
-        <figcaption>The hourglass: ancestors above, descendants below.</figcaption>
-      </figure>
-
-      <figure>
-        <img
-          src="screenshots/people.png"
-          alt="The people list with birth and death years, and the form for adding relationships below it."
-        />
-        <figcaption>People and relationships are added with plain forms. No jargon.</figcaption>
-      </figure>
-
-      <h2>The name</h2>
-      <p>
-        Genealogigi is named after my grandmother, Gigi. A family's story is worth keeping in a form
-        that outlasts any one app, so the file is plain JSON and the app is free.
-      </p>
-
-      <h2 id="get">Get it</h2>
-      <p>
-        There is no installer to download yet. Genealogigi is built with Tauri, Vue and TypeScript,
-        and runs on Windows (the main target). To try it today:
-      </p>
-      <pre>
-git clone https://github.com/promethee/genealogigi
-cd genealogigi
-npm install
-npm run tauri:dev     # run it
-npm run tauri:build   # make an installer</pre>
-      <p>
-        You need Node.js 24+ and Rust, see the
-        <a href="https://tauri.app/start/prerequisites/">Tauri prerequisites</a>. Installers will
-        appear on the
-        <a href="https://github.com/promethee/genealogigi/releases">releases page</a> once there are
-        releases.
-      </p>
-
       <footer>
-        Genealogigi is open source under the MIT license.
-        <a href="https://github.com/promethee/genealogigi">Source on GitHub</a>.
+        <span>Named after my grandmother, Gigi. Open source under the MIT license.</span>
+        <span>
+          <a href="https://github.com/promethee/genealogigi">Source</a> ·
+          <a href="https://github.com/promethee/genealogigi/releases">Releases</a> ·
+          <a href="https://github.com/promethee/genealogigi/issues">Feedback</a>
+        </span>
       </footer>
     </div>
   </body>
