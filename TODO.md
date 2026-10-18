@@ -109,3 +109,6 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (cont.)** — Implemented change `hourglass-chart`: nodes gain `column`; hourglass layout composes the ancestors and descendants layouts around one root; links drawn in either direction. 135 unit tests, 51 e2e. Manual steps added.
 
 - **2026-10-18 (cont.)** — Removed the fan chart (reverted 2ab97d3) at the user's request: ugly, and not the way relationships should be shown. Pedigree, descendants and hourglass remain.
+
+- **2026-10-18 (cont.)** — Implemented change `tree-default` after asking the user: the Tree tab opens first when the family has relationships; the People tab otherwise. Relationships list stays a list. 3 existing e2e fixed to click the People tab after resume; 2 new e2e. 135 unit, 53 e2e.
+

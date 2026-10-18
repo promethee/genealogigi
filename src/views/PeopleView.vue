@@ -16,7 +16,8 @@ import { useFamilyStore } from "../store/index.ts";
 
 const family = useFamilyStore();
 
-const tab = ref<"list" | "tree">("list");
+// Tree first once there are relationships; chosen once, so adding the first one does not switch tabs.
+const tab = ref<"list" | "tree">(family.data?.relationships.length ? "tree" : "list");
 
 /** "new" = add form open, a PersonId = editing that person, null = form closed. */
 const formTarget = ref<"new" | PersonId | null>(null);

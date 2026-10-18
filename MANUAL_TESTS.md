@@ -155,3 +155,11 @@ Start from an open family with at least one person.
 | 2   | Look at the links                                                   | Lines join the facing sides of the boxes; none cross boxes. |
 | 3   | Click Mum                                                           | Mum becomes root; still hourglass.                          |
 | 4   | Generations 2 on Gran                                               | Kid (3 generations down) is not shown.                      |
+
+## Tree first
+
+| #   | Action                                                     | Expected                                                                                                                    |
+| --- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Resume or open a family that has at least one relationship | The Tree tab is shown first. (Earlier steps that resume a family and then look at the list need a click on the People tab.) |
+| 2   | Create a new family                                        | The People tab is shown.                                                                                                    |
+| 3   | Add the first relationship                                 | You stay on the People tab.                                                                                                 |

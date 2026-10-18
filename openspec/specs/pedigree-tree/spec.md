@@ -187,3 +187,18 @@ left and descendants to the right of the root, with the root appearing once.
 
 - **WHEN** the user clicks a person in the hourglass
 - **THEN** that person becomes the root and the view stays hourglass
+
+### Requirement: Tree first when relationships exist
+
+The app SHALL open on the Tree tab when the loaded family has at least one
+relationship, and on the People tab otherwise.
+
+#### Scenario: Family with relationships
+
+- **WHEN** the user resumes a family file that has a relationship
+- **THEN** the Tree tab is shown first
+
+#### Scenario: Family without relationships
+
+- **WHEN** the user creates a new family or opens one with no relationships
+- **THEN** the People tab is shown first

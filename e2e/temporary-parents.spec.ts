@@ -64,6 +64,7 @@ test("adds an ended step link with a period and shows dates only when relevant",
 
   await page.reload();
   await page.getByTestId("resume").click();
+  await page.getByTestId("tab-list").click(); // a family with relationships opens on the tree
   await expect(page.getByTestId("relationship-text")).toHaveText([
     "Ada is parent of Byron (step, 1990–1995)",
   ]);

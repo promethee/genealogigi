@@ -63,6 +63,7 @@ test("edits a parent link from adoptive to foster and it survives a restart", as
 
   await page.reload();
   await page.getByTestId("resume").click();
+  await page.getByTestId("tab-list").click(); // a family with relationships opens on the tree
   await expect(page.getByTestId("relationship-text")).toHaveText([
     "Ada is parent of Byron (foster, from 2000)",
   ]);
