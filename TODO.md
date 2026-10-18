@@ -176,3 +176,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (tree-defaults)** — Tree opens as Hourglass with siblings on; search suggestions close on Enter/Escape/choice/leaving the box; French "Personne centrale". Archived `tree-defaults`.
 
 - **2026-10-18 (map dropped)** — Person-card map considered and dropped by the owner (online needs network, offline needs a bundled gazetteer). Not planned.
+
+- **2026-10-18 (backlog)** — Family stats dashboard deferred to v2 (size, ages, names, patterns, timeline, upcoming birthdays, to-complete list). Undo/redo, print/PDF and keyboard shortcuts rejected.
