@@ -290,3 +290,7 @@ Decision: `Person.notes?: string`, plain text, 20 000 chars, searchable; no rich
 ## Share as web page (2026-10-18)
 
 Decision: sharing = one self-contained HTML file built from a pre-computed, already-translated model (`buildShareModel`), rendered by a tiny vanilla viewer. Contains everyone (a warning says so). No tree drawing in v1; navigation through relatives. Chosen over a hosted share because the app promises no cloud.
+
+## Git sync parked (2026-10-18)
+
+Decision: the Sync with Git button is hidden for v1 (v2 feature). The store action, `PlatformAPI.git` and the Rust commands stay in place and tested by unit and cargo tests; only the UI and its e2e spec were removed.

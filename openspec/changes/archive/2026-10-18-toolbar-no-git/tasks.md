@@ -1,0 +1,2 @@
+- [x] Toolbar grid
+- [x] Git button removed, docs and tests updated

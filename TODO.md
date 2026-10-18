@@ -188,3 +188,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (ui-polish-3)** — UI/UX pass: card hides "living" and an unknown partner status, mini family tree scales to its column, tree filters collapsed behind a Filters button, name rows wrap as groups. Archived `ui-polish-3`. Real-app (Linux, Xvfb + tauri-driver) test tooling installed in this environment; see the exploration notes below.
 
 - **2026-10-18 (brand-icon)** — One mark everywhere: a tree from one trunk to four branches (`src/brand.ts`, `branding/icon.svg`); app header, welcome screen, web favicon, project page logo + favicon and the native Tauri icons (regenerated with `tauri icon`) all match; a test keeps the page equal to the app. Archived `brand-icon`.
+
+- **2026-10-18 (toolbar, git parked)** — Toolbar is now Add person (left), search (centre), People/Tree switch (right). The Sync with Git button and its hints are removed from the UI and parked for v2 (store, platform and Rust code stay; its e2e spec is removed, unit and cargo tests remain).

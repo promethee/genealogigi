@@ -113,19 +113,6 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ t("header.import") }}
           </button>
           <button
-            v-if="family.gitStatus === 'ready'"
-            data-testid="git-sync"
-            :disabled="family.syncing"
-            class="btn btn-secondary"
-            @click="family.syncGit()"
-          >
-            <AppIcon name="sync" :class="{ 'animate-spin': family.syncing }" />
-            {{ family.syncing ? t("git.syncing") : t("git.sync") }}
-          </button>
-          <p v-else-if="family.gitStatus !== 'unavailable'" data-testid="git-hint" class="chip">
-            {{ t(`git.hint.${family.gitStatus}`) }}
-          </p>
-          <button
             data-testid="close-family"
             class="btn btn-secondary ml-auto"
             @click="family.closeFamily()"
@@ -150,35 +137,23 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         </ul>
       </header>
 
-      <div class="flex flex-wrap items-center gap-3">
-        <nav class="inline-flex rounded-xl bg-slate-200/70 p-1 text-sm font-medium">
+      <div
+        class="grid items-center gap-3 sm:grid-cols-[1fr_minmax(14rem,28rem)_1fr]"
+        data-testid="toolbar"
+      >
+        <div class="justify-self-start" data-testid="toolbar-left">
           <button
-            data-testid="tab-list"
-            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-            :class="
-              tab === 'list'
-                ? 'bg-surface text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            "
-            @click="tab = 'list'"
+            v-if="tab === 'list' && !formTarget"
+            data-testid="add-person"
+            class="btn btn-primary"
+            @click="formTarget = 'new'"
           >
-            {{ t("tab.people") }}
+            <AppIcon name="plus" />
+            {{ t("person.add") }}
           </button>
-          <button
-            data-testid="tab-tree"
-            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-            :class="
-              tab === 'tree'
-                ? 'bg-surface text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            "
-            @click="tab = 'tree'"
-          >
-            {{ t("tab.tree") }}
-          </button>
-        </nav>
+        </div>
         <div
-          class="relative min-w-56 max-w-md flex-1"
+          class="relative w-full min-w-0"
           data-testid="search-box"
           @focusout="
             (e: FocusEvent) => {
@@ -226,15 +201,34 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ t("search.none") }}
           </p>
         </div>
-        <button
-          v-if="tab === 'list' && !formTarget"
-          data-testid="add-person"
-          class="btn btn-primary ml-auto"
-          @click="formTarget = 'new'"
+        <nav
+          class="inline-flex justify-self-end rounded-xl bg-slate-200/70 p-1 text-sm font-medium"
         >
-          <AppIcon name="plus" />
-          {{ t("person.add") }}
-        </button>
+          <button
+            data-testid="tab-list"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'list'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'list'"
+          >
+            {{ t("tab.people") }}
+          </button>
+          <button
+            data-testid="tab-tree"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'tree'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'tree'"
+          >
+            {{ t("tab.tree") }}
+          </button>
+        </nav>
       </div>
 
       <div v-if="tab === 'tree'" class="card p-5">

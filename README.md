@@ -16,7 +16,6 @@ Working today:
 - Person card with a timeline of their life, and events you add (marriage, residence...) that can involve other people.
 - Tree charts: pedigree (ancestors), descendants and hourglass; opens on the tree when the family has relationships.
 - English and French interface, switchable at any time (top right).
-- Sync the family file through git (commit, pull --rebase, push) with one button.
 
 Not yet: installers (build from source for now), other export formats.
 See [TODO.md](./TODO.md).

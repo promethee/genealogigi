@@ -91,12 +91,41 @@ test("the search is in French too", async ({ page }) => {
   await expect(page.getByTestId("search-none")).toHaveText("Aucune personne trouvée.");
 });
 
-test("the search box sits on the same line as the People/Tree switch", async ({ page }) => {
+test("toolbar: Add person on the left, search in the centre, People/Tree switch on the right", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
   await build(page);
+  await page.getByTestId("tab-list").click();
+  const add = (await page.getByTestId("add-person").boundingBox())!;
+  const search = (await page.getByTestId("search").boundingBox())!;
   const tab = (await page.getByTestId("tab-list").boundingBox())!;
-  const box = (await page.getByTestId("search").boundingBox())!;
-  expect(Math.abs(tab.y + tab.height / 2 - (box.y + box.height / 2))).toBeLessThan(20);
-  expect(box.x).toBeGreaterThan(tab.x + tab.width);
+  const middle = (b: { y: number; height: number }) => b.y + b.height / 2;
+  expect(Math.abs(middle(add) - middle(search))).toBeLessThan(20);
+  expect(Math.abs(middle(tab) - middle(search))).toBeLessThan(20);
+  expect(add.x).toBeLessThan(search.x);
+  expect(search.x + search.width).toBeLessThan(tab.x);
+  // The search box is centred in the window.
+  expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30);
+});
+
+test("the Tree tab keeps the search centred and the switch on the right (no Add person)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await build(page);
+  await page.getByTestId("tab-tree").click();
+  await expect(page.getByTestId("add-person")).toHaveCount(0);
+  const search = (await page.getByTestId("search").boundingBox())!;
+  const tab = (await page.getByTestId("tab-tree").boundingBox())!;
+  expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30);
+  expect(tab.x).toBeGreaterThan(search.x + search.width);
+});
+
+test("there is no Sync with Git button (parked for v2)", async ({ page }) => {
+  await build(page);
+  await expect(page.getByTestId("git-sync")).toHaveCount(0);
+  await expect(page.getByTestId("git-hint")).toHaveCount(0);
 });
 
 test("the people list has a title with an icon, like the relationships", async ({ page }) => {
