@@ -24,3 +24,4 @@ jobs:
       - run: npx playwright install chromium
       - run: npm run e2e
       - run: cargo check --manifest-path src-tauri/Cargo.toml
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --lib

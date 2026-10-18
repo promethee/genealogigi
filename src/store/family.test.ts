@@ -14,6 +14,8 @@ interface FakeOptions {
   loadError?: Error;
   confirmResult?: boolean;
   saveError?: Error;
+  gitStatus?: "no-git" | "not-repo" | "no-remote" | "ready";
+  gitSync?: () => Promise<string>;
 }
 
 function fakePlatform(options: FakeOptions = {}) {
@@ -44,6 +46,10 @@ function fakePlatform(options: FakeOptions = {}) {
       },
     },
     confirm: async () => options.confirmResult ?? true,
+    git: {
+      status: async () => options.gitStatus ?? "not-repo",
+      sync: options.gitSync ?? (async () => "Synced"),
+    },
     exit: async () => {},
   };
   return {
@@ -437,5 +443,86 @@ describe("family store: person dates", () => {
       }),
     ).toBe(false);
     expect(store.error).toBe("Death cannot be before birth.");
+  });
+});
+
+describe("family store: git sync", () => {
+  async function opened(options: FakeOptions = {}) {
+    const path = "/g/family.json";
+    const made = makeStore({ ...options, saveResult: path });
+    await made.store.createNew();
+    return { ...made, path };
+  }
+
+  it("reports the git status of the opened file", async () => {
+    expect((await opened({ gitStatus: "ready" })).store.gitStatus).toBe("ready");
+    expect((await opened({ gitStatus: "no-remote" })).store.gitStatus).toBe("no-remote");
+  });
+
+  it("treats a failing status check as unavailable", async () => {
+    const made = makeStore({ saveResult: "/g/f.json" });
+    // Simulates a shell without git support (e.g. the e2e fake).
+    (made.platform as unknown as { git: unknown }).git = undefined;
+    await made.store.createNew();
+    expect(made.store.gitStatus).toBe("unavailable");
+    expect(await made.store.syncGit()).toBe(false);
+  });
+
+  it("syncs, shows the message and reloads the file from disk", async () => {
+    const { store, files, path } = await opened({
+      gitStatus: "ready",
+      gitSync: async () => "Synced with git.",
+    });
+    files.set(path, {
+      schemaVersion: 1,
+      people: [{ id: "11111111-1111-4111-8111-111111111111" } as never],
+      relationships: [],
+    });
+    expect(await store.syncGit()).toBe(true);
+    expect(store.notice).toBe("Synced with git.");
+    expect(store.data?.people).toHaveLength(1);
+    expect(store.syncing).toBe(false);
+  });
+
+  it("keeps the data and shows the error when git fails", async () => {
+    const { store } = await opened({
+      gitStatus: "ready",
+      gitSync: async () => {
+        throw new Error("Could not merge the remote changes.");
+      },
+    });
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    expect(await store.syncGit()).toBe(false);
+    expect(store.error).toMatch(/Could not merge/);
+    expect(store.data?.people).toHaveLength(1);
+    expect(store.syncing).toBe(false);
+  });
+
+  it("does nothing unless git is ready", async () => {
+    const sync = vi.fn(async () => "x");
+    const { store } = await opened({ gitStatus: "no-remote", gitSync: sync });
+    expect(await store.syncGit()).toBe(false);
+    expect(sync).not.toHaveBeenCalled();
+  });
+
+  it("waits for earlier saves before syncing", async () => {
+    const order: string[] = [];
+    const made = makeStore({
+      saveResult: "/g/family.json",
+      gitStatus: "ready",
+      gitSync: async () => {
+        order.push("sync");
+        return "ok";
+      },
+    });
+    await made.store.createNew();
+    made.save.mockImplementation(async () => {
+      await new Promise((r) => setTimeout(r, 20));
+      order.push("save");
+    });
+    const add = made.store.addPerson({ firstName: "Ada", lastName: "" });
+    const sync = made.store.syncGit();
+    await Promise.all([add, sync]);
+    expect(order).toEqual(["save", "sync"]);
   });
 });

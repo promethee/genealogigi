@@ -163,3 +163,18 @@ Start from an open family with at least one person.
 | 1   | Resume or open a family that has at least one relationship | The Tree tab is shown first. (Earlier steps that resume a family and then look at the list need a click on the People tab.) |
 | 2   | Create a new family                                        | The People tab is shown.                                                                                                    |
 | 3   | Add the first relationship                                 | You stay on the People tab.                                                                                                 |
+
+## Git sync
+
+Setup: a folder that is a git repository with a remote (e.g. a private GitHub repo you can push to). Create or open the family file inside it.
+
+| #   | Action                                                             | Expected                                                                                                                              |
+| --- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Add a person, click **Sync with Git**                              | Button shows "Syncing…", then "Synced with git: committed your changes and pushed." The commit "Update family data" is on the remote. |
+| 2   | Click **Sync with Git** again without changes                      | "no local changes to commit"; no new commit.                                                                                          |
+| 3   | On another clone, edit and push the file; sync here                | The new people appear without reopening.                                                                                              |
+| 4   | Edit the same person here and elsewhere, push elsewhere, sync here | Error "resolve it with git". `git status` shows no rebase in progress; your commit is intact.                                         |
+| 5   | Open a family file in a folder without a repository                | Hint "not in a git repository"; no button.                                                                                            |
+| 6   | Open a file in a repository without a remote                       | Hint "no remote"; no button.                                                                                                          |
+| 7   | Rename git temporarily so it is not on PATH, reopen the app        | Hint "git was not found".                                                                                                             |
+| 8   | No console window flashes during sync (Windows)                    | Confirmed.                                                                                                                            |

@@ -17,6 +17,12 @@ import { useFamilyStore } from "../store/index.ts";
 const family = useFamilyStore();
 
 // Tree first once there are relationships; chosen once, so adding the first one does not switch tabs.
+const GIT_HINTS: Record<string, string> = {
+  "no-git": "Git sync unavailable: git was not found.",
+  "not-repo": "Git sync unavailable: this file is not in a git repository.",
+  "no-remote": "Git sync unavailable: this repository has no remote.",
+};
+
 const tab = ref<"list" | "tree">(family.data?.relationships.length ? "tree" : "list");
 
 /** "new" = add form open, a PersonId = editing that person, null = form closed. */
@@ -54,6 +60,22 @@ async function submit(input: PersonFormInput): Promise<void> {
       >
         Save a copy…
       </button>
+      <button
+        v-if="family.gitStatus === 'ready'"
+        data-testid="git-sync"
+        :disabled="family.syncing"
+        class="mt-2 ml-2 rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:text-gray-400"
+        @click="family.syncGit()"
+      >
+        {{ family.syncing ? "Syncing…" : "Sync with Git" }}
+      </button>
+      <p
+        v-else-if="family.gitStatus !== 'unavailable'"
+        data-testid="git-hint"
+        class="mt-2 text-sm text-gray-400"
+      >
+        {{ GIT_HINTS[family.gitStatus] }}
+      </p>
       <p v-if="family.notice" data-testid="notice" class="mt-2 text-sm text-emerald-700">
         {{ family.notice }}
       </p>

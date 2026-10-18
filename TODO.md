@@ -58,7 +58,7 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - [x] Descendant chart (OpenSpec `descendant-chart`, archived 2026-10-18)
 - [x] Hourglass chart (OpenSpec `hourglass-chart`, archived 2026-10-18)
 - [x] Fan chart — dropped 2026-10-18 (judged ugly; not how relationships should be shown). Code in git history, commit 2ab97d3
-- [ ] Git-based sync (GitHub) via JSON export
+- [x] Git-based sync (OpenSpec `git-sync`, archived 2026-10-18): manual button, runs the user's own git
 - [ ] Verify `npm run tauri:dev` HMR in the real window
 - [ ] Frameless/custom window chrome (Tauri supports it; not needed now)
 
@@ -111,4 +111,6 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (cont.)** — Removed the fan chart (reverted 2ab97d3) at the user's request: ugly, and not the way relationships should be shown. Pedigree, descendants and hourglass remain.
 
 - **2026-10-18 (cont.)** — Implemented change `tree-default` after asking the user: the Tree tab opens first when the family has relationships; the People tab otherwise. Relationships list stays a list. 3 existing e2e fixed to click the People tab after resume; 2 new e2e. 135 unit, 53 e2e.
+
+- **2026-10-18 (cont.)** — Implemented change `git-sync`: Rust `git.rs` (status, commit+pull --rebase+push, abort on conflict; 7 cargo tests on temporary local repos), `PlatformAPI.git`, store `gitStatus`/`syncGit` queued with saves, header button or reason hint. CI runs `cargo test`. 141 unit, 7 cargo, 57 e2e. Manual steps added (needs a real remote). Not automatic: manual button only.
 

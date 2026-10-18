@@ -198,3 +198,11 @@ not the way relationships should be presented. Tree charts (pedigree,
 descendants, hourglass) stay. Do not re-add radial layouts without asking.
 The code is in git history (commit 2ab97d3).
 
+## Git sync (2026-10-18)
+
+Decision: sync shells out to the user's own `git` from a Rust command
+(`src-tauri/src/git.rs`), behind `PlatformAPI.git`. Reasons: reuses their
+credentials and ssh keys, no auth code, no new plugin scope, testable with
+temporary local repositories. Cost: git must be installed (the UI says so).
+Manual button only; conflicts abort the rebase and are resolved with git.
+

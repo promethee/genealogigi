@@ -11,7 +11,7 @@ import {
   type PartnersInput,
 } from "../data/relationships.ts";
 import type { FamilyData, PersonId, RelationshipId } from "../data/types.ts";
-import type { PlatformAPI } from "../platform/PlatformAPI.ts";
+import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.json";
 const COPY_FILE_NAME = "family-copy.json";
@@ -46,7 +46,21 @@ export function defineFamilyStore(platform: PlatformAPI) {
     /** Remembered path whose file still exists, or null. */
     const resumePath = ref<string | null>(null);
 
+    /** "unavailable" when the shell cannot tell (the git section is then hidden). */
+    const gitStatus = ref<GitStatus | "unavailable">("unavailable");
+    const syncing = ref(false);
+
     const resumeFileName = computed(() => (resumePath.value ? fileNameOf(resumePath.value) : null));
+
+    async function refreshGitStatus(): Promise<void> {
+      const path = filePath.value;
+      if (!path) return;
+      try {
+        gitStatus.value = await platform.git.status(path);
+      } catch {
+        gitStatus.value = "unavailable";
+      }
+    }
 
     async function enter(path: string, loaded: FamilyData): Promise<void> {
       await platform.settings.setLastFilePath(path);
@@ -54,6 +68,8 @@ export function defineFamilyStore(platform: PlatformAPI) {
       data.value = loaded;
       error.value = null;
       notice.value = null;
+      gitStatus.value = "unavailable";
+      await refreshGitStatus();
     }
 
     /** Failures stay on the welcome screen with a readable message. */
@@ -161,6 +177,32 @@ export function defineFamilyStore(platform: PlatformAPI) {
       return result;
     }
 
+    /** Commits, pulls and pushes through git, then reloads the file it may have changed. */
+    function syncGit(): Promise<boolean> {
+      const run = async (): Promise<boolean> => {
+        const path = filePath.value;
+        if (!path || gitStatus.value !== "ready") return false;
+        notice.value = null;
+        syncing.value = true;
+        try {
+          const message = await platform.git.sync(path);
+          data.value = await platform.data.load(path);
+          error.value = null;
+          notice.value = message;
+          return true;
+        } catch (err) {
+          error.value = describe(err);
+          return false;
+        } finally {
+          syncing.value = false;
+          await refreshGitStatus();
+        }
+      };
+      const result = pendingMutation.then(run);
+      pendingMutation = result;
+      return result;
+    }
+
     const addPersonNamed = (input: PersonFormInput) =>
       mutate((current) => addPerson(current, input));
 
@@ -198,6 +240,10 @@ export function defineFamilyStore(platform: PlatformAPI) {
       notice,
       resumePath,
       resumeFileName,
+      gitStatus,
+      syncing,
+      refreshGitStatus,
+      syncGit,
       init,
       resume,
       openExisting,
