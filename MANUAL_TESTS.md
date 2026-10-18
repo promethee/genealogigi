@@ -3,6 +3,8 @@
 Run with `npm run tauri:dev`. These cover what automated tests cannot: the real
 native dialogs, real files, and the Tauri settings store.
 
+> **Editing a person:** click **View** on the person's row (or their name) to open the card, then **Edit** on the card. **Delete** is only on the card too.
+
 ## Welcome screen
 
 | #   | Action                                                                  | Expected                                                                                            |
@@ -219,18 +221,18 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 
 ## Look and feel, flags, defaults
 
-| #   | Action                                                       | Expected                                                                                                                                |
-| --- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Launch the app                                               | Top bar with the logo and "Genealogigi"; welcome card with tagline and three buttons with icons.                                        |
-| 2   | Look at the language switch (top right)                      | A UK flag + "English" and a French flag + "Français"; the flags are real images, not letters.                                           |
-| 3   | Switch to French                                             | Names stay "English" and "Français"; the rest turns French.                                                                             |
-| 4   | Open a family, look at the people list                       | Avatar circles with initials; **Edit** and **Delete** are bordered buttons with icons; Delete is red; hover highlights them.            |
-| 5   | Tab through the page with the keyboard                       | Every button shows a visible focus ring.                                                                                                |
-| 6   | Click **Add person**                                         | Life status is **Living**.                                                                                                              |
-| 7   | Type birth year 1815                                         | Status becomes **Deceased** by itself and death fields appear. Pick another status by hand, then change the year: it no longer changes. |
-| 8   | Edit a person saved with status Unknown                      | The form shows Unknown.                                                                                                                 |
-| 9   | Add a confirmed biological parent link, then an adoptive one | "Ada is parent of Byron" (no parentheses) and "Ada is parent of Cleo (adoptive)".                                                       |
-| 10  | Tree tab                                                     | Soft dotted background, rounded boxes with a shadow, root in green.                                                                     |
+| #   | Action                                                       | Expected                                                                                                                                                                                   |
+| --- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Launch the app                                               | Top bar with the logo and "Genealogigi"; welcome card with tagline and three buttons with icons.                                                                                           |
+| 2   | Look at the language switch (top right)                      | A UK flag + "English" and a French flag + "Français"; the flags are real images, not letters.                                                                                              |
+| 3   | Switch to French                                             | Names stay "English" and "Français"; the rest turns French.                                                                                                                                |
+| 4   | Open a family, look at the people list                       | Avatar circles with initials; each row has a **View** button (eye icon); on the person card **Edit** and **Delete** are bordered buttons with icons, Delete is red; hover highlights them. |
+| 5   | Tab through the page with the keyboard                       | Every button shows a visible focus ring.                                                                                                                                                   |
+| 6   | Click **Add person**                                         | Life status is **Living**.                                                                                                                                                                 |
+| 7   | Type birth year 1815                                         | Status becomes **Deceased** by itself and death fields appear. Pick another status by hand, then change the year: it no longer changes.                                                    |
+| 8   | Edit a person saved with status Unknown                      | The form shows Unknown.                                                                                                                                                                    |
+| 9   | Add a confirmed biological parent link, then an adoptive one | "Ada is parent of Byron" (no parentheses) and "Ada is parent of Cleo (adoptive)".                                                                                                          |
+| 10  | Tree tab                                                     | Soft dotted background, rounded boxes with a shadow, root in green.                                                                                                                        |
 
 ## Last-name suggestions
 

@@ -28,6 +28,7 @@ export const fr: Record<MessageKey, string> = {
   "tab.tree": "Arbre",
 
   "common.edit": "Modifier",
+  "common.view": "Voir",
   "common.delete": "Supprimer",
   "common.save": "Enregistrer",
   "common.cancel": "Annuler",

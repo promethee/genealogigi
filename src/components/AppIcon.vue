@@ -11,6 +11,7 @@ export type IconName =
   | "users"
   | "link"
   | "check"
+  | "eye"
   | "x";
 
 defineProps<{ name: IconName }>();
@@ -29,6 +30,7 @@ const PATHS: Record<IconName, string> = {
     "M16 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 20v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8",
   link: "M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1",
   check: "M5 12l5 5L20 7",
+  eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
   x: "M6 6l12 12M18 6L6 18",
 };
 </script>

@@ -64,7 +64,8 @@ test("rejects a person with no name", async ({ page }) => {
 test("edits a person's name", async ({ page }) => {
   await createFamily(page);
   await addPerson(page, "Ada", "Byron");
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await page.getByTestId("last-name").fill("Lovelace");
   await page.getByTestId("submit-person").click();
   await expect(page.getByTestId("person-name")).toHaveText(["Ada Lovelace"]);

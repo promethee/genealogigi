@@ -26,6 +26,7 @@ export const en = {
   "tab.tree": "Tree",
 
   "common.edit": "Edit",
+  "common.view": "View",
   "common.delete": "Delete",
   "common.save": "Save",
   "common.cancel": "Cancel",

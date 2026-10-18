@@ -132,7 +132,8 @@ test("a person with several names can be edited without losing any, and survives
   await addNickname(page, "Addie");
   await save(page);
 
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect.poll(() => valuesOf(page, "first-name")).toEqual(["Ada", "Addie"]);
   await expect(page.getByTestId("first-name-kind").nth(1)).toHaveValue("nickname");
   await page.getByTestId("birth-year").fill("1815");
@@ -141,7 +142,8 @@ test("a person with several names can be edited without losing any, and survives
 
   await page.reload();
   await page.getByTestId("resume").click();
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect.poll(() => valuesOf(page, "first-name")).toEqual(["Ada", "Addie"]);
 });
 

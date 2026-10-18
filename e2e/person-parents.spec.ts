@@ -52,7 +52,8 @@ test("no Parents section when nobody exists yet, nor when editing", async ({ pag
   await page.getByTestId("add-person").click();
   await expect(page.getByTestId("new-parents")).toBeVisible();
   await page.getByTestId("cancel-person").click();
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("new-parents")).toHaveCount(0);
 });
 

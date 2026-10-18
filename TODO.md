@@ -134,3 +134,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `person-parents`: the add-person form has an optional Parents section (Parent 1/2 from existing people, permanent natures, optional "also record as partners"); person and links are saved together or not at all (`createPerson.ts`). Hidden when nobody exists and when editing. Step/foster/guardian stay in the relationships form (they need dates). 234 unit, 131 e2e.
 
+- **2026-10-18 (cont.)** — People list rows now have a **View** button (eye icon) that opens the person card, replacing the row Edit button (the name still opens it too); Edit and Delete are on the card. e2e updated accordingly.
+

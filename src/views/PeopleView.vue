@@ -247,12 +247,12 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             </span>
             <span class="flex shrink-0 gap-2">
               <button
-                data-testid="edit-person"
+                data-testid="view-person"
                 class="btn btn-secondary btn-sm"
-                @click="formTarget = person.id"
+                @click="viewing = person.id"
               >
-                <AppIcon name="pencil" />
-                {{ t("common.edit") }}
+                <AppIcon name="eye" />
+                {{ t("common.view") }}
               </button>
             </span>
           </li>

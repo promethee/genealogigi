@@ -86,7 +86,8 @@ test("choosing the birth name as main name removes the née", async ({ page }) =
   await page.getByTestId("add-last-name").click();
   await page.getByTestId("last-name").nth(1).fill("Dubois");
   await page.getByTestId("submit-person").click();
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("last-name-row")).toHaveCount(2); // detailed again
   await page.getByTestId("last-name-primary").first().check();
   await page.getByTestId("submit-person").click();
@@ -122,7 +123,8 @@ test("a person edited with an existing single dated name shows detailed controls
   await page.getByTestId("add-last-name").click();
   await page.getByTestId("last-name").nth(1).fill("Dubois");
   await page.getByTestId("submit-person").click();
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("last-name-kind")).toHaveCount(2);
   await expect(page.getByTestId("last-name-primary")).toHaveCount(2);
 });

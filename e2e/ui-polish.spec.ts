@@ -60,18 +60,23 @@ test("welcome screen: name, tagline and three icon buttons", async ({ page }) =>
   await expect(page.getByTestId("tagline")).toContainText("Votre arbre généalogique");
 });
 
-test("Edit and Delete look like buttons; Delete is only on the person card", async ({ page }) => {
+test("rows have a View button with an eye icon; Edit and Delete are on the person card", async ({
+  page,
+}) => {
   await newFamily(page);
   await page.getByTestId("add-person").click();
   await page.getByTestId("first-name").fill("Ada");
   await page.getByTestId("submit-person").click();
 
-  // The list row offers Edit, but no direct Delete.
-  await expect(page.getByTestId("edit-person")).toBeVisible();
+  // The list row offers View (not Edit, not Delete).
+  await expect(page.getByTestId("view-person")).toBeVisible();
+  await expect(page.getByTestId("view-person")).toContainText("View");
+  await expect(page.getByTestId("edit-person")).toHaveCount(0);
   await expect(page.getByTestId("delete-person")).toHaveCount(0);
 
-  await page.getByTestId("person-name").click();
-  for (const id of ["edit-person", "detail-edit", "detail-delete"]) {
+  await page.getByTestId("view-person").click();
+  await expect(page.getByTestId("person-card")).toBeVisible();
+  for (const id of ["view-person", "detail-edit", "detail-delete"]) {
     const button = page.getByTestId(id);
     await expect(button.locator("svg")).toBeVisible();
     await expect(button).toHaveCSS("border-top-width", "1px");
@@ -80,6 +85,15 @@ test("Edit and Delete look like buttons; Delete is only on the person card", asy
   // Delete is visually distinct (red) from Edit.
   const colorOf = (id: string) => page.getByTestId(id).evaluate((el) => getComputedStyle(el).color);
   expect(await colorOf("detail-delete")).not.toBe(await colorOf("detail-edit"));
+});
+
+test("French: the row button reads Voir", async ({ page }) => {
+  await newFamily(page);
+  await page.getByTestId("add-person").click();
+  await page.getByTestId("first-name").fill("Ada");
+  await page.getByTestId("submit-person").click();
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("view-person")).toContainText("Voir");
 });
 
 test("the people list shows an avatar with initials", async ({ page }) => {
@@ -127,7 +141,8 @@ test("unknown is still selectable and an existing unknown status is shown when e
   await page.getByTestId("life-status").selectOption("unknown");
   await page.getByTestId("submit-person").click();
   await expect(page.getByTestId("person-life")).toHaveCount(0);
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("life-status")).toHaveValue("unknown");
 });
 

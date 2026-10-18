@@ -111,7 +111,8 @@ test("editing shows the saved dates and keeps them after a restart", async ({ pa
   await newFamily(page);
   await addPerson(page, "Ada", { birth: ["1815", "12", "10"], status: "living" });
 
-  await page.getByTestId("edit-person").click();
+  await page.getByTestId("view-person").click();
+  await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("birth-year")).toHaveValue("1815");
   await expect(page.getByTestId("birth-month")).toHaveValue("12");
   await expect(page.getByTestId("birth-day")).toHaveValue("10");
