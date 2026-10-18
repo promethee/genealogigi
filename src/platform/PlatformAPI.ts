@@ -24,11 +24,20 @@ export interface PlatformAPI {
     /** The saved UI language ("en" / "fr"), or null when never chosen. */
     getLanguage(): Promise<string | null>;
     setLanguage(language: string): Promise<void>;
+    /** The newest version whose update banner the user dismissed, or null. */
+    getDismissedUpdate(): Promise<string | null>;
+    setDismissedUpdate(version: string): Promise<void>;
   };
   git: {
     status(filePath: string): Promise<GitStatus>;
     /** Commits the file, pulls (rebase) and pushes. Rejects with a `GitSyncError`. */
     sync(filePath: string): Promise<GitSyncResult>;
   };
+  window: {
+    /** The native window title (the app name and version). */
+    setTitle(title: string): Promise<void>;
+  };
+  /** Opens a link in the system browser. */
+  openExternal(url: string): Promise<void>;
   exit(code?: number): Promise<void>;
 }

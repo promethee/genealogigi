@@ -273,3 +273,17 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 9   | Edit a person from the tree card and Save                                         | The chart and the card show the new name.                                                        |
 | 10  | Add person, click into Birth place                                                | Places already saved are suggested.                                                              |
 | 11  | App logo (top left) and window/taskbar icon                                       | A tree growing upward: root at the bottom, branches above.                                       |
+
+## Version and update check
+
+| #   | Action                                                                                  | Expected                                                                          |
+| --- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1   | Launch the app, look at the window title bar and the taskbar                            | "Genealogigi 0.1.0".                                                              |
+| 2   | Launch with no GitHub release published yet                                             | No banner, no error.                                                              |
+| 3   | Click **Check for updates** (top bar)                                                   | "You are up to date (0.1.0)." for a few seconds.                                  |
+| 4   | Disconnect the network, click **Check for updates**                                     | "Could not check for updates."; the app keeps working.                            |
+| 5   | Publish a GitHub release tagged v0.2.0 (or temporarily lower the app version), relaunch | A banner "Version 0.2.0 is available (you have 0.1.0)" with Download and Dismiss. |
+| 6   | Click **Download**                                                                      | The release page opens in your browser; nothing is installed.                     |
+| 7   | Click **Dismiss**, relaunch                                                             | The banner stays hidden for 0.2.0.                                                |
+| 8   | Click **Check for updates** after dismissing                                            | The banner shows again.                                                           |
+| 9   | Publish v0.3.0, relaunch                                                                | The banner returns for 0.3.0.                                                     |

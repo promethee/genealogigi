@@ -1,6 +1,6 @@
 [package]
 name = "genealogigi"
-version = "0.0.0"
+version = "0.1.0"
 description = "Desktop genealogy app for one family's ancestry data"
 edition = "2021"
 license = "MIT"
@@ -19,3 +19,4 @@ tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-process = "2"
 tauri-plugin-store = "2.5.0"
+tauri-plugin-opener = "2.7.2"

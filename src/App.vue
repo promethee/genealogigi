@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
+import AppIcon from "./components/AppIcon.vue";
 import LanguageSwitch from "./components/LanguageSwitch.vue";
-import { useFamilyStore, useLanguageStore } from "./store/index.ts";
+import UpdateBanner from "./components/UpdateBanner.vue";
+import { t } from "./i18n/index.ts";
+import { useAppStore, useFamilyStore, useLanguageStore } from "./store/index.ts";
 import PeopleView from "./views/PeopleView.vue";
 import WelcomeView from "./views/WelcomeView.vue";
 
 const family = useFamilyStore();
 const language = useLanguageStore();
-onMounted(() => language.init());
+const app = useAppStore();
+onMounted(async () => {
+  await language.init();
+  await app.init();
+});
 </script>
 
 <template>
@@ -35,8 +42,20 @@ onMounted(() => language.init());
         </span>
         <span class="text-sm font-semibold tracking-tight text-slate-800">Genealogigi</span>
       </div>
-      <LanguageSwitch />
+      <div class="flex items-center gap-3">
+        <button
+          data-testid="check-update"
+          class="btn btn-ghost btn-sm"
+          :disabled="app.checking"
+          @click="app.checkNow()"
+        >
+          <AppIcon name="sync" :class="{ 'animate-spin': app.checking }" />
+          {{ app.checking ? t("update.checking") : t("update.check") }}
+        </button>
+        <LanguageSwitch />
+      </div>
     </header>
+    <UpdateBanner />
     <div class="min-h-0 flex-1">
       <PeopleView v-if="family.filePath" />
       <WelcomeView v-else />

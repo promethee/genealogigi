@@ -19,6 +19,18 @@ Working today:
 Not yet: installers (build from source for now), other export formats.
 See [TODO.md](./TODO.md).
 
+## Updates and privacy
+
+The window title shows the version (e.g. "Genealogigi 0.1.0"). On startup the app
+makes one read-only request to the public GitHub releases API to see whether a newer
+release exists, and shows a banner with a download link if so. Nothing is installed
+automatically, and no family data is sent. **Check for updates** in the top bar runs
+the same check on demand. Offline or without releases, nothing is shown.
+
+The version lives in `package.json`; `src-tauri/tauri.conf.json` and
+`src-tauri/Cargo.toml` must carry the same one (a unit test checks it). To release:
+bump all three, tag `vX.Y.Z`, publish a GitHub release with the installer.
+
 ## Stack
 
 Tauri 2 · Vue 3 · Pinia · Tailwind CSS 4 · TypeScript · JSON file storage

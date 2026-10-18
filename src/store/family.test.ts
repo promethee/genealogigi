@@ -46,12 +46,16 @@ function fakePlatform(options: FakeOptions = {}) {
       },
       getLanguage: async () => null,
       setLanguage: async () => {},
+      getDismissedUpdate: async () => null,
+      setDismissedUpdate: async () => {},
     },
     confirm: async () => options.confirmResult ?? true,
     git: {
       status: async () => options.gitStatus ?? "not-repo",
       sync: options.gitSync ?? (async () => "committed"),
     },
+    window: { setTitle: async () => {} },
+    openExternal: async () => {},
     exit: async () => {},
   };
   return {

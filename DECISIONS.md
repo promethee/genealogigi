@@ -223,3 +223,11 @@ older app versions ignore them). Places are suggested from places already saved.
 Relatives (parents, children, partners, siblings) are always derived from the
 stored relationships, never stored.
 
+## Updates (2026-10-18)
+
+Decision: notify, don't install. The app reads the latest GitHub release at startup
+(and on demand) and shows a banner linking to the release page. No signing keys, no
+auto-updater yet. Upgrade path: `tauri-plugin-updater` with a signed `latest.json`
+once installers are published; the banner and store stay. The update request sends no
+family data (README states it). The e2e fake shell never reaches the network.
+

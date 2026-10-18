@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { confirm, open, save } from "@tauri-apps/plugin-dialog";
 import { exists, readTextFile, rename, writeTextFile } from "@tauri-apps/plugin-fs";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { load as loadStore } from "@tauri-apps/plugin-store";
 import { loadFamilyData, saveFamilyData, type FileIO } from "../data/store.ts";
@@ -12,6 +14,7 @@ const DEFAULT_EXTENSIONS = ["json"];
 const SETTINGS_FILE = "settings.json";
 const LAST_FILE_PATH_KEY = "lastFilePath";
 const LANGUAGE_KEY = "language";
+const DISMISSED_UPDATE_KEY = "dismissedUpdate";
 
 // Opened lazily so merely importing this module never touches Tauri.
 const settingsStore = () => loadStore(SETTINGS_FILE, { defaults: {}, autoSave: false });
@@ -66,6 +69,15 @@ export function createPlatformAPI(): PlatformAPI {
         await store.set(LANGUAGE_KEY, language);
         await store.save();
       },
+      getDismissedUpdate: async () => {
+        const store = await settingsStore();
+        return (await store.get<string>(DISMISSED_UPDATE_KEY)) ?? null;
+      },
+      setDismissedUpdate: async (version) => {
+        const store = await settingsStore();
+        await store.set(DISMISSED_UPDATE_KEY, version);
+        await store.save();
+      },
     },
     git: {
       status: (filePath) => invoke<GitStatus>("git_status", { filePath }),
@@ -78,6 +90,8 @@ export function createPlatformAPI(): PlatformAPI {
         }
       },
     },
+    window: { setTitle: (title) => getCurrentWindow().setTitle(title) },
+    openExternal: (url) => openUrl(url),
     exit: (code) => exit(code ?? 0),
   };
 }

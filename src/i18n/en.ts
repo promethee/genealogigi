@@ -2,6 +2,14 @@
 export const en = {
   "lang.label": "Language",
 
+  "update.available": "Version {latest} is available (you have {current}).",
+  "update.download": "Download",
+  "update.dismiss": "Dismiss",
+  "update.check": "Check for updates",
+  "update.checking": "Checking…",
+  "update.current": "You are up to date ({current}).",
+  "update.failed": "Could not check for updates.",
+
   "welcome.resume": "Resume {file}",
   "welcome.resumeLast": "Resume last family",
   "welcome.open": "Open family file…",

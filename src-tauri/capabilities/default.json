@@ -5,6 +5,11 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:allow-set-title",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "https://github.com/promethee/genealogigi/**" }]
+    },
     "dialog:allow-open",
     "dialog:allow-save",
     "dialog:allow-confirm",

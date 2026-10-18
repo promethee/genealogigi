@@ -4,6 +4,14 @@ import type { MessageKey } from "./en.ts";
 export const fr: Record<MessageKey, string> = {
   "lang.label": "Langue",
 
+  "update.available": "La version {latest} est disponible (vous avez la {current}).",
+  "update.download": "Télécharger",
+  "update.dismiss": "Ignorer",
+  "update.check": "Rechercher des mises à jour",
+  "update.checking": "Recherche…",
+  "update.current": "Vous êtes à jour ({current}).",
+  "update.failed": "Impossible de rechercher les mises à jour.",
+
   "welcome.resume": "Reprendre {file}",
   "welcome.resumeLast": "Reprendre la dernière famille",
   "welcome.open": "Ouvrir un fichier famille…",
