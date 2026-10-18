@@ -44,10 +44,12 @@ TODO.md.
 
 For each feature:
 
-0. Spec first with OpenSpec: create a change (`/opsx:propose` or
-   `openspec new change <name>`), write proposal/specs/design/tasks, and wait
-   for the user's approval before writing code. Archive the change when done
-   (`/opsx:archive`).
+0. Spec first with OpenSpec, for every feature: create a change
+   (`openspec new change <name>`), write proposal/specs/design/tasks. Open
+   design forks are settled with the agent's own recommendation, recorded with
+   its reasoning in `design.md` before any code. Then implement automatically
+   and exactly as designed, with no deviation. Archive the
+   change when done (`openspec archive <name>`).
 1. Implement the feature (UI + store + data layer as needed), following the
    change's `tasks.md`.
 2. Write e2e test(s) covering ONLY this feature — do not write e2e tests for

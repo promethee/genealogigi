@@ -57,12 +57,16 @@ export interface PersonFirstName {
   value: string;
   kind: "birth" | "current" | "nickname" | "other";
   date: VariablePrecisionDate;
+  /** At most one per list; with none marked, the first entry is primary. */
+  primary?: boolean;
 }
 
 export interface PersonLastName {
   value: string;
   kind: "birth" | "married" | "current" | "other";
   date: VariablePrecisionDate;
+  /** At most one per list; with none marked, the first entry is primary. */
+  primary?: boolean;
 }
 
 /** A non-empty array — at least one element guaranteed at the type level. */

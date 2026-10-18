@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { MONTH_NAMES } from "../data/dates.ts";
-import type { PersonFormValues } from "../data/people.ts";
+import { FIRST_NAME_KINDS, LAST_NAME_KINDS, type PersonFormValues } from "../data/people.ts";
+import NameEntriesEditor from "./NameEntriesEditor.vue";
 
 const props = defineProps<{ initial: PersonFormValues }>();
 const emit = defineEmits<{ submit: [input: PersonFormValues]; cancel: [] }>();
 
-const form = reactive<PersonFormValues>({
-  ...props.initial,
-  birth: { ...props.initial.birth },
-  death: { ...props.initial.death },
-});
+// The form state is plain JSON, so a JSON round trip is a safe deep copy even when the
+// values are reactive proxies (structuredClone throws on those).
+const clonePlain = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+
+// Deep copy so editing never touches the caller's object.
+const form = reactive<PersonFormValues>(clonePlain(props.initial));
 
 function submit(): void {
-  emit("submit", { ...form, birth: { ...form.birth }, death: { ...form.death } });
+  emit("submit", clonePlain(form));
 }
 
 const inputClass = "rounded border border-gray-300 px-2 py-1";
@@ -21,16 +23,20 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
 
 <template>
   <form class="mb-4 flex flex-col gap-3" @submit.prevent="submit">
-    <div class="flex flex-wrap items-end gap-3">
-      <label class="flex flex-col text-sm">
-        First name
-        <input v-model="form.firstName" data-testid="first-name" :class="inputClass" autofocus />
-      </label>
-      <label class="flex flex-col text-sm">
-        Last name
-        <input v-model="form.lastName" data-testid="last-name" :class="inputClass" />
-      </label>
-    </div>
+    <NameEntriesEditor
+      v-model="form.firstNames"
+      title="First names"
+      noun="first name"
+      :kinds="FIRST_NAME_KINDS"
+      test-prefix="first-name"
+    />
+    <NameEntriesEditor
+      v-model="form.lastNames"
+      title="Last names"
+      noun="last name"
+      :kinds="LAST_NAME_KINDS"
+      test-prefix="last-name"
+    />
 
     <fieldset class="flex flex-wrap items-end gap-3">
       <legend class="mb-1 text-sm text-gray-600">Birth date (any part may be left empty)</legend>

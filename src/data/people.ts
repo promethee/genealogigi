@@ -18,8 +18,11 @@ import {
   type Person,
   type PersonBorn,
   type PersonDeceased,
+  type PersonFirstName,
   type PersonId,
+  type PersonLastName,
   type PersonLiving,
+  type VariablePrecisionDate,
 } from "./types.ts";
 
 export { PersonNotFoundError, UNKNOWN_DATE };
@@ -27,28 +30,53 @@ export { PersonNotFoundError, UNKNOWN_DATE };
 export const UNNAMED_PERSON_LABEL = "Unnamed person";
 
 export type LifeStatusChoice = "unknown" | "living" | "deceased";
+export type FirstNameKind = PersonFirstName["kind"];
+export type LastNameKind = PersonLastName["kind"];
 
-export interface PersonNameInput {
-  firstName: string;
-  lastName: string;
+export const FIRST_NAME_KINDS: readonly FirstNameKind[] = ["birth", "current", "nickname", "other"];
+export const LAST_NAME_KINDS: readonly LastNameKind[] = ["birth", "married", "current", "other"];
+
+/** One editable row of the names form. */
+export interface NameEntryInput<K extends string> {
+  value: string;
+  kind: K;
+  date: PartialDateInput;
+  primary: boolean;
+}
+
+export function blankNameEntry<K extends string>(kind: K, primary = false): NameEntryInput<K> {
+  return { value: "", kind, date: emptyDateInput(), primary };
 }
 
 /**
- * What the person form submits. Birth, status and death are optional so that
- * callers sending only names leave those facets untouched on update.
+ * What the person form submits. Names come as lists (`firstNames`,
+ * `lastNames`) or, as shorthand, as single strings (`firstName`, `lastName`);
+ * lists win when given. Birth, status and death are optional so that callers
+ * sending only names leave those facets untouched on update.
  */
-export interface PersonFormInput extends PersonNameInput {
+export interface PersonFormInput {
+  firstName?: string;
+  lastName?: string;
+  firstNames?: NameEntryInput<FirstNameKind>[];
+  lastNames?: NameEntryInput<LastNameKind>[];
   birth?: PartialDateInput;
   status?: LifeStatusChoice;
   death?: PartialDateInput;
 }
 
-export type PersonFormValues = Required<PersonFormInput>;
+/** A fully-populated form state. */
+export interface PersonFormValues {
+  firstNames: NameEntryInput<FirstNameKind>[];
+  lastNames: NameEntryInput<LastNameKind>[];
+  birth: PartialDateInput;
+  status: LifeStatusChoice;
+  death: PartialDateInput;
+}
 
 export function emptyPersonForm(): PersonFormValues {
   return {
-    firstName: "",
-    lastName: "",
+    firstNames: [blankNameEntry<FirstNameKind>("birth", true)],
+    lastNames: [blankNameEntry<LastNameKind>("birth", true)],
     birth: emptyDateInput(),
     status: "unknown",
     death: emptyDateInput(),
@@ -76,13 +104,62 @@ export class DateOrderError extends InvalidDateError {
   }
 }
 
-function buildNames(id: PersonId, input: PersonNameInput): NamedPerson {
-  const first = input.firstName.trim();
-  const last = input.lastName.trim();
-  const firstNames = first ? [{ value: first, kind: "birth" as const, date: UNKNOWN_DATE }] : [];
-  const lastNames = last ? [{ value: last, kind: "birth" as const, date: UNKNOWN_DATE }] : [];
-  if (firstNames[0]) return { id, firstNames: [firstNames[0]], lastNames };
-  if (lastNames[0]) return { id, lastNames: [lastNames[0]] };
+/** The primary entry: the first marked primary, otherwise the first entry. */
+export function primaryOf<T extends { primary?: boolean }>(
+  entries: T[] | undefined,
+): T | undefined {
+  if (!entries || entries.length === 0) return undefined;
+  return entries.find((entry) => entry.primary) ?? entries[0];
+}
+
+interface StoredName<K extends string> {
+  value: string;
+  kind: K;
+  date: VariablePrecisionDate;
+  primary?: boolean;
+}
+
+/**
+ * Drops blank rows, validates dates, and marks exactly one entry primary: the
+ * chosen row, or the first remaining row if the chosen one was dropped.
+ */
+function buildEntries<K extends string>(rows: NameEntryInput<K>[], label: string): StoredName<K>[] {
+  const kept = rows
+    .map((row) => ({ row, value: row.value.trim() }))
+    .filter((item) => item.value !== "");
+  const chosen = kept.findIndex((item) => item.row.primary);
+  const primaryIndex = chosen === -1 ? 0 : chosen;
+  return kept.map(({ row, value }, index) => ({
+    value,
+    kind: row.kind,
+    date: dateFromInput(row.date, `${label} date`) ?? UNKNOWN_DATE,
+    ...(index === primaryIndex ? { primary: true } : {}),
+  }));
+}
+
+function usesLists(input: PersonFormInput): boolean {
+  return input.firstNames !== undefined || input.lastNames !== undefined;
+}
+
+function rowsFromInput(input: PersonFormInput): {
+  first: NameEntryInput<FirstNameKind>[];
+  last: NameEntryInput<LastNameKind>[];
+} {
+  if (usesLists(input)) return { first: input.firstNames ?? [], last: input.lastNames ?? [] };
+  return {
+    first: [{ ...blankNameEntry<FirstNameKind>("birth", true), value: input.firstName ?? "" }],
+    last: [{ ...blankNameEntry<LastNameKind>("birth", true), value: input.lastName ?? "" }],
+  };
+}
+
+function buildNames(id: PersonId, input: PersonFormInput): NamedPerson {
+  const rows = rowsFromInput(input);
+  const first = buildEntries(rows.first, "First name");
+  const last = buildEntries(rows.last, "Last name");
+  const [firstHead, ...firstRest] = first;
+  if (firstHead) return { id, firstNames: [firstHead, ...firstRest], lastNames: last };
+  const [lastHead, ...lastRest] = last;
+  if (lastHead) return { id, lastNames: [lastHead, ...lastRest] };
   throw new NameRequiredError();
 }
 
@@ -109,18 +186,32 @@ function assertDeathNotBeforeBirth(person: Person): void {
   if (isCertainlyBefore(status.dateOfDeath, person.born.birthDate)) throw new DateOrderError();
 }
 
-/** True when the names fit the simple "one first, one last" form. */
+/** True when the names fit the single-string shorthand ("one first, one last"). */
 export function canEditNames(person: Person): boolean {
   const names = person.names;
   if (!names) return true;
   return (names.firstNames?.length ?? 0) <= 1 && (names.lastNames?.length ?? 0) <= 1;
 }
 
+function rowsFromStored<K extends string>(
+  entries: StoredName<K>[] | undefined,
+  fallbackKind: K,
+): NameEntryInput<K>[] {
+  if (!entries || entries.length === 0) return [blankNameEntry(fallbackKind, true)];
+  const primary = primaryOf(entries);
+  return entries.map((entry) => ({
+    value: entry.value,
+    kind: entry.kind,
+    date: inputFromDate(entry.date),
+    primary: entry === primary,
+  }));
+}
+
 export function inputFromPerson(person: Person): PersonFormValues {
   const status = person.lifeStatus;
   return {
-    firstName: person.names?.firstNames?.[0]?.value ?? "",
-    lastName: person.names?.lastNames?.[0]?.value ?? "",
+    firstNames: rowsFromStored(person.names?.firstNames, "birth"),
+    lastNames: rowsFromStored(person.names?.lastNames, "birth"),
     birth: inputFromDate(person.born?.birthDate),
     status: !status ? "unknown" : status.living ? "living" : "deceased",
     death: inputFromDate(status && !status.living ? status.dateOfDeath : undefined),
@@ -128,8 +219,8 @@ export function inputFromPerson(person: Person): PersonFormValues {
 }
 
 export function displayName(person: Person): string {
-  const first = person.names?.firstNames?.[0]?.value;
-  const last = person.names?.lastNames?.[0]?.value;
+  const first = primaryOf(person.names?.firstNames)?.value;
+  const last = primaryOf(person.names?.lastNames)?.value;
   return [first, last].filter(Boolean).join(" ") || UNNAMED_PERSON_LABEL;
 }
 
@@ -176,7 +267,8 @@ export function addPerson(data: FamilyData, input: PersonFormInput): FamilyData 
 export function updatePerson(data: FamilyData, id: PersonId, input: PersonFormInput): FamilyData {
   const existing = data.people.find((p) => p.id === id);
   if (!existing) throw new PersonNotFoundError(id);
-  if (!canEditNames(existing)) throw new NamesNotEditableError();
+  // The single-string shorthand cannot express several names, so refuse it for those people.
+  if (!usesLists(input) && !canEditNames(existing)) throw new NamesNotEditableError();
 
   const { born: oldBorn, lifeStatus: oldLifeStatus, ...rest } = existing;
   const updated: Person = { ...rest, names: buildNames(id, input) };

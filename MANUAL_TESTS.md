@@ -96,3 +96,18 @@ Start from an open family with at least one person.
 | 7   | Status Deceased with empty death date                                           | Saved. List shows "deceased".                                                                                      |
 | 8   | Open the file in a text editor                                                  | Dates have `raw` plus `yearKnown`/`monthKnown`/`dayKnown` flags. A partial date has `false` for the missing parts. |
 | 9   | Tree tab, root Ada                                                              | The box shows "1815–1852" under the name.                                                                          |
+
+## Several names per person
+
+| #   | Action                                                                                              | Expected                                                                                         |
+| --- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1   | Add person: first name Ada, last name Byron. Click **+ Add first name**, enter Addie, kind Nickname | Two first-name rows.                                                                             |
+| 2   | Click **+ Add last name**, enter King, kind Married, year 1835. Save                                | List shows "Ada Byron".                                                                          |
+| 3   | Edit the person                                                                                     | Both first names and both last names are shown with their kinds. The married name has year 1835. |
+| 4   | Mark Addie as **Primary**, save                                                                     | List and Tree show "Addie Byron".                                                                |
+| 5   | Use the arrow buttons to move Addie above Ada                                                       | Order changes. The first row's up arrow and the last row's down arrow are disabled.              |
+| 6   | Add an empty name row and save                                                                      | Saved without the empty row.                                                                     |
+| 7   | Clear every name and save                                                                           | Error "At least one name is required."                                                           |
+| 8   | Enter an impossible name date (31 April)                                                            | Error naming the name field. Nothing saved.                                                      |
+| 9   | Open the file in a text editor                                                                      | Each name has `kind`, `date`, and exactly one entry per list has `"primary": true`.              |
+| 10  | Edit only the birth date of a person with a nickname, then reopen the file                          | The nickname, its kind and date are unchanged.                                                   |

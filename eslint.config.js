@@ -18,6 +18,8 @@ export default tseslint.config(
   {
     files: ["**/*.vue"],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
+    // vue-tsc already reports undefined names, with correct DOM globals.
+    rules: { "no-undef": "off" },
   },
   { rules: { "@typescript-eslint/no-explicit-any": "error" } },
 );

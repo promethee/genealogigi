@@ -4,7 +4,6 @@ import PedigreeTree from "../components/PedigreeTree.vue";
 import PersonForm from "../components/PersonForm.vue";
 import RelationshipsSection from "../components/RelationshipsSection.vue";
 import {
-  canEditNames,
   displayName,
   inputFromPerson,
   emptyPersonForm,
@@ -124,8 +123,6 @@ async function submit(input: PersonFormInput): Promise<void> {
             <button
               data-testid="edit-person"
               class="text-sm text-emerald-700 hover:underline disabled:text-gray-400 disabled:no-underline"
-              :disabled="!canEditNames(person)"
-              :title="canEditNames(person) ? '' : 'Several names: not editable yet'"
               @click="formTarget = person.id"
             >
               Edit

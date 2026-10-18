@@ -4,7 +4,9 @@ import {
   canEditNames,
   DateOrderError,
   displayName,
+  type FirstNameKind,
   inputFromPerson,
+  type LastNameKind,
   lifeSummary,
   lifespan,
   type PersonFormInput,
@@ -62,6 +64,7 @@ describe("addPerson", () => {
       value: "Ada",
       kind: "birth",
       date: UNKNOWN_DATE,
+      primary: true,
     });
   });
 
@@ -138,7 +141,9 @@ describe("updatePerson", () => {
 
   it("round-trips through inputFromPerson", () => {
     const person = onlyPerson(addPerson(EMPTY, { firstName: "Ada", lastName: "Lovelace" }));
-    expect(inputFromPerson(person)).toMatchObject({ firstName: "Ada", lastName: "Lovelace" });
+    const form = inputFromPerson(person);
+    expect(form.firstNames[0]?.value).toBe("Ada");
+    expect(form.lastNames[0]?.value).toBe("Lovelace");
   });
 });
 
@@ -289,8 +294,8 @@ describe("person dates and life status", () => {
       death: d("1852", "11", "27"),
     }).people[0] as Person;
     expect(inputFromPerson(person)).toEqual({
-      firstName: "Ada",
-      lastName: "Lovelace",
+      firstNames: [{ value: "Ada", kind: "birth", date: empty, primary: true }],
+      lastNames: [{ value: "Lovelace", kind: "birth", date: empty, primary: true }],
       birth: d("1815", "12", "10"),
       status: "deceased",
       death: d("1852", "11", "27"),
@@ -318,5 +323,158 @@ describe("person dates and life status", () => {
       }),
     ).toThrow(NamesNotEditableError);
     expect(nicknamed.names?.firstNames).toHaveLength(2);
+  });
+});
+
+describe("several names per person", () => {
+  const empty = { year: "", month: "", day: "" };
+  const base: FamilyData = { schemaVersion: 1, people: [], relationships: [] };
+  const first = (value: string, kind: FirstNameKind = "birth", primary = false) => ({
+    value,
+    kind,
+    date: empty,
+    primary,
+  });
+  const last = (value: string, kind: LastNameKind = "birth", primary = false) => ({
+    value,
+    kind,
+    date: empty,
+    primary,
+  });
+  const one = (data: FamilyData) => data.people[0] as Person;
+
+  it("stores several first and last names with kinds", () => {
+    const person = one(
+      addPerson(base, {
+        firstNames: [first("Ada", "birth", true), first("Addie", "nickname")],
+        lastNames: [last("Byron", "birth", true), last("King", "married")],
+      }),
+    );
+    expect(person.names?.firstNames?.map((n) => [n.value, n.kind])).toEqual([
+      ["Ada", "birth"],
+      ["Addie", "nickname"],
+    ]);
+    expect(person.names?.lastNames?.map((n) => n.kind)).toEqual(["birth", "married"]);
+  });
+
+  it("stores a partial date on a name and rejects an invalid one", () => {
+    const person = one(
+      addPerson(base, {
+        firstNames: [first("Ada")],
+        lastNames: [
+          { ...last("King", "married", true), date: { year: "1835", month: "", day: "" } },
+        ],
+      }),
+    );
+    expect(person.names?.lastNames?.[0]?.date).toMatchObject({
+      yearKnown: true,
+      monthKnown: false,
+    });
+    expect(() =>
+      addPerson(base, {
+        firstNames: [{ ...first("Ada"), date: { year: "1815", month: "4", day: "31" } }],
+        lastNames: [],
+      }),
+    ).toThrow(/First name date: That day does not exist/);
+  });
+
+  it("marks exactly one primary per list and displays it", () => {
+    const person = one(
+      addPerson(base, {
+        firstNames: [first("Ada"), first("Addie", "nickname", true)],
+        lastNames: [last("Byron", "birth", true)],
+      }),
+    );
+    expect(person.names?.firstNames?.filter((n) => n.primary).map((n) => n.value)).toEqual([
+      "Addie",
+    ]);
+    expect(displayName(person)).toBe("Addie Byron");
+  });
+
+  it("falls back to the first entry when none is marked (old files)", () => {
+    const id = newId();
+    const old: Person = {
+      id,
+      names: {
+        id,
+        firstNames: [
+          { value: "Ada", kind: "birth", date: UNKNOWN_DATE },
+          { value: "Addie", kind: "nickname", date: UNKNOWN_DATE },
+        ],
+      },
+    };
+    expect(displayName(old)).toBe("Ada");
+    const form = inputFromPerson(old);
+    expect(form.firstNames.map((n) => n.primary)).toEqual([true, false]);
+  });
+
+  it("first marked primary wins when a corrupt file marks several", () => {
+    const id = newId();
+    const corrupt: Person = {
+      id,
+      names: {
+        id,
+        firstNames: [
+          { value: "A", kind: "birth", date: UNKNOWN_DATE },
+          { value: "B", kind: "other", date: UNKNOWN_DATE, primary: true },
+          { value: "C", kind: "other", date: UNKNOWN_DATE, primary: true },
+        ],
+      },
+    };
+    expect(displayName(corrupt)).toBe("B");
+  });
+
+  it("drops blank rows and moves primary to the first remaining row if its row was blank", () => {
+    const person = one(
+      addPerson(base, {
+        firstNames: [first("", "birth", true), first("Ada"), first("Addie")],
+        lastNames: [last(" ")],
+      }),
+    );
+    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["Ada", "Addie"]);
+    expect(person.names?.firstNames?.[0]?.primary).toBe(true);
+    expect(person.names?.lastNames).toEqual([]);
+  });
+
+  it("requires a name even with lists", () => {
+    expect(() => addPerson(base, { firstNames: [first(" ")], lastNames: [last("")] })).toThrow(
+      NameRequiredError,
+    );
+  });
+
+  it("keeps list order, so Up/Down changes the stored order", () => {
+    const person = one(
+      addPerson(base, { firstNames: [first("B"), first("A", "birth", true)], lastNames: [] }),
+    );
+    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["B", "A"]);
+  });
+
+  it("edits a person who has several names without losing any", () => {
+    const added = addPerson(base, {
+      firstNames: [first("Ada", "birth", true), first("Addie", "nickname")],
+      lastNames: [last("Byron", "birth", true)],
+    });
+    const id = one(added).id;
+    const form = inputFromPerson(one(added));
+    const edited = updatePerson(added, id, {
+      ...form,
+      birth: { year: "1815", month: "", day: "" },
+    });
+    const person = one(edited);
+    expect(person.names?.firstNames?.map((n) => [n.value, n.kind])).toEqual([
+      ["Ada", "birth"],
+      ["Addie", "nickname"],
+    ]);
+    expect(person.born?.birthDate.yearKnown).toBe(true);
+  });
+
+  it("the shorthand strings are still refused for people with several names", () => {
+    const added = addPerson(base, {
+      firstNames: [first("Ada"), first("Addie", "nickname")],
+      lastNames: [],
+    });
+    expect(() => updatePerson(added, one(added).id, { firstName: "X", lastName: "" })).toThrow(
+      NamesNotEditableError,
+    );
   });
 });
