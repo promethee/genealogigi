@@ -42,6 +42,7 @@ test("opens on the tree when relationships exist, on the people list otherwise",
   await expect(page.getByTestId("empty-state")).toBeVisible(); // new family: people list
   await addPerson(page, "Ada");
   await addPerson(page, "Byron");
+  await page.getByTestId("rel-kind").selectOption("parent");
   await page.getByTestId("rel-first").selectOption({ label: "Ada" });
   await page.getByTestId("rel-second").selectOption({ label: "Byron" });
   await page.getByTestId("rel-add").click();

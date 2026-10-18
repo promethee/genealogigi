@@ -4,11 +4,13 @@ import { t, tn } from "../i18n/index.ts";
 import { addPerson, removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
 import {
   addParentChild,
+  addParentsOfChild,
   addPartners,
   relationshipsOf,
   removeRelationship,
   updateRelationship,
   type ParentChildInput,
+  type ParentsOfChildInput,
   type PartnersInput,
 } from "../data/relationships.ts";
 import type { FamilyData, PersonId, RelationshipId } from "../data/types.ts";
@@ -221,6 +223,9 @@ export function defineFamilyStore(platform: PlatformAPI) {
     const addParentChildLink = (input: ParentChildInput) =>
       mutate((current) => addParentChild(current, input));
 
+    const addParents = (input: ParentsOfChildInput) =>
+      mutate((current) => addParentsOfChild(current, input));
+
     const addPartnersLink = (input: PartnersInput) =>
       mutate((current) => addPartners(current, input));
 
@@ -252,6 +257,7 @@ export function defineFamilyStore(platform: PlatformAPI) {
       editPerson,
       deletePerson,
       addParentChild: addParentChildLink,
+      addParents,
       addPartners: addPartnersLink,
       editRelationship,
       deleteRelationship,

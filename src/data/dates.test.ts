@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { VariablePrecisionDate } from "./types.ts";
 import {
   dateFromInput,
   emptyDateInput,
@@ -6,6 +7,7 @@ import {
   inputFromDate,
   InvalidDateError,
   isCertainlyBefore,
+  isInFuture,
   UNKNOWN_DATE,
   yearOf,
 } from "./dates.ts";
@@ -128,5 +130,30 @@ describe("isCertainlyBefore", () => {
     expect(isCertainlyBefore(date("1815"), date("1815", "12"))).toBe(false);
     expect(isCertainlyBefore(date("", "3"), date("1815"))).toBe(false);
     expect(isCertainlyBefore(UNKNOWN_DATE, date("1815"))).toBe(false);
+  });
+});
+
+describe("isInFuture", () => {
+  const today = new Date(2026, 9, 18); // 18 October 2026
+  const date = (year: string, month = "", day = "") =>
+    dateFromInput({ year, month, day }, "x") as VariablePrecisionDate;
+
+  it("rejects a later year, month or day", () => {
+    expect(isInFuture(date("2027"), today)).toBe(true);
+    expect(isInFuture(date("2026", "11"), today)).toBe(true);
+    expect(isInFuture(date("2026", "10", "19"), today)).toBe(true);
+  });
+
+  it("accepts today, the past, and partial dates that may be in the past", () => {
+    expect(isInFuture(date("2026", "10", "18"), today)).toBe(false);
+    expect(isInFuture(date("2026", "10", "17"), today)).toBe(false);
+    expect(isInFuture(date("2026", "9", "30"), today)).toBe(false);
+    expect(isInFuture(date("2025", "12", "31"), today)).toBe(false);
+    expect(isInFuture(date("2026"), today)).toBe(false);
+    expect(isInFuture(date("2026", "10"), today)).toBe(false);
+  });
+
+  it("never treats an unknown year as future", () => {
+    expect(isInFuture(date("", "12", "31"), today)).toBe(false);
   });
 });

@@ -242,3 +242,18 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 4   | Click **+ Last name changed**, click into the new field | The same suggestions appear.   |
 | 5   | Type a name that is not suggested and save              | Saved exactly as typed.        |
 | 6   | Click into First name                                   | No suggestions.                |
+
+## Two parents at once and birth date hints
+
+| #   | Action                                                         | Expected                                                                                       |
+| --- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | Add Ada, Cleo and Byron. Open the Relationships form           | Type is **Parents of** with fields Child, Parent 1, Parent 2 and Nature.                       |
+| 2   | Child Byron, Parent 1 Ada, Parent 2 Cleo, Add                  | Two rows: "Ada is parent of Byron" and "Cleo is parent of Byron".                              |
+| 3   | Repeat with the same three people                              | Error "already exists"; still two rows.                                                        |
+| 4   | Tick **Also record the parents as partners** for another child | A third row "Ada and Cleo are partners (unknown)". The box is gone for that couple afterwards. |
+| 5   | Nature Foster with start year 2000                             | Both rows show "(foster, from 2000)".                                                          |
+| 6   | Switch the type to **Parent of**                               | The single-parent form (Parent, Child) is back.                                                |
+| 7   | Add person: look at the birth year box                         | A grey hint like "e.g. 1996" (30 years ago); the box is empty.                                 |
+| 8   | Save without typing a birth year                               | No birth date stored.                                                                          |
+| 9   | Enter next year as the birth year                              | Error "Birth date cannot be in the future."                                                    |
+| 10  | Deceased with a death year in the future                       | Error "Death date cannot be in the future."                                                    |

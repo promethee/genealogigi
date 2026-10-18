@@ -110,6 +110,7 @@ test("relationship rows, errors and dates are French in French", async ({ page }
   await addPerson(page, "Ada");
   await addPerson(page, "Byron");
   await page.getByTestId("lang-fr").click();
+  await page.getByTestId("rel-kind").selectOption("parent");
   await page.getByTestId("rel-first").selectOption({ label: "Ada" });
   await page.getByTestId("rel-second").selectOption({ label: "Byron" });
   await page.getByTestId("rel-nature").selectOption("foster");
@@ -119,6 +120,8 @@ test("relationship rows, errors and dates are French in French", async ({ page }
   await expect(page.getByTestId("relationship-text")).toHaveText(
     "Ada est parent de Byron (famille d’accueil, depuis déc. 1990)",
   );
+
+  await page.getByTestId("rel-kind").selectOption("parent");
 
   await page.getByTestId("rel-first").selectOption({ label: "Ada" });
   await page.getByTestId("rel-second").selectOption({ label: "Ada" });

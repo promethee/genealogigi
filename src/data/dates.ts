@@ -132,6 +132,20 @@ export function formatDate(date: VariablePrecisionDate): string {
   return pieces.join(" ");
 }
 
+/**
+ * True only when `date` is certainly after `today`: compares year, then month, then day, and
+ * gives up (false) at the first part the date does not know.
+ */
+export function isInFuture(date: VariablePrecisionDate, today: Date = new Date()): boolean {
+  const p = parts(date);
+  const now = { year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() };
+  if (!date.yearKnown) return false;
+  if (p.year !== now.year) return p.year > now.year;
+  if (!date.monthKnown) return false;
+  if (p.month !== now.month) return p.month > now.month;
+  return date.dayKnown && p.day > now.day;
+}
+
 /** The year if it is known, otherwise null. */
 export function yearOf(date: VariablePrecisionDate): number | null {
   return date.yearKnown ? parts(date).year : null;

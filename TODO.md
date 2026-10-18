@@ -126,3 +126,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `name-suggestions`: last-name fields suggest names already saved (most frequent first, case-insensitive) through a native datalist, including the married-name row; first names not suggested. Renamed `Icon.vue` to `AppIcon.vue` (lint rule). Manual steps added.
 
+- **2026-10-18 (cont.)** — Implemented changes `two-parents` (relationship form defaults to "Parents of": child + two parents + nature added atomically, optional "also record as partners" with status unknown) and `birth-date-default` (grey example birth year = current year − 30, as the user chose; birth and death dates in the future rejected). 183 unit, ~97 e2e. Manual steps added.
+

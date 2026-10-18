@@ -5,6 +5,7 @@ import { t } from "../i18n/index.ts";
 import { displayName } from "../data/people.ts";
 import {
   describeRelationship,
+  isParentChild,
   natureLabel,
   statusLabel,
   PARENT_CHILD_NATURES,
@@ -24,7 +25,12 @@ import { useFamilyStore } from "../store/index.ts";
 
 const family = useFamilyStore();
 
-const kind = ref<"parent" | "partner">("parent");
+// "parents" (two parents of a child) is the most common case, so it comes first.
+const kind = ref<"parents" | "parent" | "partner">("parents");
+const childId = ref<PersonId | "">("");
+const parentAId = ref<PersonId | "">("");
+const parentBId = ref<PersonId | "">("");
+const recordPartners = ref(false);
 const firstId = ref<PersonId | "">("");
 const secondId = ref<PersonId | "">("");
 const nature = ref<ParentChildNature | TemporaryNature>("biological-confirmed");
@@ -38,7 +44,17 @@ const people = computed(() => family.data?.people ?? []);
 const relationships = computed(() => family.data?.relationships ?? []);
 const allNatures = [...PARENT_CHILD_NATURES, ...TEMPORARY_NATURES];
 const isTemporary = computed(
-  () => kind.value === "parent" && (TEMPORARY_NATURES as readonly string[]).includes(nature.value),
+  () => kind.value !== "partner" && (TEMPORARY_NATURES as readonly string[]).includes(nature.value),
+);
+
+/** The checkbox is pointless when the two chosen parents are already partners. */
+const alreadyPartners = computed(() =>
+  relationships.value.some(
+    (r) =>
+      !isParentChild(r) &&
+      ((r.personAId === parentAId.value && r.personBId === parentBId.value) ||
+        (r.personAId === parentBId.value && r.personBId === parentAId.value)),
+  ),
 );
 const canAdd = computed(() => people.value.length >= 2);
 
@@ -47,7 +63,48 @@ function nameOf(id: PersonId): string {
   return person ? displayName(person) : t("rel.unknownPerson");
 }
 
+function natureInput():
+  | { nature: ParentChildNature }
+  | {
+      nature: TemporaryNature;
+      status: TemporaryStatus;
+      start: typeof start.value;
+      end: typeof end.value;
+    } {
+  return isTemporary.value
+    ? {
+        nature: nature.value as TemporaryNature,
+        status: linkStatus.value,
+        start: start.value,
+        end: end.value,
+      }
+    : { nature: nature.value as ParentChildNature };
+}
+
+async function addParents(): Promise<void> {
+  if (!childId.value || !parentAId.value || !parentBId.value) {
+    family.error = t("rel.chooseParents");
+    return;
+  }
+  const ok = await family.addParents({
+    childId: childId.value,
+    parentAId: parentAId.value,
+    parentBId: parentBId.value,
+    recordPartners: recordPartners.value && !alreadyPartners.value,
+    ...natureInput(),
+  });
+  if (ok) {
+    childId.value = "";
+    parentAId.value = "";
+    parentBId.value = "";
+    recordPartners.value = false;
+    start.value = emptyDateInput();
+    end.value = emptyDateInput();
+  }
+}
+
 async function add(): Promise<void> {
+  if (kind.value === "parents") return addParents();
   if (!firstId.value || !secondId.value) {
     family.error = t("rel.chooseTwo");
     return;
@@ -101,25 +158,49 @@ async function add(): Promise<void> {
       <label class="label">
         {{ t("rel.type") }}
         <select v-model="kind" data-testid="rel-kind" :disabled="!canAdd" class="input">
+          <option value="parents">{{ t("rel.parentsOf") }}</option>
           <option value="parent">{{ t("rel.parentOf") }}</option>
           <option value="partner">{{ t("rel.partnerOf") }}</option>
         </select>
       </label>
-      <label class="label">
+      <template v-if="kind === 'parents'">
+        <label class="label">
+          {{ t("rel.child") }}
+          <select v-model="childId" data-testid="rel-child" :disabled="!canAdd" class="input">
+            <option value="" disabled>{{ t("rel.choose") }}</option>
+            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          </select>
+        </label>
+        <label class="label">
+          {{ t("rel.parent1") }}
+          <select v-model="parentAId" data-testid="rel-parent-a" :disabled="!canAdd" class="input">
+            <option value="" disabled>{{ t("rel.choose") }}</option>
+            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          </select>
+        </label>
+        <label class="label">
+          {{ t("rel.parent2") }}
+          <select v-model="parentBId" data-testid="rel-parent-b" :disabled="!canAdd" class="input">
+            <option value="" disabled>{{ t("rel.choose") }}</option>
+            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          </select>
+        </label>
+      </template>
+      <label v-if="kind !== 'parents'" class="label">
         {{ kind === "parent" ? t("rel.parent") : t("rel.person") }}
         <select v-model="firstId" data-testid="rel-first" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
           <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
         </select>
       </label>
-      <label class="label">
+      <label v-if="kind !== 'parents'" class="label">
         {{ kind === "parent" ? t("rel.child") : t("rel.partner") }}
         <select v-model="secondId" data-testid="rel-second" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
           <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
         </select>
       </label>
-      <label v-if="kind === 'parent'" class="label">
+      <label v-if="kind !== 'partner'" class="label">
         {{ t("rel.nature") }}
         <select v-model="nature" data-testid="rel-nature" :disabled="!canAdd" class="input">
           <option v-for="n in allNatures" :key="n" :value="n">
@@ -159,6 +240,18 @@ async function add(): Promise<void> {
           test-prefix="rel-end"
         />
       </template>
+      <label
+        v-if="kind === 'parents' && !alreadyPartners"
+        class="flex items-center gap-2 pb-2 text-sm text-slate-600"
+      >
+        <input
+          v-model="recordPartners"
+          type="checkbox"
+          data-testid="rel-partners"
+          class="size-4 accent-emerald-700"
+        />
+        {{ t("rel.alsoPartners") }}
+      </label>
       <button type="submit" data-testid="rel-add" :disabled="!canAdd" class="btn btn-primary">
         <AppIcon name="plus" />
         {{ t("rel.add") }}

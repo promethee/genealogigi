@@ -137,6 +137,7 @@ test("the relationships list leaves confirmed biological unmarked and shows othe
     await page.getByTestId("submit-person").click();
   }
   const add = async (parent: string, child: string, nature: string) => {
+    await page.getByTestId("rel-kind").selectOption("parent");
     await page.getByTestId("rel-first").selectOption({ label: parent });
     await page.getByTestId("rel-second").selectOption({ label: child });
     await page.getByTestId("rel-nature").selectOption(nature);

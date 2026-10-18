@@ -306,6 +306,27 @@ describe("family store: relationships", () => {
     expect(store.data?.relationships[0]).toMatchObject({ nature: "foster", status: "ongoing" });
   });
 
+  it("adds two parents in a single save, and nothing when one link is invalid", async () => {
+    const { store, save, a, b } = await twoPeople();
+    await store.addPerson({ firstName: "Cleo", lastName: "" });
+    const c = store.data?.people[2]?.id;
+    if (!c) throw new Error("no third person");
+    save.mockClear();
+    expect(
+      await store.addParents({ parentAId: a, parentBId: b, childId: c, nature: "adoptive" }),
+    ).toBe(true);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(store.data?.relationships).toHaveLength(2);
+
+    save.mockClear();
+    expect(
+      await store.addParents({ parentAId: a, parentBId: b, childId: c, nature: "adoptive" }),
+    ).toBe(false);
+    expect(store.error).toMatch(/already exists/);
+    expect(save).not.toHaveBeenCalled();
+    expect(store.data?.relationships).toHaveLength(2);
+  });
+
   it("deletes a relationship only after confirmation", async () => {
     const declined = await twoPeople({ confirmResult: false });
     await declined.store.addPartners({

@@ -103,6 +103,7 @@ test("the tree box shows the name, then née and lifespan", async ({ page }) => 
   await page.getByTestId("add-person").click();
   await page.getByTestId("first-name").first().fill("Paul");
   await page.getByTestId("submit-person").click();
+  await page.getByTestId("rel-kind").selectOption("parent");
   await page.getByTestId("rel-first").selectOption({ index: 1 });
   await page.getByTestId("rel-second").selectOption({ index: 2 });
   await page.getByTestId("rel-add").click();

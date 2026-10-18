@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { monthNames } from "../data/dates.ts";
 import { t } from "../i18n/index.ts";
 import {
@@ -41,6 +41,11 @@ function submit(): void {
 }
 
 const inputClass = "input";
+
+/** A grey hint (30 years back), not a value: nothing is saved unless the user types it. */
+const birthYearExample = computed(() =>
+  t("form.example", { value: new Date().getFullYear() - 30 }),
+);
 </script>
 
 <template>
@@ -72,7 +77,7 @@ const inputClass = "input";
       <input
         v-model="form.birth.year"
         data-testid="birth-year"
-        :placeholder="t('form.year')"
+        :placeholder="birthYearExample"
         inputmode="numeric"
         :class="[inputClass, 'w-24']"
       />

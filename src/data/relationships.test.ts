@@ -3,6 +3,7 @@ import { addPerson, displayName, removePerson } from "./people.ts";
 import { PersonNotFoundError } from "./errors.ts";
 import {
   addParentChild,
+  addParentsOfChild,
   addPartners,
   describeRelationship,
   involvesPerson,
@@ -481,5 +482,98 @@ describe("describeRelationship default nature", () => {
       "Ada is parent of Byron (biological, presumed)",
       "Ada is parent of Byron (adoptive)",
     ]);
+  });
+});
+
+describe("addParentsOfChild", () => {
+  const blankDate = { year: "", month: "", day: "" };
+
+  it("adds both parent links at once", () => {
+    const { data, ids } = family("Ada", "Cleo", "Byron");
+    const next = addParentsOfChild(data, {
+      parentAId: id(ids, 0),
+      parentBId: id(ids, 1),
+      childId: id(ids, 2),
+      nature: "biological-confirmed",
+    });
+    expect(next.relationships).toHaveLength(2);
+    expect(next.relationships.every((r) => isParentChild(r) && r.childId === id(ids, 2))).toBe(
+      true,
+    );
+    expect(next.relationships.map((r) => isParentChild(r) && r.parentId)).toEqual([
+      id(ids, 0),
+      id(ids, 1),
+    ]);
+  });
+
+  it("gives both links the same nature, status and dates", () => {
+    const { data, ids } = family("Ada", "Cleo", "Byron");
+    const next = addParentsOfChild(data, {
+      parentAId: id(ids, 0),
+      parentBId: id(ids, 1),
+      childId: id(ids, 2),
+      nature: "foster",
+      status: "ongoing",
+      start: { ...blankDate, year: "2000" },
+      end: blankDate,
+    });
+    for (const r of next.relationships) {
+      expect(r).toMatchObject({
+        nature: "foster",
+        status: "ongoing",
+        startDate: { yearKnown: true },
+      });
+    }
+  });
+
+  it("rejects the same person twice", () => {
+    const { data, ids } = family("Ada", "Byron");
+    expect(() =>
+      addParentsOfChild(data, {
+        parentAId: id(ids, 0),
+        parentBId: id(ids, 0),
+        childId: id(ids, 1),
+        nature: "adoptive",
+      }),
+    ).toThrow("The two parents must be different people.");
+  });
+
+  it("is all or nothing: a duplicate, a self-link or a cycle adds nothing", () => {
+    const { data, ids } = family("Ada", "Cleo", "Byron");
+    const [a, c, b] = [id(ids, 0), id(ids, 1), id(ids, 2)];
+    const once = addParentChild(data, { parentId: c, childId: b, nature: "adoptive" });
+    expect(() =>
+      addParentsOfChild(once, { parentAId: a, parentBId: c, childId: b, nature: "adoptive" }),
+    ).toThrow(RelationshipError);
+    expect(once.relationships).toHaveLength(1);
+    expect(() =>
+      addParentsOfChild(data, { parentAId: a, parentBId: b, childId: b, nature: "adoptive" }),
+    ).toThrow("own parent");
+    const cycle = addParentChild(data, { parentId: b, childId: a, nature: "adoptive" });
+    expect(() =>
+      addParentsOfChild(cycle, { parentAId: a, parentBId: c, childId: b, nature: "adoptive" }),
+    ).toThrow("cycle");
+    expect(cycle.relationships).toHaveLength(1);
+  });
+
+  it("optionally records the couple as partners, once", () => {
+    const { data, ids } = family("Ada", "Cleo", "Byron", "Dan");
+    const input = {
+      parentAId: id(ids, 0),
+      parentBId: id(ids, 1),
+      childId: id(ids, 2),
+      nature: "biological-confirmed" as const,
+    };
+    const without = addParentsOfChild(data, input);
+    expect(without.relationships).toHaveLength(2);
+    const withPartners = addParentsOfChild(data, { ...input, recordPartners: true });
+    expect(withPartners.relationships).toHaveLength(3);
+    expect(withPartners.relationships[2]).toMatchObject({ status: "unknown" });
+    const second = addParentsOfChild(withPartners, {
+      ...input,
+      childId: id(ids, 3),
+      recordPartners: true,
+    });
+    expect(second.relationships.filter((r) => !isParentChild(r))).toHaveLength(1);
   });
 });

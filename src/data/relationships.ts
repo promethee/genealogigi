@@ -155,6 +155,42 @@ export function addParentChild(data: FamilyData, input: ParentChildInput): Famil
   return { ...data, relationships: [...data.relationships, relationship] };
 }
 
+type PermanentDetails = Omit<PermanentParentChildInput, "parentId" | "childId">;
+type TemporaryDetails = Omit<TemporaryParentChildInput, "parentId" | "childId">;
+
+/** Two parents of one child, with one nature (and dates) for both links. */
+export type ParentsOfChildInput = {
+  parentAId: PersonId;
+  parentBId: PersonId;
+  childId: PersonId;
+  /** Also add a partnership (status unknown) unless they already are partners. */
+  recordPartners?: boolean;
+} & (PermanentDetails | TemporaryDetails);
+
+function arePartners(data: FamilyData, a: PersonId, b: PersonId): boolean {
+  return data.relationships.some(
+    (r) =>
+      !isParentChild(r) &&
+      ((r.personAId === a && r.personBId === b) || (r.personAId === b && r.personBId === a)),
+  );
+}
+
+/**
+ * Adds both parent links, and optionally the partnership, or nothing at all: each step
+ * works on immutable data, so a failure in any of them discards the others.
+ */
+export function addParentsOfChild(data: FamilyData, input: ParentsOfChildInput): FamilyData {
+  const { parentAId, parentBId, childId, recordPartners, ...details } = input;
+  if (parentAId === parentBId) throw new RelationshipError(t("err.sameParents"));
+  const link = (parentId: PersonId) => ({ ...details, parentId, childId }) as ParentChildInput;
+  let next = addParentChild(data, link(parentAId));
+  next = addParentChild(next, link(parentBId));
+  if (recordPartners && !arePartners(next, parentAId, parentBId)) {
+    next = addPartners(next, { personAId: parentAId, personBId: parentBId, status: "unknown" });
+  }
+  return next;
+}
+
 export interface PartnersInput {
   personAId: PersonId;
   personBId: PersonId;

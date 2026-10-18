@@ -4,6 +4,7 @@ import {
   formatDate,
   inputFromDate,
   isCertainlyBefore,
+  isInFuture,
   InvalidDateError,
   UNKNOWN_DATE,
   yearOf,
@@ -181,6 +182,9 @@ function buildNames(id: PersonId, input: PersonFormInput): NamedPerson {
 
 function buildBorn(id: PersonId, birth: PartialDateInput): PersonBorn | undefined {
   const birthDate = dateFromInput(birth, t("date.birth"));
+  if (birthDate && isInFuture(birthDate)) {
+    throw new InvalidDateError(t("err.dateFuture", { label: t("date.birth") }));
+  }
   return birthDate ? { id, birthDate } : undefined;
 }
 
@@ -191,11 +195,11 @@ function buildLifeStatus(
 ): PersonLiving | PersonDeceased | undefined {
   if (status === "living") return { id, living: true };
   if (status === "deceased") {
-    return {
-      id,
-      living: false,
-      dateOfDeath: dateFromInput(death, t("date.death")) ?? UNKNOWN_DATE,
-    };
+    const dateOfDeath = dateFromInput(death, t("date.death")) ?? UNKNOWN_DATE;
+    if (isInFuture(dateOfDeath)) {
+      throw new InvalidDateError(t("err.dateFuture", { label: t("date.death") }));
+    }
+    return { id, living: false, dateOfDeath };
   }
   return undefined;
 }

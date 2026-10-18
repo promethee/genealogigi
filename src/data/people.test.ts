@@ -576,3 +576,35 @@ describe("lastNameSuggestions", () => {
     ).toEqual([]);
   });
 });
+
+describe("no future dates", () => {
+  const nextYear = String(new Date().getFullYear() + 1);
+  const blank = { year: "", month: "", day: "" };
+
+  it("rejects a future birth date", () => {
+    expect(() =>
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: { ...blank, year: nextYear } }),
+    ).toThrow("Birth date cannot be in the future.");
+  });
+
+  it("rejects a future death date", () => {
+    expect(() =>
+      addPerson(EMPTY, {
+        firstName: "Ada",
+        lastName: "",
+        status: "deceased",
+        death: { ...blank, year: nextYear },
+      }),
+    ).toThrow("Death date cannot be in the future.");
+  });
+
+  it("accepts this year (partial) and past dates", () => {
+    const year = String(new Date().getFullYear());
+    expect(() =>
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: { ...blank, year } }),
+    ).not.toThrow();
+    expect(() =>
+      addPerson(EMPTY, { firstName: "Ada", lastName: "", birth: { ...blank, year: "1815" } }),
+    ).not.toThrow();
+  });
+});
