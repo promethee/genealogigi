@@ -273,6 +273,31 @@ describe("family store: relationships", () => {
     expect(store.error).toMatch(/already exists/);
   });
 
+  it("edits a relationship, persists it, and keeps state on failure", async () => {
+    const { store, files, save, path, a, b } = await twoPeople();
+    await store.addParentChild({ parentId: a, childId: b, nature: "adoptive" });
+    const rid = store.data?.relationships[0]?.id;
+    if (!rid) throw new Error("no relationship");
+    const blank = { year: "", month: "", day: "" };
+    const foster = {
+      parentId: a,
+      childId: b,
+      nature: "foster" as const,
+      status: "ongoing" as const,
+      start: { ...blank, year: "2000" },
+      end: blank,
+    };
+    expect(await store.editRelationship(rid, foster)).toBe(true);
+    expect(files.get(path)?.relationships[0]).toMatchObject({ id: rid, nature: "foster" });
+
+    save.mockClear();
+    const bad = { ...foster, status: "ended" as const, end: { ...blank, year: "1990" } };
+    expect(await store.editRelationship(rid, bad)).toBe(false);
+    expect(store.error).toMatch(/end date/);
+    expect(save).not.toHaveBeenCalled();
+    expect(store.data?.relationships[0]).toMatchObject({ nature: "foster", status: "ongoing" });
+  });
+
   it("deletes a relationship only after confirmation", async () => {
     const declined = await twoPeople({ confirmResult: false });
     await declined.store.addPartners({

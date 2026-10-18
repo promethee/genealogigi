@@ -124,3 +124,15 @@ Start from an open family with at least one person.
 | 6   | Start 31 April                                                                              | Error naming the start date.                                             |
 | 7   | Tree tab, root Byron                                                                        | Ada appears with dashed lines; legend mentions step, foster or guardian. |
 | 8   | Open the file in a text editor                                                              | Temporary links have `status`, `startDate` and (if ended) `endDate`.     |
+
+## Edit relationships
+
+| #   | Action                                                               | Expected                                            |
+| --- | -------------------------------------------------------------------- | --------------------------------------------------- |
+| 1   | Add Ada -> Byron adoptive. Click **Edit**, nature Foster, start 2000 | Row "Ada is parent of Byron (foster, from 2000)".   |
+| 2   | Quit and relaunch, Resume                                            | The edited row is unchanged.                        |
+| 3   | Add partners Ada and Byron. Edit: Ended, start 1990, end 1995        | Row "(ended, 1990–1995)".                           |
+| 4   | Click Edit again                                                     | Fields show 1990 and 1995.                          |
+| 5   | Edit with end 1980 and start 1990                                    | Error "end date cannot be before"; form stays open. |
+| 6   | Click Cancel                                                         | Form closes, row unchanged.                         |
+| 7   | Add partners with start year 1985                                    | Row "(ongoing, from 1985)".                         |

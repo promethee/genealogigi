@@ -14,8 +14,9 @@ import {
   type TemporaryNature,
   type TemporaryStatus,
 } from "../data/relationships.ts";
-import type { PersonId } from "../data/types.ts";
+import type { PersonId, RelationshipId } from "../data/types.ts";
 import DateFields from "./DateFields.vue";
+import RelationshipEditForm from "./RelationshipEditForm.vue";
 import { useFamilyStore } from "../store/index.ts";
 
 const family = useFamilyStore();
@@ -28,6 +29,7 @@ const linkStatus = ref<TemporaryStatus>("ongoing");
 const start = ref(emptyDateInput());
 const end = ref(emptyDateInput());
 const status = ref<PartnerStatus>("ongoing");
+const editingId = ref<RelationshipId | null>(null);
 
 const people = computed(() => family.data?.people ?? []);
 const relationships = computed(() => family.data?.relationships ?? []);
@@ -65,6 +67,8 @@ async function add(): Promise<void> {
           personAId: firstId.value,
           personBId: secondId.value,
           status: status.value,
+          start: start.value,
+          end: end.value,
         });
   if (ok) {
     firstId.value = "";
@@ -163,6 +167,15 @@ async function add(): Promise<void> {
           <option v-for="s in PARTNER_STATUSES" :key="s" :value="s">{{ s }}</option>
         </select>
       </label>
+      <template v-if="kind === 'partner'">
+        <DateFields v-model="start" label="Start (optional)" test-prefix="rel-start" />
+        <DateFields
+          v-if="status === 'ended'"
+          v-model="end"
+          label="End (optional)"
+          test-prefix="rel-end"
+        />
+      </template>
       <button
         type="submit"
         data-testid="rel-add"
@@ -177,20 +190,31 @@ async function add(): Promise<void> {
       No relationships yet.
     </p>
     <ul v-else class="divide-y divide-gray-200">
-      <li
-        v-for="r in relationships"
-        :key="r.id"
-        data-testid="relationship-row"
-        class="flex items-center justify-between py-2"
-      >
-        <span data-testid="relationship-text">{{ describeRelationship(r, nameOf) }}</span>
-        <button
-          data-testid="delete-relationship"
-          class="text-sm text-red-600 hover:underline"
-          @click="family.deleteRelationship(r.id, describeRelationship(r, nameOf))"
-        >
-          Delete
-        </button>
+      <li v-for="r in relationships" :key="r.id" data-testid="relationship-row" class="py-2">
+        <div class="flex items-center justify-between">
+          <span data-testid="relationship-text">{{ describeRelationship(r, nameOf) }}</span>
+          <span class="flex gap-3">
+            <button
+              data-testid="edit-relationship"
+              class="text-sm text-emerald-700 hover:underline"
+              @click="editingId = editingId === r.id ? null : r.id"
+            >
+              Edit
+            </button>
+            <button
+              data-testid="delete-relationship"
+              class="text-sm text-red-600 hover:underline"
+              @click="family.deleteRelationship(r.id, describeRelationship(r, nameOf))"
+            >
+              Delete
+            </button>
+          </span>
+        </div>
+        <RelationshipEditForm
+          v-if="editingId === r.id"
+          :relationship="r"
+          @done="editingId = null"
+        />
       </li>
     </ul>
   </section>

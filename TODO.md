@@ -31,6 +31,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [x] Feature: birth date, life status and death date (OpenSpec `person-dates`, archived 2026-10-18)
 - [x] Feature: several names per person with primary marker, kinds, dates, ordering (OpenSpec `person-names`, archived 2026-10-18)
 - [x] Feature: step, foster and guardian parents with status and dates (OpenSpec `temporary-parents`, archived 2026-10-18)
+- [x] Feature: edit relationships and partner dates (OpenSpec `edit-relationships`, archived 2026-10-18)
 - [~] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [~] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [x] Feature: save a copy of the open family (OpenSpec `save-copy`, archived 2026-10-18) — covers the JSON-export need, since the file is already JSON
@@ -98,3 +99,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (cont.)** — Implemented change `temporary-parents`: parent links can be step/foster/guardian with status (ongoing/ended/unknown), partial start/end dates, end-before-start validation, per-nature duplicate rule, period shown in the list, legend updated. New `DateFields.vue`. 116 unit tests, 40 e2e, fmt/lint/typecheck/build green. Manual steps added to `MANUAL_TESTS.md`.
 
 - **2026-10-18 (cont.)** — Chores: new app icon; CI now also runs build, Playwright e2e (chromium) and `cargo check`; removed two stray family JSON files from `src-tauri/` and ignored `src-tauri/*.json` (except `tauri.conf.json`). Clean-copy check: fmt, lint, typecheck, 116 unit tests pass; `cargo check` passes. Manual tests still pending.
+
+- **2026-10-18 (cont.)** — Implemented change `edit-relationships`: inline Edit on each relationship (nature, status, dates; people fixed), shared add/update builders in `relationships.ts`, partner start/end dates in add and list, new `RelationshipEditForm.vue`. Closed the redundant "data export (JSON)" item. 125 unit tests, 44 e2e. Manual steps added.

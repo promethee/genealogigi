@@ -11,6 +11,8 @@ import {
   RelationshipError,
   RelationshipNotFoundError,
   removeRelationship,
+  updateRelationship,
+  editValuesOf,
 } from "./relationships.ts";
 import { createUuidId, type FamilyData, type PersonId } from "./types.ts";
 
@@ -311,5 +313,155 @@ describe("describeRelationship", () => {
     expect(isParentChild(pc)).toBe(true);
     expect(describeRelationship(pc, nameOf)).toBe("Ada is parent of Byron (biological, confirmed)");
     expect(describeRelationship(partners, nameOf)).toBe("Ada and Byron are partners (ongoing)");
+  });
+});
+
+describe("partner dates", () => {
+  it("stores and describes a period", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const next = addPartners(data, {
+      personAId: id(ids, 0),
+      personBId: id(ids, 1),
+      status: "ended",
+      start: year("1990"),
+      end: year("1995"),
+    });
+    expect(describeRelationship(next.relationships[0]!, () => "X")).toBe(
+      "X and X are partners (ended, 1990–1995)",
+    );
+    const ongoing = addPartners(data, {
+      personAId: id(ids, 0),
+      personBId: id(ids, 1),
+      status: "ongoing",
+      start: year("1990"),
+    });
+    expect(describeRelationship(ongoing.relationships[0]!, () => "X")).toContain(
+      "(ongoing, from 1990)",
+    );
+  });
+
+  it("rejects end before start and bad dates", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const input = { personAId: id(ids, 0), personBId: id(ids, 1), status: "ended" as const };
+    expect(() => addPartners(data, { ...input, start: year("1995"), end: year("1990") })).toThrow(
+      "end date cannot be before",
+    );
+    expect(() => addPartners(data, { ...input, start: year("abc") })).toThrow("Start date");
+  });
+});
+
+describe("updateRelationship", () => {
+  const foster = (ids: PersonId[]) => ({
+    parentId: id(ids, 0),
+    childId: id(ids, 1),
+    nature: "foster" as const,
+    status: "ongoing" as const,
+    start: year("2000"),
+    end: blank,
+  });
+
+  it("changes a permanent link into a temporary one, keeping id and position", () => {
+    const { data, ids } = family("Ada", "Byron", "Cleo");
+    let d = addParentChild(data, { parentId: id(ids, 0), childId: id(ids, 1), nature: "adoptive" });
+    d = addPartners(d, { personAId: id(ids, 1), personBId: id(ids, 2), status: "ongoing" });
+    const original = d.relationships[0]!;
+    const next = updateRelationship(d, original.id, foster(ids));
+    expect(next.relationships[0]).toMatchObject({
+      id: original.id,
+      nature: "foster",
+      status: "ongoing",
+    });
+    expect(next.relationships[1]).toEqual(d.relationships[1]);
+  });
+
+  it("changes a temporary link back to permanent, dropping dates", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const d = addParentChild(data, foster(ids));
+    const next = updateRelationship(d, d.relationships[0]!.id, {
+      parentId: id(ids, 0),
+      childId: id(ids, 1),
+      nature: "biological-confirmed",
+    });
+    expect(next.relationships[0]).toEqual({
+      id: d.relationships[0]!.id,
+      parentId: id(ids, 0),
+      childId: id(ids, 1),
+      nature: "biological-confirmed",
+    });
+  });
+
+  it("updates partner status and dates", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const d = addPartners(data, {
+      personAId: id(ids, 0),
+      personBId: id(ids, 1),
+      status: "ongoing",
+    });
+    const next = updateRelationship(d, d.relationships[0]!.id, {
+      personAId: id(ids, 0),
+      personBId: id(ids, 1),
+      status: "ended",
+      start: year("1990"),
+      end: year("1995"),
+    });
+    expect(describeRelationship(next.relationships[0]!, () => "X")).toContain("(ended, 1990–1995)");
+  });
+
+  it("ignores itself when checking duplicates but rejects a collision", () => {
+    const { data, ids } = family("Ada", "Byron");
+    let d = addParentChild(data, foster(ids));
+    d = addParentChild(d, { ...foster(ids), nature: "step" });
+    const [fosterLink, stepLink] = d.relationships;
+    expect(() =>
+      updateRelationship(d, fosterLink!.id, { ...foster(ids), start: year("2001") }),
+    ).not.toThrow();
+    expect(() => updateRelationship(d, stepLink!.id, foster(ids))).toThrow("already exists");
+  });
+
+  it("rejects invalid dates, changed people, type switches and unknown ids", () => {
+    const { data, ids } = family("Ada", "Byron", "Cleo");
+    const d = addParentChild(data, foster(ids));
+    const rid = d.relationships[0]!.id;
+    expect(() =>
+      updateRelationship(d, rid, {
+        ...foster(ids),
+        status: "ended",
+        start: year("1995"),
+        end: year("1990"),
+      }),
+    ).toThrow("end date cannot be before");
+    expect(() => updateRelationship(d, rid, { ...foster(ids), childId: id(ids, 2) })).toThrow(
+      "cannot be changed",
+    );
+    expect(() =>
+      updateRelationship(d, rid, {
+        personAId: id(ids, 0),
+        personBId: id(ids, 1),
+        status: "ongoing",
+      }),
+    ).toThrow("cannot change between");
+    expect(() => updateRelationship(d, createUuidId<"RelationshipId">(), foster(ids))).toThrow(
+      RelationshipNotFoundError,
+    );
+  });
+});
+
+describe("editValuesOf", () => {
+  it("prefills dates from a saved link", () => {
+    const { data, ids } = family("Ada", "Byron");
+    const d = addParentChild(data, {
+      parentId: id(ids, 0),
+      childId: id(ids, 1),
+      nature: "step",
+      status: "ended",
+      start: year("1990"),
+      end: year("1995"),
+    });
+    expect(editValuesOf(d.relationships[0]!)).toMatchObject({
+      nature: "step",
+      status: "ended",
+      start: { year: "1990" },
+      end: { year: "1995" },
+    });
   });
 });

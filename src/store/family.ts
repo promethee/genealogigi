@@ -6,6 +6,7 @@ import {
   addPartners,
   relationshipsOf,
   removeRelationship,
+  updateRelationship,
   type ParentChildInput,
   type PartnersInput,
 } from "../data/relationships.ts";
@@ -181,6 +182,9 @@ export function defineFamilyStore(platform: PlatformAPI) {
     const addPartnersLink = (input: PartnersInput) =>
       mutate((current) => addPartners(current, input));
 
+    const editRelationship = (id: RelationshipId, input: ParentChildInput | PartnersInput) =>
+      mutate((current) => updateRelationship(current, id, input));
+
     /** Asks for confirmation first; returns true only if the relationship was deleted. */
     async function deleteRelationship(id: RelationshipId, label: string): Promise<boolean> {
       if (!(await platform.confirm(`Delete "${label}"? This cannot be undone.`))) return false;
@@ -203,6 +207,7 @@ export function defineFamilyStore(platform: PlatformAPI) {
       deletePerson,
       addParentChild: addParentChildLink,
       addPartners: addPartnersLink,
+      editRelationship,
       deleteRelationship,
       saveCopy,
     };
