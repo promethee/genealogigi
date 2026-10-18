@@ -266,3 +266,7 @@ compared; if that fails nothing changes. Validation is structural: unreadable, w
 newer-schema files are refused; dangling links, duplicate people, bad photos and bad events are
 dropped and reported. Export replaces "Save a copy" (same behaviour, richer message). Close family
 awaits pending saves, then shows the welcome screen (Resume still offers the closed file).
+
+## File extension (2026-10-18)
+
+Decision: family files are `.gigi` with JSON content; `.json` stays readable. Reason: recognisable, associable file type without a format change (no schema bump). Backups keep the source extension so they open as family files.

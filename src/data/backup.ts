@@ -99,7 +99,7 @@ export const shortHash = (hash: string): string => hash.slice(0, 8);
 
 /**
  * Where the backup of `filePath` goes: next to it, as
- * `<name>.backup-<yyyyMMdd>-<HHmmss>-<hash8>.json`, keeping the folder and its slash style.
+ * `<name>.backup-<yyyyMMdd>-<HHmmss>-<hash8>.<ext>` (the source's extension, default gigi), keeping the folder and its slash style.
  */
 export function backupPath(filePath: string, date: Date, hash: string): string {
   const cut = Math.max(filePath.lastIndexOf("/"), filePath.lastIndexOf("\\"));
@@ -107,7 +107,8 @@ export function backupPath(filePath: string, date: Date, hash: string): string {
   const file = filePath.slice(cut + 1);
   const dot = file.lastIndexOf(".");
   const base = dot > 0 ? file.slice(0, dot) : file;
-  return `${folder}${base}.backup-${timestamp(date)}-${shortHash(hash)}.json`;
+  const extension = dot > 0 ? file.slice(dot + 1) : "gigi";
+  return `${folder}${base}.backup-${timestamp(date)}-${shortHash(hash)}.${extension}`;
 }
 
 /** Just the file name of a path. */

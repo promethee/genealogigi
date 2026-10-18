@@ -34,8 +34,8 @@ import {
 import type { EventId, FamilyData, PersonId, PhotoId, RelationshipId } from "../data/types.ts";
 import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
-const DEFAULT_FILE_NAME = "family.json";
-const EXPORT_FILE_NAME = "family-export.json";
+const DEFAULT_FILE_NAME = "family.gigi";
+const EXPORT_FILE_NAME = "family-export.gigi";
 
 function emptyFamily(): FamilyData {
   return { schemaVersion: 1, people: [], relationships: [] };

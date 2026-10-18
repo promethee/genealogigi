@@ -10,8 +10,8 @@ native dialogs, real files, and the Tauri settings store.
 | #   | Action                                                                  | Expected                                                                                            |
 | --- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | 1   | First launch (delete `%APPDATA%\app.genealogigi\settings.json` first)   | Welcome screen. "Resume last family" is greyed out. No error.                                       |
-| 2   | Click **Create new family…**, choose a folder, keep `family.json`, Save | App shows the path and "0 people · 0 relationships". File exists and contains `"schemaVersion": 1`. |
-| 3   | Close the app, relaunch                                                 | Welcome screen. Resume button reads "Resume family.json" and is enabled.                            |
+| 2   | Click **Create new family…**, choose a folder, keep `family.gigi`, Save | App shows the path and "0 people · 0 relationships". File exists and contains `"schemaVersion": 1`. |
+| 3   | Close the app, relaunch                                                 | Welcome screen. Resume button reads "Resume family.gigi" and is enabled.                            |
 | 4   | Click **Resume**                                                        | Same loaded view as step 2.                                                                         |
 | 5   | Relaunch, click **Open family file…**, then Cancel                      | Still on welcome. No error.                                                                         |
 | 6   | Click **Open family file…**, pick a file containing `{not json`         | Red message "The file is not valid JSON." Still on welcome. The file is unchanged.                  |
@@ -71,6 +71,8 @@ Use a family with at least: Me, Mum, Dad, Gran (Mum's parent) and GreatGran
 | 9   | Resize the window narrower than the chart                          | The chart scrolls inside its frame. The page layout does not break.                       |
 
 ## Export, import and close
+
+Family files use the `.gigi` extension (JSON inside); old `.json` files still open. The file dialogs offer `.gigi`; Open also lists `.json`.
 
 Start from an open family with at least one person.
 

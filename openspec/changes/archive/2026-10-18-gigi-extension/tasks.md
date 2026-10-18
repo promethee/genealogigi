@@ -1,0 +1,3 @@
+- [x] Default names and dialog filters use gigi (json still accepted on open)
+- [x] backupPath keeps the source extension
+- [x] Tests, docs, MANUAL_TESTS

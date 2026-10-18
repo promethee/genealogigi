@@ -62,12 +62,18 @@ describe("backupPath", () => {
     );
   });
 
+  it("keeps the source extension, so a backup of a .gigi file is a .gigi file", () => {
+    expect(backupPath("/x/family.gigi", date, ABC)).toBe(
+      "/x/family.backup-20261018-143055-ba7816bf.gigi",
+    );
+  });
+
   it("handles a bare name, no extension and several dots", () => {
     expect(backupPath("family.json", date, ABC)).toBe(
       "family.backup-20261018-143055-ba7816bf.json",
     );
     expect(backupPath("/x/family", date, ABC)).toBe(
-      "/x/family.backup-20261018-143055-ba7816bf.json",
+      "/x/family.backup-20261018-143055-ba7816bf.gigi",
     );
     expect(backupPath("/x/my.family.json", date, ABC)).toBe(
       "/x/my.family.backup-20261018-143055-ba7816bf.json",

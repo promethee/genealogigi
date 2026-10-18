@@ -154,3 +154,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 
 - **2026-10-18 (import-export)** — Implemented `import-export`: Export… (replaces Save a copy), Import… (replace after native confirmation; backup `<name>.backup-yyyyMMdd-HHmmss-<sha256 first 8>.json` written, read back and verified before anything changes; damaged items skipped and listed as warnings; newer schema refused), Close family (back to the welcome screen). Pure modules `backup.ts`, `importFamily.ts`; `PlatformAPI.data.readRaw/writeRaw`. Real-app run deferred (MANUAL_TESTS.md "Export, import and close").
+
+- **2026-10-18 (gigi-extension)** — Family files now use `.gigi` (JSON inside): default names, save dialogs; Open/Import still accept `.json`; backups keep the source extension. Archived `gigi-extension`.

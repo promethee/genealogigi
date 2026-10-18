@@ -16,7 +16,8 @@ import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
 import type { GitStatus, PickedImage, PlatformAPI } from "./PlatformAPI.ts";
 
 const FAMILY_FILE_FILTER_NAME = "Genealogigi family";
-const DEFAULT_EXTENSIONS = ["json"];
+const OPEN_EXTENSIONS = ["gigi", "json"];
+const SAVE_EXTENSIONS = ["gigi"];
 const SETTINGS_FILE = "settings.json";
 const LAST_FILE_PATH_KEY = "lastFilePath";
 const LANGUAGE_KEY = "language";
@@ -58,7 +59,7 @@ export function createPlatformAPI(): PlatformAPI {
         multiple: false,
         directory: false,
         filters: [
-          { name: FAMILY_FILE_FILTER_NAME, extensions: options?.extensions ?? DEFAULT_EXTENSIONS },
+          { name: FAMILY_FILE_FILTER_NAME, extensions: options?.extensions ?? OPEN_EXTENSIONS },
         ],
       });
       return selected ?? null;
@@ -66,7 +67,7 @@ export function createPlatformAPI(): PlatformAPI {
     saveFileDialog: (options) =>
       save({
         defaultPath: options?.defaultName,
-        filters: [{ name: FAMILY_FILE_FILTER_NAME, extensions: DEFAULT_EXTENSIONS }],
+        filters: [{ name: FAMILY_FILE_FILTER_NAME, extensions: SAVE_EXTENSIONS }],
       }),
     confirm: (message) => confirm(message, { title: "Genealogigi", kind: "warning" }),
     data: {
