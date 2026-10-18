@@ -161,6 +161,7 @@ export const fr: Record<MessageKey, string> = {
   "tree.descendants": "Descendants",
   "tree.hourglass": "Sablier (les deux)",
   "tree.generations": "Générations",
+  "tree.siblings": "Afficher la fratrie",
   "tree.legend.confirmed": "biologique, confirmé",
   "tree.legend.other": "présumé, adoptif, beau-parent, famille d’accueil ou tuteur",
 

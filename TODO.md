@@ -136,3 +136,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — People list rows now have a **View** button (eye icon) that opens the person card, replacing the row Edit button (the name still opens it too); Edit and Delete are on the card. e2e updated accordingly.
 
+- **2026-10-18 (cont.)** — Implemented change `tree-siblings`: "Show siblings" checkbox (ancestors and hourglass views) draws the root's siblings, including half-siblings, on the root's row linked to their shared parents (older left, younger/unknown right); the card's X became an explicit **Close** button. 241 unit, 138 e2e.
+

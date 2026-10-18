@@ -6,6 +6,7 @@ import {
   truncateName,
   type Pedigree,
 } from "./pedigree.ts";
+import { dateFromInput } from "./dates.ts";
 import { addPerson } from "./people.ts";
 import type { ParentChildNature } from "./relationships.ts";
 import { createUuidId, type FamilyData, type PersonId } from "./types.ts";
@@ -377,5 +378,112 @@ describe("vertical levels", () => {
     const slots = p.nodes.filter((n) => n.level === 1).map((n) => n.slot);
     expect(new Set(slots).size).toBe(2);
     expect(p.nodes.find((n) => n.generation === 0)?.slot).toBeCloseTo((slots[0]! + slots[1]!) / 2);
+  });
+});
+
+describe("siblings of the root", () => {
+  const withYears = (years: Record<string, string>) => {
+    const names = ["Mum", "Dad", "Step", "Me", "Older", "Younger", "Half", "Alone"];
+    const base = build(names, [
+      ["Mum", "Me"],
+      ["Dad", "Me"],
+      ["Mum", "Older"],
+      ["Dad", "Older"],
+      ["Mum", "Younger"],
+      ["Dad", "Younger"],
+      ["Mum", "Half"],
+      ["Step", "Half"],
+    ]);
+    let data = base.data;
+    for (const [name, year] of Object.entries(years)) {
+      data = {
+        ...data,
+        people: data.people.map((p) =>
+          p.id === base.id(name)
+            ? {
+                ...p,
+                born: { id: p.id, birthDate: dateFromInput({ year, month: "", day: "" }, "x")! },
+              }
+            : p,
+        ),
+      };
+    }
+    return { data, id: base.id };
+  };
+  const slotOf = (p: Pedigree, id: PersonId) => p.nodes.find((n) => n.personId === id)?.slot;
+  const levelOf = (p: Pedigree, id: PersonId) => p.nodes.find((n) => n.personId === id)?.level;
+
+  it("adds nothing unless asked", () => {
+    const { data, id } = withYears({});
+    expect(buildPedigree(data, id("Me"), 4, "ancestors").nodes).toHaveLength(3);
+    expect(buildPedigree(data, id("Me"), 4, "ancestors", { siblings: false }).nodes).toHaveLength(
+      3,
+    );
+  });
+
+  it("draws siblings (full and half) on the root's row, once each", () => {
+    const { data, id } = withYears({});
+    const p = buildPedigree(data, id("Me"), 4, "ancestors", { siblings: true });
+    // Mum, Dad, Step (not a parent of Me, so not drawn), Me + Older, Younger, Half.
+    expect(
+      p.nodes
+        .filter((n) => n.sibling)
+        .map((n) => n.personId)
+        .sort(),
+    ).toEqual([id("Older"), id("Younger"), id("Half")].sort());
+    const rootLevel = levelOf(p, id("Me"));
+    for (const n of p.nodes.filter((x) => x.sibling)) expect(n.level).toBe(rootLevel);
+    expect(p.nodes.filter((n) => n.personId === id("Me"))).toHaveLength(1);
+    expect(p.nodes.find((n) => n.personId === id("Alone"))).toBeUndefined();
+  });
+
+  it("links each sibling to the parents they share", () => {
+    const { data, id } = withYears({});
+    const p = buildPedigree(data, id("Me"), 4, "ancestors", { siblings: true });
+    const keyOf = (name: string) => p.nodes.find((n) => n.personId === id(name))!.key;
+    const to = (name: string) =>
+      p.edges
+        .filter((e) => e.fromKey === keyOf(name))
+        .map((e) => p.nodes.find((n) => n.key === e.toKey)!.personId);
+    expect(to("Older").sort()).toEqual([id("Mum"), id("Dad")].sort());
+    expect(to("Half")).toEqual([id("Mum")]);
+  });
+
+  it("puts older siblings on the left and younger or unknown ones on the right", () => {
+    const { data, id } = withYears({ Me: "1980", Older: "1975", Younger: "1985" });
+    const p = buildPedigree(data, id("Me"), 4, "ancestors", { siblings: true });
+    expect(slotOf(p, id("Older"))!).toBeLessThan(slotOf(p, id("Me"))!);
+    expect(slotOf(p, id("Younger"))!).toBeGreaterThan(slotOf(p, id("Me"))!);
+    expect(slotOf(p, id("Half"))!).toBeGreaterThan(slotOf(p, id("Me"))!); // unknown year
+  });
+
+  it("keeps every box on its own slot and the chart inside slot 0..slots", () => {
+    const { data, id } = withYears({ Me: "1980", Older: "1975", Younger: "1985" });
+    const p = buildPedigree(data, id("Me"), 4, "ancestors", { siblings: true });
+    const rootRow = p.nodes.filter((n) => n.level === levelOf(p, id("Me")));
+    expect(new Set(rootRow.map((n) => n.slot)).size).toBe(rootRow.length);
+    expect(Math.min(...p.nodes.map((n) => n.slot))).toBe(0);
+    expect(Math.max(...p.nodes.map((n) => n.slot))).toBeLessThanOrEqual(p.slots - 1);
+  });
+
+  it("works in the hourglass, with only one root", () => {
+    const { data, id } = withYears({});
+    const p = buildPedigree(data, id("Me"), 4, "hourglass", { siblings: true });
+    expect(p.nodes.filter((n) => n.generation === 0 && !n.sibling)).toHaveLength(1);
+    expect(p.nodes.filter((n) => n.sibling)).toHaveLength(3);
+  });
+
+  it("is ignored in the descendants layout, and for a root without parents", () => {
+    const { data, id } = withYears({});
+    expect(
+      buildPedigree(data, id("Mum"), 4, "descendants", { siblings: true }).nodes.some(
+        (n) => n.sibling,
+      ),
+    ).toBe(false);
+    expect(
+      buildPedigree(data, id("Mum"), 4, "ancestors", { siblings: true }).nodes.some(
+        (n) => n.sibling,
+      ),
+    ).toBe(false);
   });
 });

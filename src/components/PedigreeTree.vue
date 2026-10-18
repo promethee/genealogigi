@@ -38,6 +38,7 @@ const selectedId = ref<PersonId | null>(null);
 const editing = ref(false);
 const generations = ref(DEFAULT_GENERATIONS);
 const direction = ref<PedigreeDirection>("ancestors");
+const showSiblings = ref(false);
 
 const people = computed(() => family.data?.people ?? []);
 const generationOptions = Array.from(
@@ -53,7 +54,14 @@ const rootId = computed<PersonId | null>(() => {
 
 const pedigree = computed(() =>
   family.data && rootId.value
-    ? buildPedigree(family.data, rootId.value, clampGenerations(generations.value), direction.value)
+    ? buildPedigree(
+        family.data,
+        rootId.value,
+        clampGenerations(generations.value),
+        direction.value,
+        // The parents are not drawn in the descendants view, so siblings would float unlinked.
+        { siblings: showSiblings.value && direction.value !== "descendants" },
+      )
     : null,
 );
 
@@ -172,6 +180,18 @@ function fullName(id: PersonId): string {
             <option v-for="n in generationOptions" :key="n" :value="n">{{ n }}</option>
           </select>
         </label>
+        <label
+          v-if="direction !== 'descendants'"
+          class="flex items-center gap-2 pb-2 text-sm text-slate-600"
+        >
+          <input
+            v-model="showSiblings"
+            type="checkbox"
+            data-testid="tree-siblings"
+            class="size-4 accent-emerald-700"
+          />
+          {{ t("tree.siblings") }}
+        </label>
         <p class="flex items-center gap-4 text-xs text-slate-500" data-testid="tree-legend">
           <span class="flex items-center gap-1">
             <svg width="28" height="6">
@@ -234,7 +254,7 @@ function fullName(id: PersonId): string {
             v-for="node in pedigree.nodes"
             :key="node.key"
             data-testid="tree-node"
-            :data-root="node.generation === 0"
+            :data-root="node.generation === 0 && !node.sibling"
             class="cursor-pointer"
             :data-selected="node.personId === selectedId"
             :transform="`translate(${positions.get(node.key)?.x ?? 0} ${positions.get(node.key)?.y ?? 0})`"
@@ -246,15 +266,21 @@ function fullName(id: PersonId): string {
               :width="BOX_WIDTH"
               :height="BOX_HEIGHT"
               rx="10"
-              :fill="node.generation === 0 ? '#ecfdf5' : '#ffffff'"
+              :fill="node.generation === 0 && !node.sibling ? '#ecfdf5' : '#ffffff'"
               :stroke="
                 node.personId === selectedId
                   ? '#0ea5e9'
-                  : node.generation === 0
+                  : node.generation === 0 && !node.sibling
                     ? '#059669'
                     : '#cbd5e1'
               "
-              :stroke-width="node.personId === selectedId ? 2.5 : node.generation === 0 ? 1.5 : 1"
+              :stroke-width="
+                node.personId === selectedId
+                  ? 2.5
+                  : node.generation === 0 && !node.sibling
+                    ? 1.5
+                    : 1
+              "
               filter="url(#node-shadow)"
             />
             <text

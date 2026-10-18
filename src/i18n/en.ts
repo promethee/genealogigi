@@ -158,6 +158,7 @@ export const en = {
   "tree.descendants": "Descendants",
   "tree.hourglass": "Hourglass (both)",
   "tree.generations": "Generations",
+  "tree.siblings": "Show siblings",
   "tree.legend.confirmed": "biological, confirmed",
   "tree.legend.other": "presumed, adoptive, step, foster or guardian",
 

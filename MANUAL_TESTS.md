@@ -302,3 +302,15 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 6   | Birth year in the future with a parent chosen                                            | Error; neither the person nor the link is saved.                                       |
 | 7   | Choose two parents who are not partners and tick **Also record the parents as partners** | A partnership (unknown) is added too; the box is gone next time for that couple.       |
 | 8   | Edit an existing person                                                                  | No Parents section.                                                                    |
+
+## Siblings in the tree, Close button
+
+| #   | Action                                                                                                  | Expected                                                                                      |
+| --- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 1   | Family: Mum + Dad with Me (1980), Older (1975), Younger (1985); Mum + Step with Half. Tree tab, root Me | Only Me, Mum, Dad.                                                                            |
+| 2   | Tick **Show siblings**                                                                                  | Older, Younger and Half appear on Me's row, linked to their shared parents; only Me is green. |
+| 3   | Look at their order                                                                                     | Older to the left of Me; Younger and Half to the right.                                       |
+| 4   | Half's links                                                                                            | A single line, to Mum.                                                                        |
+| 5   | Click a sibling                                                                                         | Their card opens below the chart; double-click makes them the root.                           |
+| 6   | Show: Descendants                                                                                       | The checkbox disappears. Hourglass: it is back.                                               |
+| 7   | Open any person card                                                                                    | An explicit **Close** button (text, no "X" icon) closes it.                                   |

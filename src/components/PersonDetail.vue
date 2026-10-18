@@ -139,14 +139,8 @@ async function remove(): Promise<void> {
           <AppIcon name="trash" />
           {{ t("common.delete") }}
         </button>
-        <button
-          data-testid="detail-close"
-          class="btn btn-ghost btn-sm"
-          :aria-label="t('detail.close')"
-          :title="t('detail.close')"
-          @click="emit('close')"
-        >
-          <AppIcon name="x" />
+        <button data-testid="detail-close" class="btn btn-secondary btn-sm" @click="emit('close')">
+          {{ t("detail.close") }}
         </button>
       </div>
     </header>
