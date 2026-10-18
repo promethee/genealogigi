@@ -86,7 +86,7 @@ async function save(input: EventInput): Promise<void> {
         :data-kind="entry.kind"
       >
         <span
-          class="absolute top-1.5 -left-[27px] size-3 rounded-full border-2 border-white"
+          class="absolute top-1.5 -left-[27px] size-3 rounded-full border-2 border-surface"
           :class="
             entry.kind === 'birth' || entry.kind === 'death'
               ? 'bg-emerald-600'
@@ -108,7 +108,7 @@ async function save(input: EventInput): Promise<void> {
             {{ t("timeline.with") }}
             <template v-for="(id, i) in entry.people" :key="id">
               <button
-                class="font-medium text-emerald-700 hover:underline"
+                class="font-medium text-link hover:underline"
                 data-testid="timeline-person"
                 @click="emit('select', id)"
               >

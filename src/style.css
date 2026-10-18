@@ -1,8 +1,61 @@
 @import "tailwindcss";
 
+/* Dark theme = a `.dark` class on <html> (set by the theme store). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Colours that change with the theme. Slate is remapped below; these three are semantic so
+   `text-white` on a button stays white while a card's background flips. */
+@theme {
+  --color-surface: #ffffff;
+  --color-page: #f8fafc;
+  --color-link: #047857;
+}
+
+:root {
+  color-scheme: light;
+  --tree-node: #ffffff;
+  --tree-node-stroke: #cbd5e1;
+  --tree-root: #ecfdf5;
+  --tree-root-stroke: #059669;
+  --tree-edge: #94a3b8;
+  --tree-text: #0f172a;
+  --tree-muted: #64748b;
+}
+
+/* While the theme flips, skip colour transitions so nothing visibly fades from white to dark. */
+.theme-switching,
+.theme-switching * {
+  transition: none !important;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-surface: #111a2c;
+  --color-page: #0b1322;
+  --color-link: #34d399;
+  /* The slate scale, inverted for dark: low numbers are subtle surfaces, high numbers are text. */
+  --color-slate-50: #182235;
+  --color-slate-100: #1d283c;
+  --color-slate-200: #2a3750;
+  --color-slate-300: #3b4a66;
+  --color-slate-400: #7a8aa5;
+  --color-slate-500: #98a6bd;
+  --color-slate-600: #b4c0d3;
+  --color-slate-700: #cfd8e6;
+  --color-slate-800: #e3e9f2;
+  --color-slate-900: #f4f7fb;
+  --tree-node: #1b2740;
+  --tree-node-stroke: #3b4a66;
+  --tree-root: #06392c;
+  --tree-root-stroke: #34d399;
+  --tree-edge: #64748b;
+  --tree-text: #f1f5f9;
+  --tree-muted: #98a6bd;
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-700 antialiased;
+    @apply bg-page text-slate-700 antialiased;
     font-family:
       Inter,
       "Segoe UI Variable",
@@ -19,11 +72,11 @@
 /* Shared building blocks, so the look is tuned in one place. */
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+    @apply rounded-2xl border border-slate-200 bg-surface shadow-sm;
   }
 
   .input {
-    @apply rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-800 shadow-sm transition;
+    @apply rounded-lg border border-slate-300 bg-surface px-2.5 py-1.5 text-sm text-slate-800 shadow-sm transition;
     @apply placeholder:text-slate-400 hover:border-slate-400;
     @apply focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 focus:outline-none;
   }
@@ -39,13 +92,14 @@
     @apply border-emerald-700 bg-emerald-700 text-white hover:bg-emerald-800 active:bg-emerald-900;
   }
   .btn-secondary {
-    @apply border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100;
+    @apply border-slate-300 bg-surface text-slate-700 hover:border-slate-400 hover:bg-slate-50 active:bg-slate-100;
   }
   .btn-danger {
-    @apply border-red-200 bg-white text-red-600 hover:border-red-300 hover:bg-red-50 active:bg-red-100;
+    @apply border-red-200 bg-surface text-red-600 hover:border-red-300 hover:bg-red-50 active:bg-red-100;
+    @apply dark:border-red-900 dark:text-red-400 dark:hover:border-red-800 dark:hover:bg-red-950/50 dark:active:bg-red-950;
   }
   .btn-ghost {
-    @apply border-transparent bg-transparent text-emerald-700 shadow-none hover:bg-emerald-50;
+    @apply border-transparent bg-transparent text-link shadow-none hover:bg-emerald-50 dark:hover:bg-emerald-950/40;
   }
 
   .chip {

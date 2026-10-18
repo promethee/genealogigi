@@ -195,7 +195,7 @@ function fullName(id: PersonId): string {
         <p class="flex items-center gap-4 text-xs text-slate-500" data-testid="tree-legend">
           <span class="flex items-center gap-1">
             <svg width="28" height="6">
-              <line x1="0" y1="3" x2="28" y2="3" stroke="#94a3b8" stroke-width="2" />
+              <line x1="0" y1="3" x2="28" y2="3" stroke="var(--tree-edge)" stroke-width="2" />
             </svg>
             {{ t("tree.legend.confirmed") }}
           </span>
@@ -206,7 +206,7 @@ function fullName(id: PersonId): string {
                 y1="3"
                 x2="28"
                 y2="3"
-                stroke="#94a3b8"
+                stroke="var(--tree-edge)"
                 stroke-width="2"
                 stroke-dasharray="5 3"
               />
@@ -217,7 +217,7 @@ function fullName(id: PersonId): string {
       </div>
 
       <div
-        class="overflow-auto rounded-xl border border-slate-200 bg-slate-50/70 bg-[radial-gradient(circle,#cbd5e1_1px,transparent_1px)] [background-size:18px_18px]"
+        class="overflow-auto rounded-xl border border-slate-200 bg-slate-50/70 bg-[radial-gradient(circle,#cbd5e1_1px,transparent_1px)] [background-size:18px_18px] dark:bg-[radial-gradient(circle,#334155_1px,transparent_1px)]"
       >
         <svg
           v-if="pedigree"
@@ -245,7 +245,7 @@ function fullName(id: PersonId): string {
             :data-dashed="edge.dashed"
             :d="edge.d"
             fill="none"
-            stroke="#94a3b8"
+            stroke="var(--tree-edge)"
             stroke-width="2"
             stroke-linejoin="round"
             :stroke-dasharray="edge.dashed ? '5 4' : undefined"
@@ -266,13 +266,15 @@ function fullName(id: PersonId): string {
               :width="BOX_WIDTH"
               :height="BOX_HEIGHT"
               rx="10"
-              :fill="node.generation === 0 && !node.sibling ? '#ecfdf5' : '#ffffff'"
+              :fill="
+                node.generation === 0 && !node.sibling ? 'var(--tree-root)' : 'var(--tree-node)'
+              "
               :stroke="
                 node.personId === selectedId
                   ? '#0ea5e9'
                   : node.generation === 0 && !node.sibling
-                    ? '#059669'
-                    : '#cbd5e1'
+                    ? 'var(--tree-root-stroke)'
+                    : 'var(--tree-node-stroke)'
               "
               :stroke-width="
                 node.personId === selectedId
@@ -289,7 +291,7 @@ function fullName(id: PersonId): string {
               text-anchor="middle"
               font-size="14"
               font-weight="500"
-              fill="#0f172a"
+              fill="var(--tree-text)"
             >
               {{ truncateName(shortNames.get(node.personId) ?? fullName(node.personId)) }}
             </text>
@@ -300,7 +302,7 @@ function fullName(id: PersonId): string {
               y="38"
               text-anchor="middle"
               font-size="11"
-              fill="#64748b"
+              fill="var(--tree-muted)"
             >
               {{ lifespans.get(node.personId) }}
             </text>
@@ -310,7 +312,7 @@ function fullName(id: PersonId): string {
 
       <div
         v-if="selected"
-        class="mt-4 rounded-xl border border-slate-200 bg-white p-5"
+        class="mt-4 rounded-xl border border-slate-200 bg-surface p-5"
         data-testid="tree-detail-panel"
       >
         <PersonForm
@@ -336,7 +338,7 @@ function fullName(id: PersonId): string {
         <p
           v-if="family.error"
           data-testid="error"
-          class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+          class="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300"
         >
           {{ family.error }}
         </p>

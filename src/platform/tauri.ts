@@ -15,6 +15,7 @@ const SETTINGS_FILE = "settings.json";
 const LAST_FILE_PATH_KEY = "lastFilePath";
 const LANGUAGE_KEY = "language";
 const DISMISSED_UPDATE_KEY = "dismissedUpdate";
+const THEME_KEY = "theme";
 
 // Opened lazily so merely importing this module never touches Tauri.
 const settingsStore = () => loadStore(SETTINGS_FILE, { defaults: {}, autoSave: false });
@@ -67,6 +68,15 @@ export function createPlatformAPI(): PlatformAPI {
       setLanguage: async (language) => {
         const store = await settingsStore();
         await store.set(LANGUAGE_KEY, language);
+        await store.save();
+      },
+      getTheme: async () => {
+        const store = await settingsStore();
+        return (await store.get<string>(THEME_KEY)) ?? null;
+      },
+      setTheme: async (theme) => {
+        const store = await settingsStore();
+        await store.set(THEME_KEY, theme);
         await store.save();
       },
       getDismissedUpdate: async () => {

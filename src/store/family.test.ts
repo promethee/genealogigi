@@ -46,6 +46,8 @@ function fakePlatform(options: FakeOptions = {}) {
       },
       getLanguage: async () => null,
       setLanguage: async () => {},
+      getTheme: async () => null,
+      setTheme: async () => {},
       getDismissedUpdate: async () => null,
       setDismissedUpdate: async () => {},
     },

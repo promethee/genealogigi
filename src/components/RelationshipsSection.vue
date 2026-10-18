@@ -142,7 +142,7 @@ async function add(): Promise<void> {
 <template>
   <section data-testid="relationships-section">
     <h2 class="mb-4 flex items-center gap-2 text-base font-semibold text-slate-900">
-      <AppIcon name="link" class="text-emerald-700" />
+      <AppIcon name="link" class="text-link" />
       {{ t("rel.title") }}
     </h2>
 

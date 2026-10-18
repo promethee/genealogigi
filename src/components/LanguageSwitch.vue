@@ -23,7 +23,7 @@ const language = useLanguageStore();
       class="flex cursor-pointer items-center gap-2 rounded-[10px] px-2.5 py-1 font-medium transition"
       :class="
         language.current === code
-          ? 'bg-white text-slate-900 shadow-sm'
+          ? 'bg-surface text-slate-900 shadow-sm'
           : 'text-slate-500 hover:text-slate-800'
       "
       @click="language.choose(code)"

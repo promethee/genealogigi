@@ -10,7 +10,7 @@ onMounted(() => family.init());
 
 <template>
   <main
-    class="flex h-full w-full items-center justify-center bg-linear-to-b from-slate-50 to-emerald-50/60 p-6"
+    class="flex h-full w-full items-center justify-center bg-linear-to-b from-page to-emerald-50/60 dark:to-emerald-950/30 p-6"
   >
     <div class="card flex w-full max-w-md flex-col items-center gap-6 px-8 py-10">
       <span
@@ -69,7 +69,7 @@ onMounted(() => family.init());
       <p
         v-if="family.error"
         data-testid="error"
-        class="w-full rounded-lg bg-red-50 px-3 py-2 text-center text-sm text-red-700"
+        class="w-full rounded-lg bg-red-50 px-3 py-2 text-center text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300"
       >
         {{ family.error }}
       </p>

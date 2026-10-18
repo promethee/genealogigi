@@ -142,3 +142,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `person-mini-tree`: the card shows a small tree of the immediate family (parents above, partners beside, children below; dashed + noted for non-confirmed natures; boxes open cards; hidden when empty). Pure layout in `miniTree.ts`. 269 unit, 154 e2e.
 
+- **2026-10-18 (cont.)** — Implemented change `dark-theme`: light/dark theme (class strategy; slate scale remapped through CSS variables, semantic `surface`/`page`/`link` colours, `dark:` variants for coloured panels, tree and small-tree colours as CSS variables); sun/moon button in the top bar; first launch follows the system, a click is remembered (platform setting + localStorage copy to avoid a flash); transitions paused while switching; contrast measured by a test in both themes. 278 unit, ~163 e2e.
+

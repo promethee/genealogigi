@@ -41,12 +41,12 @@ function initialInput(): PersonFormValues {
 }
 
 const AVATAR_COLORS = [
-  "bg-emerald-100 text-emerald-800",
-  "bg-sky-100 text-sky-800",
-  "bg-amber-100 text-amber-800",
-  "bg-rose-100 text-rose-800",
-  "bg-violet-100 text-violet-800",
-  "bg-teal-100 text-teal-800",
+  "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200",
+  "bg-sky-100 text-sky-800 dark:bg-sky-950/50 dark:text-sky-100",
+  "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200",
+  "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200",
+  "bg-violet-100 text-violet-800 dark:bg-violet-950/50 dark:text-violet-200",
+  "bg-teal-100 text-teal-800 dark:bg-teal-950/50 dark:text-teal-200",
 ];
 
 /** Up to two initials of the main name, e.g. "Marie Dubois" -> "MD". */
@@ -125,7 +125,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         <p
           v-if="family.notice"
           data-testid="notice"
-          class="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+          class="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
         >
           {{ family.notice }}
         </p>
@@ -137,7 +137,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           class="cursor-pointer rounded-lg px-4 py-1.5 transition"
           :class="
             tab === 'list'
-              ? 'bg-white text-slate-900 shadow-sm'
+              ? 'bg-surface text-slate-900 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
           "
           @click="tab = 'list'"
@@ -149,7 +149,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           class="cursor-pointer rounded-lg px-4 py-1.5 transition"
           :class="
             tab === 'tree'
-              ? 'bg-white text-slate-900 shadow-sm'
+              ? 'bg-surface text-slate-900 shadow-sm'
               : 'text-slate-500 hover:text-slate-800'
           "
           @click="tab = 'tree'"
@@ -201,7 +201,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         <p
           v-if="family.error"
           data-testid="error"
-          class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+          class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300"
         >
           {{ family.error }}
         </p>
@@ -231,7 +231,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
               <span class="min-w-0">
                 <button
                   data-testid="person-name"
-                  class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-emerald-700 hover:underline"
+                  class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
                   :title="t('detail.open', { name: displayName(person) })"
                   @click="viewing = person.id"
                 >

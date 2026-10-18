@@ -342,3 +342,15 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 5   | Open the card of someone with only children                      | No row above; children below.                                                                                     |
 | 6   | Many children                                                    | The little tree scrolls sideways inside its frame.                                                                |
 | 7   | Open a card from the Tree tab                                    | The small tree is there too.                                                                                      |
+
+## Light / dark theme
+
+| #   | Action                                                                                                      | Expected                                                                   |
+| --- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1   | Delete the app's saved settings, set Windows to dark mode, launch                                           | The app starts dark. With Windows in light mode it starts light.           |
+| 2   | Click the sun/moon button in the top bar (next to the language switch)                                      | The whole app switches at once, with no half-white panels or fading flash. |
+| 3   | Go through: welcome, people list, forms, relationships, card, timeline, event form, tree, small family tree | Every surface is dark in dark mode; text is readable everywhere.           |
+| 4   | In dark mode open a native select (e.g. Month) and scroll a long page                                       | The dropdown and the scrollbar are dark too.                               |
+| 5   | Quit and relaunch                                                                                           | The last choice is kept, with no flash of the other theme at startup.      |
+| 6   | Change Windows' light/dark setting while the app is open (before ever clicking the button)                  | The app follows. After a click on the button it no longer follows.         |
+| 7   | Show an update banner / error message in dark mode                                                          | Coloured panels are dark tinted with light text.                           |

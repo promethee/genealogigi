@@ -97,7 +97,7 @@ const lines = computed(() => {
           :data-dashed="line.dashed"
           :d="line.d"
           fill="none"
-          stroke="#94a3b8"
+          stroke="var(--tree-edge)"
           stroke-width="1.5"
           :stroke-dasharray="line.dashed ? '4 3' : undefined"
         />
@@ -115,8 +115,8 @@ const lines = computed(() => {
             :width="BOX_W"
             :height="BOX_H"
             rx="8"
-            :fill="box.role === 'self' ? '#ecfdf5' : '#ffffff'"
-            :stroke="box.role === 'self' ? '#059669' : '#cbd5e1'"
+            :fill="box.role === 'self' ? 'var(--tree-root)' : 'var(--tree-node)'"
+            :stroke="box.role === 'self' ? 'var(--tree-root-stroke)' : 'var(--tree-node-stroke)'"
             :stroke-width="box.role === 'self' ? 1.5 : 1"
           />
           <text
@@ -125,7 +125,7 @@ const lines = computed(() => {
             text-anchor="middle"
             font-size="12"
             font-weight="500"
-            fill="#0f172a"
+            fill="var(--tree-text)"
           >
             {{ truncateName(nameOf(box.personId)) }}
           </text>
@@ -136,7 +136,7 @@ const lines = computed(() => {
             y="30"
             text-anchor="middle"
             font-size="9"
-            fill="#64748b"
+            fill="var(--tree-muted)"
           >
             {{ natureLabel(box.nature) }}
           </text>

@@ -24,6 +24,9 @@ export interface PlatformAPI {
     /** The saved UI language ("en" / "fr"), or null when never chosen. */
     getLanguage(): Promise<string | null>;
     setLanguage(language: string): Promise<void>;
+    /** The saved theme ("light" / "dark"), or null when the user never chose. */
+    getTheme(): Promise<string | null>;
+    setTheme(theme: string): Promise<void>;
     /** The newest version whose update banner the user dismissed, or null. */
     getDismissedUpdate(): Promise<string | null>;
     setDismissedUpdate(version: string): Promise<void>;

@@ -1,6 +1,8 @@
 /** English catalog. Keys defined here are the source of truth; `fr.ts` must have the same ones. */
 export const en = {
   "lang.label": "Language",
+  "theme.toDark": "Switch to dark theme",
+  "theme.toLight": "Switch to light theme",
 
   "update.available": "Version {latest} is available (you have {current}).",
   "update.download": "Download",

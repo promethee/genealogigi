@@ -109,7 +109,7 @@ async function remove(): Promise<void> {
     <header class="flex flex-wrap items-start justify-between gap-3">
       <div class="flex min-w-0 items-center gap-3">
         <span
-          class="grid size-12 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-800"
+          class="grid size-12 shrink-0 place-items-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
           aria-hidden="true"
         >
           {{ initials }}
@@ -197,7 +197,7 @@ async function remove(): Promise<void> {
           <ul class="flex flex-col gap-1 text-sm">
             <li v-for="p in relatives.parents" :key="p.link.id">
               <button
-                class="font-medium text-emerald-700 hover:underline"
+                class="font-medium text-link hover:underline"
                 data-testid="detail-relative"
                 :title="t('detail.open', { name: nameOf(p.personId) })"
                 @click="emit('select', p.personId)"
@@ -217,7 +217,7 @@ async function remove(): Promise<void> {
           <ul class="flex flex-col gap-1 text-sm">
             <li v-for="p in relatives.partners" :key="p.link.id">
               <button
-                class="font-medium text-emerald-700 hover:underline"
+                class="font-medium text-link hover:underline"
                 data-testid="detail-relative"
                 @click="emit('select', p.personId)"
               >
@@ -234,7 +234,7 @@ async function remove(): Promise<void> {
           <ul class="flex flex-col gap-1 text-sm">
             <li v-for="c in relatives.children" :key="c.link.id">
               <button
-                class="font-medium text-emerald-700 hover:underline"
+                class="font-medium text-link hover:underline"
                 data-testid="detail-relative"
                 @click="emit('select', c.personId)"
               >
@@ -253,7 +253,7 @@ async function remove(): Promise<void> {
           <ul class="flex flex-col gap-1 text-sm">
             <li v-for="s in relatives.siblings" :key="s.personId">
               <button
-                class="font-medium text-emerald-700 hover:underline"
+                class="font-medium text-link hover:underline"
                 data-testid="detail-relative"
                 @click="emit('select', s.personId)"
               >

@@ -4,6 +4,7 @@ import { createPlatformAPI } from "../platform/tauri.ts";
 import { defineAppStore } from "./app.ts";
 import { defineFamilyStore } from "./family.ts";
 import { defineLanguageStore } from "./language.ts";
+import { defineThemeStore } from "./theme.ts";
 
 declare global {
   interface Window {
@@ -28,3 +29,4 @@ export const useAppStore = defineAppStore(
         (() => Promise.reject(new Error("network disabled in tests"))))
     : undefined,
 );
+export const useThemeStore = defineThemeStore(platform);

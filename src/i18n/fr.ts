@@ -3,6 +3,8 @@ import type { MessageKey } from "./en.ts";
 /** French catalog. Typed so a key missing here fails the typecheck. */
 export const fr: Record<MessageKey, string> = {
   "lang.label": "Langue",
+  "theme.toDark": "Passer au thème sombre",
+  "theme.toLight": "Passer au thème clair",
 
   "update.available": "La version {latest} est disponible (vous avez la {current}).",
   "update.download": "Télécharger",

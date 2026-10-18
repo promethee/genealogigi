@@ -239,3 +239,11 @@ Only user-recorded events are stored: `FamilyData.events?: FamilyEvent[]` (kind,
 date, place, description, one or more people). Optional field, no schema bump. A marriage
 event is independent of a partnership record: linking them automatically would guess.
 
+## Theme (2026-10-18)
+
+Decision: light and dark via a `.dark` class on the root. The slate colour scale is remapped
+through CSS variables so existing classes flip; `surface`, `page` and `link` are semantic
+colours; coloured panels have explicit `dark:` variants; SVG trees use `--tree-*` variables.
+One toggle button; first launch follows the system, a click is saved and wins. Contrast
+(4.5:1 text, 3:1 muted) is asserted by a Playwright test in both themes.
+
