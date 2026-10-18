@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import AppIcon from "../components/AppIcon.vue";
 import { t, tn } from "../i18n/index.ts";
 import PedigreeTree from "../components/PedigreeTree.vue";
 import PersonForm from "../components/PersonForm.vue";
 import RelationshipsSection from "../components/RelationshipsSection.vue";
 import {
   displayName,
+  displayNameParts,
   inputFromPerson,
   emptyPersonForm,
   lifeSummary,
@@ -30,6 +32,31 @@ function initialInput(): PersonFormValues {
   return person ? inputFromPerson(person) : emptyPersonForm();
 }
 
+const AVATAR_COLORS = [
+  "bg-emerald-100 text-emerald-800",
+  "bg-sky-100 text-sky-800",
+  "bg-amber-100 text-amber-800",
+  "bg-rose-100 text-rose-800",
+  "bg-violet-100 text-violet-800",
+  "bg-teal-100 text-teal-800",
+];
+
+/** Up to two initials of the main name, e.g. "Marie Dubois" -> "MD". */
+function initials(person: Parameters<typeof displayName>[0]): string {
+  const words = displayNameParts(person).name.split(/\s+/).filter(Boolean);
+  return words
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join("");
+}
+
+/** A stable pastel colour per person, from a hash of their id. */
+function avatarColor(person: Parameters<typeof displayName>[0]): string {
+  let hash = 0;
+  for (const ch of person.id) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length] as string;
+}
+
 async function submit(input: PersonFormInput): Promise<void> {
   const target = formTarget.value;
   if (!target) return;
@@ -40,121 +67,162 @@ async function submit(input: PersonFormInput): Promise<void> {
 </script>
 
 <template>
-  <main class="h-full w-full overflow-auto bg-white p-6 text-gray-700">
-    <header class="mb-4">
-      <p data-testid="loaded-path" class="text-sm text-gray-500">{{ family.filePath }}</p>
-      <p data-testid="loaded-summary" class="text-lg">
-        {{ tn("summary.people", family.data?.people.length ?? 0) }} ·
-        {{ tn("summary.relationships", family.data?.relationships.length ?? 0) }}
-      </p>
-      <button
-        data-testid="save-copy"
-        class="mt-2 rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
-        @click="family.saveCopy()"
-      >
-        {{ t("header.saveCopy") }}
-      </button>
-      <button
-        v-if="family.gitStatus === 'ready'"
-        data-testid="git-sync"
-        :disabled="family.syncing"
-        class="mt-2 ml-2 rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:text-gray-400"
-        @click="family.syncGit()"
-      >
-        {{ family.syncing ? t("git.syncing") : t("git.sync") }}
-      </button>
-      <p
-        v-else-if="family.gitStatus !== 'unavailable'"
-        data-testid="git-hint"
-        class="mt-2 text-sm text-gray-400"
-      >
-        {{ t(`git.hint.${family.gitStatus}`) }}
-      </p>
-      <p v-if="family.notice" data-testid="notice" class="mt-2 text-sm text-emerald-700">
-        {{ family.notice }}
-      </p>
-    </header>
-
-    <nav class="mb-4 flex gap-2 border-b border-gray-200">
-      <button
-        data-testid="tab-list"
-        class="px-3 py-1.5 text-sm"
-        :class="tab === 'list' ? 'border-b-2 border-emerald-700 font-medium' : 'text-gray-500'"
-        @click="tab = 'list'"
-      >
-        {{ t("tab.people") }}
-      </button>
-      <button
-        data-testid="tab-tree"
-        class="px-3 py-1.5 text-sm"
-        :class="tab === 'tree' ? 'border-b-2 border-emerald-700 font-medium' : 'text-gray-500'"
-        @click="tab = 'tree'"
-      >
-        {{ t("tab.tree") }}
-      </button>
-    </nav>
-
-    <PedigreeTree v-if="tab === 'tree'" />
-    <div v-else>
-      <button
-        v-if="!formTarget"
-        data-testid="add-person"
-        class="mb-4 rounded bg-emerald-700 px-4 py-2 text-white"
-        @click="formTarget = 'new'"
-      >
-        {{ t("person.add") }}
-      </button>
-
-      <PersonForm
-        v-if="formTarget"
-        :key="formTarget"
-        :initial="initialInput()"
-        @submit="submit"
-        @cancel="formTarget = null"
-      />
-
-      <p v-if="family.error" data-testid="error" class="mb-3 text-sm text-red-600">
-        {{ family.error }}
-      </p>
-
-      <p v-if="!family.data?.people.length" data-testid="empty-state" class="text-gray-400">
-        {{ t("person.empty") }}
-      </p>
-      <ul v-else class="divide-y divide-gray-200">
-        <li
-          v-for="person in family.data.people"
-          :key="person.id"
-          data-testid="person-row"
-          class="flex items-center justify-between py-2"
+  <main class="h-full w-full overflow-auto">
+    <div class="mx-auto flex max-w-5xl flex-col gap-5 px-6 py-6">
+      <header class="card p-5">
+        <p data-testid="loaded-path" class="truncate font-mono text-xs text-slate-400">
+          {{ family.filePath }}
+        </p>
+        <p data-testid="loaded-summary" class="mt-1 text-xl font-semibold text-slate-900">
+          {{ tn("summary.people", family.data?.people.length ?? 0) }} ·
+          {{ tn("summary.relationships", family.data?.relationships.length ?? 0) }}
+        </p>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <button data-testid="save-copy" class="btn btn-secondary" @click="family.saveCopy()">
+            <AppIcon name="copy" />
+            {{ t("header.saveCopy") }}
+          </button>
+          <button
+            v-if="family.gitStatus === 'ready'"
+            data-testid="git-sync"
+            :disabled="family.syncing"
+            class="btn btn-secondary"
+            @click="family.syncGit()"
+          >
+            <AppIcon name="sync" :class="{ 'animate-spin': family.syncing }" />
+            {{ family.syncing ? t("git.syncing") : t("git.sync") }}
+          </button>
+          <p v-else-if="family.gitStatus !== 'unavailable'" data-testid="git-hint" class="chip">
+            {{ t(`git.hint.${family.gitStatus}`) }}
+          </p>
+        </div>
+        <p
+          v-if="family.notice"
+          data-testid="notice"
+          class="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
         >
-          <span>
-            <span data-testid="person-name">{{ displayName(person) }}</span>
-            <span
-              v-if="lifeSummary(person)"
-              data-testid="person-life"
-              class="ml-2 text-sm text-gray-500"
-              >{{ lifeSummary(person) }}</span
-            >
-          </span>
-          <span class="flex gap-2">
-            <button
-              data-testid="edit-person"
-              class="text-sm text-emerald-700 hover:underline disabled:text-gray-400 disabled:no-underline"
-              @click="formTarget = person.id"
-            >
-              {{ t("common.edit") }}
-            </button>
-            <button
-              data-testid="delete-person"
-              class="text-sm text-red-600 hover:underline"
-              @click="family.deletePerson(person.id, displayName(person))"
-            >
-              {{ t("common.delete") }}
-            </button>
-          </span>
-        </li>
-      </ul>
-      <RelationshipsSection />
+          {{ family.notice }}
+        </p>
+      </header>
+
+      <nav class="inline-flex self-start rounded-xl bg-slate-200/70 p-1 text-sm font-medium">
+        <button
+          data-testid="tab-list"
+          class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+          :class="
+            tab === 'list'
+              ? 'bg-white text-slate-900 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          "
+          @click="tab = 'list'"
+        >
+          {{ t("tab.people") }}
+        </button>
+        <button
+          data-testid="tab-tree"
+          class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+          :class="
+            tab === 'tree'
+              ? 'bg-white text-slate-900 shadow-sm'
+              : 'text-slate-500 hover:text-slate-800'
+          "
+          @click="tab = 'tree'"
+        >
+          {{ t("tab.tree") }}
+        </button>
+      </nav>
+
+      <div v-if="tab === 'tree'" class="card p-5">
+        <PedigreeTree />
+      </div>
+      <template v-else>
+        <div v-if="!formTarget">
+          <button
+            data-testid="add-person"
+            class="btn btn-primary px-4 py-2"
+            @click="formTarget = 'new'"
+          >
+            <AppIcon name="plus" />
+            {{ t("person.add") }}
+          </button>
+        </div>
+
+        <div v-if="formTarget" class="card p-5">
+          <PersonForm
+            :key="formTarget"
+            :initial="initialInput()"
+            :auto-status="formTarget === 'new'"
+            @submit="submit"
+            @cancel="formTarget = null"
+          />
+        </div>
+
+        <p
+          v-if="family.error"
+          data-testid="error"
+          class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"
+        >
+          {{ family.error }}
+        </p>
+
+        <p
+          v-if="!family.data?.people.length"
+          data-testid="empty-state"
+          class="card px-5 py-8 text-center text-sm text-slate-400"
+        >
+          {{ t("person.empty") }}
+        </p>
+        <ul v-else class="card divide-y divide-slate-100 overflow-hidden">
+          <li
+            v-for="person in family.data.people"
+            :key="person.id"
+            data-testid="person-row"
+            class="flex items-center justify-between gap-3 px-4 py-3 transition hover:bg-slate-50"
+          >
+            <span class="flex min-w-0 items-center gap-3">
+              <span
+                class="grid size-9 shrink-0 place-items-center rounded-full text-xs font-semibold"
+                :class="avatarColor(person)"
+                aria-hidden="true"
+              >
+                {{ initials(person) }}
+              </span>
+              <span class="min-w-0">
+                <span data-testid="person-name" class="block truncate font-medium text-slate-900">{{
+                  displayName(person)
+                }}</span>
+                <span
+                  v-if="lifeSummary(person)"
+                  data-testid="person-life"
+                  class="block text-xs text-slate-500"
+                  >{{ lifeSummary(person) }}</span
+                >
+              </span>
+            </span>
+            <span class="flex shrink-0 gap-2">
+              <button
+                data-testid="edit-person"
+                class="btn btn-secondary btn-sm"
+                @click="formTarget = person.id"
+              >
+                <AppIcon name="pencil" />
+                {{ t("common.edit") }}
+              </button>
+              <button
+                data-testid="delete-person"
+                class="btn btn-danger btn-sm"
+                @click="family.deletePerson(person.id, displayName(person))"
+              >
+                <AppIcon name="trash" />
+                {{ t("common.delete") }}
+              </button>
+            </span>
+          </li>
+        </ul>
+        <div class="card p-5">
+          <RelationshipsSection />
+        </div>
+      </template>
     </div>
   </main>
 </template>

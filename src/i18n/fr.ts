@@ -8,6 +8,7 @@ export const fr: Record<MessageKey, string> = {
   "welcome.resumeLast": "Reprendre la dernière famille",
   "welcome.open": "Ouvrir un fichier famille…",
   "welcome.create": "Créer une nouvelle famille…",
+  "welcome.tagline": "Votre arbre généalogique, dans un seul fichier qui vous appartient.",
 
   "summary.people.one": "{count} personne",
   "summary.people.other": "{count} personnes",
@@ -101,6 +102,7 @@ export const fr: Record<MessageKey, string> = {
   "rel.statusUnknown": "statut inconnu",
   "rel.unknownPerson": "Personne inconnue",
   "rel.describe.parent": "{parent} est parent de {child} ({details})",
+  "rel.describe.parentPlain": "{parent} est parent de {child}",
   "rel.describe.partners": "{a} et {b} sont partenaires ({details})",
 
   "nature.biological-confirmed": "biologique, confirmé",

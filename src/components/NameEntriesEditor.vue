@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="K extends string">
 import { computed } from "vue";
 import { monthNames } from "../data/dates.ts";
+import AppIcon from "./AppIcon.vue";
 import { t, type MessageKey } from "../i18n/index.ts";
 import { blankNameEntry, type NameEntryInput } from "../data/people.ts";
 
@@ -22,7 +23,7 @@ const props = defineProps<{
 
 const entries = defineModel<NameEntryInput<K>[]>({ required: true });
 
-const inputClass = "rounded border border-gray-300 px-2 py-1";
+const inputClass = "input";
 
 function capitalise(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -80,7 +81,7 @@ function makePrimary(index: number): void {
 
 <template>
   <fieldset class="flex flex-col gap-2" :data-testid="`${testPrefix}-list`">
-    <legend class="mb-1 text-sm font-medium text-gray-700">
+    <legend class="mb-1 text-sm font-semibold text-slate-700">
       {{ detailed ? title : capitalise(noun) }}
     </legend>
     <div
@@ -151,7 +152,7 @@ function makePrimary(index: number): void {
         :data-testid="`${testPrefix}-up`"
         :aria-label="t('form.moveUp', { noun })"
         :disabled="index === 0"
-        class="rounded border border-gray-300 px-2 py-1 disabled:text-gray-300"
+        class="btn btn-secondary btn-sm px-2"
         @click="move(index, -1)"
       >
         ↑
@@ -162,7 +163,7 @@ function makePrimary(index: number): void {
         :data-testid="`${testPrefix}-down`"
         :aria-label="t('form.moveDown', { noun })"
         :disabled="index === entries.length - 1"
-        class="rounded border border-gray-300 px-2 py-1 disabled:text-gray-300"
+        class="btn btn-secondary btn-sm px-2"
         @click="move(index, 1)"
       >
         ↓
@@ -172,7 +173,7 @@ function makePrimary(index: number): void {
         type="button"
         :data-testid="`${testPrefix}-remove`"
         :aria-label="t('form.remove', { noun })"
-        class="rounded border border-gray-300 px-2 py-1 text-red-600"
+        class="btn btn-danger btn-sm px-2"
         @click="remove(index)"
       >
         ✕
@@ -181,10 +182,11 @@ function makePrimary(index: number): void {
     <button
       type="button"
       :data-testid="`add-${testPrefix}`"
-      class="self-start text-sm text-emerald-700 hover:underline"
+      class="btn btn-ghost btn-sm self-start"
       @click="add"
     >
-      + {{ addLabel }}
+      <AppIcon name="plus" />
+      {{ addLabel }}
     </button>
   </fieldset>
 </template>

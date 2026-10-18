@@ -114,18 +114,18 @@ function fullName(id: PersonId): string {
 
 <template>
   <section data-testid="tree-section">
-    <p v-if="!people.length" data-testid="tree-empty" class="text-gray-400">
+    <p v-if="!people.length" data-testid="tree-empty" class="text-sm text-slate-400">
       {{ t("tree.empty") }}
     </p>
 
     <template v-else>
       <div class="mb-4 flex flex-wrap items-end gap-4">
-        <label class="flex flex-col text-sm">
+        <label class="label">
           {{ t("tree.root") }}
           <select
             :value="rootId ?? ''"
             data-testid="tree-root"
-            class="rounded border border-gray-300 px-2 py-1"
+            class="input"
             @change="chosenRoot = ($event.target as HTMLSelectElement).value as PersonId"
           >
             <option v-for="p in people" :key="p.id" :value="p.id">
@@ -133,32 +133,24 @@ function fullName(id: PersonId): string {
             </option>
           </select>
         </label>
-        <label class="flex flex-col text-sm">
+        <label class="label">
           {{ t("tree.show") }}
-          <select
-            v-model="direction"
-            data-testid="tree-direction"
-            class="rounded border border-gray-300 px-2 py-1"
-          >
+          <select v-model="direction" data-testid="tree-direction" class="input">
             <option value="ancestors">{{ t("tree.ancestors") }}</option>
             <option value="descendants">{{ t("tree.descendants") }}</option>
             <option value="hourglass">{{ t("tree.hourglass") }}</option>
           </select>
         </label>
-        <label class="flex flex-col text-sm">
+        <label class="label">
           {{ t("tree.generations") }}
-          <select
-            v-model.number="generations"
-            data-testid="tree-generations"
-            class="rounded border border-gray-300 px-2 py-1"
-          >
+          <select v-model.number="generations" data-testid="tree-generations" class="input">
             <option v-for="n in generationOptions" :key="n" :value="n">{{ n }}</option>
           </select>
         </label>
-        <p class="flex items-center gap-4 text-xs text-gray-500" data-testid="tree-legend">
+        <p class="flex items-center gap-4 text-xs text-slate-500" data-testid="tree-legend">
           <span class="flex items-center gap-1">
             <svg width="28" height="6">
-              <line x1="0" y1="3" x2="28" y2="3" stroke="#374151" stroke-width="2" />
+              <line x1="0" y1="3" x2="28" y2="3" stroke="#94a3b8" stroke-width="2" />
             </svg>
             {{ t("tree.legend.confirmed") }}
           </span>
@@ -169,7 +161,7 @@ function fullName(id: PersonId): string {
                 y1="3"
                 x2="28"
                 y2="3"
-                stroke="#374151"
+                stroke="#94a3b8"
                 stroke-width="2"
                 stroke-dasharray="5 3"
               />
@@ -179,7 +171,9 @@ function fullName(id: PersonId): string {
         </p>
       </div>
 
-      <div class="overflow-auto rounded border border-gray-200">
+      <div
+        class="overflow-auto rounded-xl border border-slate-200 bg-slate-50/70 bg-[radial-gradient(circle,#cbd5e1_1px,transparent_1px)] [background-size:18px_18px]"
+      >
         <svg
           v-if="pedigree"
           class="mx-auto"
@@ -188,6 +182,17 @@ function fullName(id: PersonId): string {
           :height="size.height"
           :viewBox="`0 0 ${size.width} ${size.height}`"
         >
+          <defs>
+            <filter id="node-shadow" x="-10%" y="-10%" width="120%" height="140%">
+              <feDropShadow
+                dx="0"
+                dy="1.5"
+                stdDeviation="2"
+                flood-color="#0f172a"
+                flood-opacity="0.12"
+              />
+            </filter>
+          </defs>
           <path
             v-for="edge in edgePaths"
             :key="edge.key"
@@ -195,9 +200,10 @@ function fullName(id: PersonId): string {
             :data-dashed="edge.dashed"
             :d="edge.d"
             fill="none"
-            stroke="#374151"
+            stroke="#94a3b8"
             stroke-width="2"
-            :stroke-dasharray="edge.dashed ? '5 3' : undefined"
+            stroke-linejoin="round"
+            :stroke-dasharray="edge.dashed ? '5 4' : undefined"
           />
           <g
             v-for="node in pedigree.nodes"
@@ -212,16 +218,19 @@ function fullName(id: PersonId): string {
             <rect
               :width="BOX_WIDTH"
               :height="BOX_HEIGHT"
-              rx="6"
-              :fill="node.generation === 0 ? '#d1fae5' : '#ffffff'"
-              stroke="#374151"
+              rx="10"
+              :fill="node.generation === 0 ? '#ecfdf5' : '#ffffff'"
+              :stroke="node.generation === 0 ? '#059669' : '#cbd5e1'"
+              :stroke-width="node.generation === 0 ? 1.5 : 1"
+              filter="url(#node-shadow)"
             />
             <text
               :x="BOX_WIDTH / 2"
               :y="lifespans.get(node.personId) ? 20 : BOX_HEIGHT / 2 + 5"
               text-anchor="middle"
               font-size="14"
-              fill="#111827"
+              font-weight="500"
+              fill="#0f172a"
             >
               {{ truncateName(shortNames.get(node.personId) ?? fullName(node.personId)) }}
             </text>
@@ -232,7 +241,7 @@ function fullName(id: PersonId): string {
               y="38"
               text-anchor="middle"
               font-size="11"
-              fill="#6b7280"
+              fill="#64748b"
             >
               {{ lifespans.get(node.personId) }}
             </text>

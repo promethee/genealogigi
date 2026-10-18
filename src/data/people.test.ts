@@ -5,6 +5,7 @@ import {
   DateOrderError,
   displayName,
   displayNameParts,
+  emptyPersonForm,
   type FirstNameKind,
   inputFromPerson,
   type LastNameKind,
@@ -15,6 +16,7 @@ import {
   NamesNotEditableError,
   PersonNotFoundError,
   removePerson,
+  suggestedStatus,
   UNKNOWN_DATE,
   updatePerson,
 } from "./people.ts";
@@ -507,5 +509,26 @@ describe("displayName with a birth last name", () => {
   it("shows no née without a birth-kind last name or with a single name", () => {
     expect(displayName(person([row("Dubois", "married", true)]))).toBe("Marie Dubois");
     expect(displayName(person([row("Martin", "birth", true)]))).toBe("Marie Martin");
+  });
+});
+
+describe("life status default", () => {
+  it("a new person form starts as living", () => {
+    expect(emptyPersonForm().status).toBe("living");
+  });
+
+  it("suggests deceased only for birth years more than 110 years ago", () => {
+    expect(suggestedStatus("1815", 2026)).toBe("deceased");
+    expect(suggestedStatus("1916", 2026)).toBe("living"); // exactly 110
+    expect(suggestedStatus("1915", 2026)).toBe("deceased"); // 111
+    expect(suggestedStatus("1990", 2026)).toBe("living");
+  });
+
+  it("suggests living for blank, partial or invalid input", () => {
+    expect(suggestedStatus("", 2026)).toBe("living");
+    expect(suggestedStatus("  ", 2026)).toBe("living");
+    expect(suggestedStatus("abc", 2026)).toBe("living");
+    expect(suggestedStatus("0", 2026)).toBe("living");
+    expect(suggestedStatus("12345", 2026)).toBe("living");
   });
 });

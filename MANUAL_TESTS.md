@@ -41,7 +41,7 @@ Start from a family with at least two people (for example Ada and Byron).
 | #   | Action                                                                            | Expected                                                                                                                  |
 | --- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Open a family with one person                                                     | The relationship controls are disabled and a hint says to add people first.                                               |
-| 2   | With two people, choose "Parent of", Ada, Byron, "biological, confirmed", Add     | The list shows "Ada is parent of Byron (biological, confirmed)".                                                          |
+| 2   | With two people, choose "Parent of", Ada, Byron, "biological, confirmed", Add     | The list shows "Ada is parent of Byron" (confirmed biological is the unmarked default).                                   |
 | 3   | Add the reverse (Byron parent of Ada)                                             | Error mentioning a cycle. Nothing added.                                                                                  |
 | 4   | Add Ada parent of Byron again                                                     | Error "already exists".                                                                                                   |
 | 5   | Choose Ada and Ada                                                                | Error "cannot be their own parent".                                                                                       |
@@ -216,3 +216,18 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 4   | Show: Hourglass                                                 | Ancestors above the root, descendants below, root in the middle.                                |
 | 5   | Generations 6 with a large family, or shrink the window         | The chart area scrolls horizontally and vertically; the page itself does not.                   |
 | 6   | Narrow chart (few ancestors)                                    | Centred in the chart area.                                                                      |
+
+## Look and feel, flags, defaults
+
+| #   | Action                                                       | Expected                                                                                                                                |
+| --- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Launch the app                                               | Top bar with the logo and "Genealogigi"; welcome card with tagline and three buttons with icons.                                        |
+| 2   | Look at the language switch (top right)                      | A UK flag + "English" and a French flag + "Français"; the flags are real images, not letters.                                           |
+| 3   | Switch to French                                             | Names stay "English" and "Français"; the rest turns French.                                                                             |
+| 4   | Open a family, look at the people list                       | Avatar circles with initials; **Edit** and **Delete** are bordered buttons with icons; Delete is red; hover highlights them.            |
+| 5   | Tab through the page with the keyboard                       | Every button shows a visible focus ring.                                                                                                |
+| 6   | Click **Add person**                                         | Life status is **Living**.                                                                                                              |
+| 7   | Type birth year 1815                                         | Status becomes **Deceased** by itself and death fields appear. Pick another status by hand, then change the year: it no longer changes. |
+| 8   | Edit a person saved with status Unknown                      | The form shows Unknown.                                                                                                                 |
+| 9   | Add a confirmed biological parent link, then an adoptive one | "Ada is parent of Byron" (no parentheses) and "Ada is parent of Cleo (adoptive)".                                                       |
+| 10  | Tree tab                                                     | Soft dotted background, rounded boxes with a shadow, root in green.                                                                     |

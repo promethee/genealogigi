@@ -17,6 +17,7 @@ import {
 } from "../data/relationships.ts";
 import type { Relationship } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
+import AppIcon from "./AppIcon.vue";
 import DateFields from "./DateFields.vue";
 
 const props = defineProps<{ relationship: Relationship }>();
@@ -66,22 +67,22 @@ async function save(): Promise<void> {
   if (ok) emit("done");
 }
 
-const selectClass = "rounded border border-gray-300 px-2 py-1";
+const selectClass = "input";
 </script>
 
 <template>
   <form
-    class="flex flex-wrap items-end gap-3 py-2"
+    class="mt-3 flex flex-wrap items-end gap-3 rounded-xl bg-slate-50 p-3"
     data-testid="relationship-edit-form"
     @submit.prevent="save"
   >
-    <label v-if="parentChild" class="flex flex-col text-sm">
+    <label v-if="parentChild" class="label">
       {{ t("rel.nature") }}
       <select v-model="nature" data-testid="edit-nature" :class="selectClass">
         <option v-for="n in allNatures" :key="n" :value="n">{{ natureLabel(n) }}</option>
       </select>
     </label>
-    <label v-if="showDates" class="flex flex-col text-sm">
+    <label v-if="showDates" class="label">
       {{ t("rel.status") }}
       <select v-model="status" data-testid="edit-status" :class="selectClass">
         <option v-for="s in statuses" :key="s" :value="s">{{ statusLabel(s) }}</option>
@@ -96,19 +97,11 @@ const selectClass = "rounded border border-gray-300 px-2 py-1";
         test-prefix="edit-end"
       />
     </template>
-    <button
-      type="submit"
-      data-testid="edit-save"
-      class="rounded bg-emerald-700 px-4 py-1.5 text-white"
-    >
+    <button type="submit" data-testid="edit-save" class="btn btn-primary">
+      <AppIcon name="check" />
       {{ t("common.save") }}
     </button>
-    <button
-      type="button"
-      data-testid="edit-cancel"
-      class="rounded border border-gray-300 px-4 py-1.5"
-      @click="emit('done')"
-    >
+    <button type="button" data-testid="edit-cancel" class="btn btn-secondary" @click="emit('done')">
       {{ t("common.cancel") }}
     </button>
   </form>

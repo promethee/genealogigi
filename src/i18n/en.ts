@@ -6,6 +6,7 @@ export const en = {
   "welcome.resumeLast": "Resume last family",
   "welcome.open": "Open family file…",
   "welcome.create": "Create new family…",
+  "welcome.tagline": "Your family tree, kept in one file you own.",
 
   "summary.people.one": "{count} person",
   "summary.people.other": "{count} people",
@@ -99,6 +100,7 @@ export const en = {
   "rel.statusUnknown": "status unknown",
   "rel.unknownPerson": "Unknown person",
   "rel.describe.parent": "{parent} is parent of {child} ({details})",
+  "rel.describe.parentPlain": "{parent} is parent of {child}",
   "rel.describe.partners": "{a} and {b} are partners ({details})",
 
   "nature.biological-confirmed": "biological, confirmed",

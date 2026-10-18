@@ -6,6 +6,9 @@ export type { MessageKey };
 export type Locale = "en" | "fr";
 export const LOCALES: readonly Locale[] = ["en", "fr"];
 
+/** Each language named in itself; deliberately not part of the translated catalogs. */
+export const LANGUAGE_NAMES: Record<Locale, string> = { en: "English", fr: "Français" };
+
 const catalogs: Record<Locale, Record<MessageKey, string>> = { en, fr };
 
 /** The active language. Reactive, so templates and computeds re-render when it changes. */

@@ -5,12 +5,12 @@ import { t } from "../i18n/index.ts";
 defineProps<{ label: string; testPrefix: string }>();
 const model = defineModel<PartialDateInput>({ required: true });
 
-const inputClass = "rounded border border-gray-300 px-2 py-1";
+const inputClass = "input";
 </script>
 
 <template>
   <fieldset class="flex flex-wrap items-end gap-2">
-    <legend class="mb-1 text-sm text-gray-600">{{ label }}</legend>
+    <legend class="mb-1 text-xs font-medium text-slate-500">{{ label }}</legend>
     <input
       v-model="model.year"
       :data-testid="`${testPrefix}-year`"

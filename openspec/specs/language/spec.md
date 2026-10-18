@@ -70,3 +70,19 @@ The app SHALL store the same data in the family file whatever the UI language.
 
 - **WHEN** the same person is added in English and in French
 - **THEN** the saved JSON is identical apart from ids
+
+### Requirement: Flags and native names
+
+The language switch SHALL show a flag and the language's own name for each
+option ("English", "Français"), whatever the active language, and SHALL render
+the flags without relying on emoji fonts.
+
+#### Scenario: Names in their own language
+
+- **WHEN** the interface is in French
+- **THEN** the switch still reads "English" and "Français"
+
+#### Scenario: Flags
+
+- **WHEN** the switch is shown
+- **THEN** each option has a flag image next to its name, and the active option is highlighted

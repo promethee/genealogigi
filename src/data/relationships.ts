@@ -248,10 +248,11 @@ function periodText(start: VariablePrecisionDate, end?: VariablePrecisionDate): 
   return known(start) ? t("rel.from", { date: formatDate(start) }) : "";
 }
 
-/** e.g. "Ada is parent of Byron (biological, confirmed)" or "(foster, 1990–1995)". */
+/** e.g. "Ada is parent of Byron", "Ada is parent of Byron (adoptive)" or "(foster, 1990–1995)". */
 export function describeRelationship(r: Relationship, nameOf: (id: PersonId) => string): string {
   if (isParentChild(r)) {
-    const parts = [natureLabel(r.nature)];
+    // Biological, confirmed is the usual case, so it is the unmarked default.
+    const parts = r.nature === "biological-confirmed" ? [] : [natureLabel(r.nature)];
     if (isTemporary(r)) {
       const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
       if (period) parts.push(period);
@@ -259,11 +260,10 @@ export function describeRelationship(r: Relationship, nameOf: (id: PersonId) => 
       else if (r.status === "unknown") parts.push(t("rel.statusUnknown"));
       else if (r.status === "ongoing" && !period) parts.push(statusLabel("ongoing"));
     }
-    return t("rel.describe.parent", {
-      parent: nameOf(r.parentId),
-      child: nameOf(r.childId),
-      details: parts.join(", "),
-    });
+    const names = { parent: nameOf(r.parentId), child: nameOf(r.childId) };
+    return parts.length === 0
+      ? t("rel.describe.parentPlain", names)
+      : t("rel.describe.parent", { ...names, details: parts.join(", ") });
   }
   const period = periodText(r.startDate, r.status === "ended" ? r.endDate : undefined);
   const detail = period ? `${statusLabel(r.status)}, ${period}` : statusLabel(r.status);

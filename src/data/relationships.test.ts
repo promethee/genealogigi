@@ -311,7 +311,7 @@ describe("describeRelationship", () => {
     }).relationships[0];
     if (!pc || !partners) throw new Error("missing");
     expect(isParentChild(pc)).toBe(true);
-    expect(describeRelationship(pc, nameOf)).toBe("Ada is parent of Byron (biological, confirmed)");
+    expect(describeRelationship(pc, nameOf)).toBe("Ada is parent of Byron");
     expect(describeRelationship(partners, nameOf)).toBe("Ada and Byron are partners (ongoing)");
   });
 });
@@ -463,5 +463,23 @@ describe("editValuesOf", () => {
       start: { year: "1990" },
       end: { year: "1995" },
     });
+  });
+});
+
+describe("describeRelationship default nature", () => {
+  it("leaves the confirmed biological nature unmarked and shows every other", () => {
+    const { data, ids } = family("Ada", "Byron", "Cleo", "Dan");
+    const names = (pid: PersonId) => (pid === id(ids, 0) ? "Ada" : "Byron");
+    const texts = (["biological-confirmed", "biological-presumed", "adoptive"] as const).map(
+      (nature) => {
+        const next = addParentChild(data, { parentId: id(ids, 0), childId: id(ids, 1), nature });
+        return describeRelationship(next.relationships[0]!, names);
+      },
+    );
+    expect(texts).toEqual([
+      "Ada is parent of Byron",
+      "Ada is parent of Byron (biological, presumed)",
+      "Ada is parent of Byron (adoptive)",
+    ]);
   });
 });

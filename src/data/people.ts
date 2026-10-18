@@ -77,9 +77,26 @@ export function emptyPersonForm(): PersonFormValues {
     firstNames: [blankNameEntry<FirstNameKind>("birth", true)],
     lastNames: [blankNameEntry<LastNameKind>("birth", true)],
     birth: emptyDateInput(),
-    status: "unknown",
+    status: "living",
     death: emptyDateInput(),
   };
+}
+
+/** A birth year this many years ago or more makes "deceased" the likelier answer. */
+export const LIKELY_DECEASED_AFTER_YEARS = 110;
+
+/**
+ * The status to preselect for a new person from the typed birth year: deceased when the
+ * year is more than 110 years back, living otherwise (including when blank or not a year).
+ */
+export function suggestedStatus(
+  birthYear: string,
+  currentYear: number = new Date().getFullYear(),
+): "living" | "deceased" {
+  const text = birthYear.trim();
+  if (!/^\d{1,4}$/.test(text)) return "living";
+  const year = Number(text);
+  return year >= 1 && currentYear - year > LIKELY_DECEASED_AFTER_YEARS ? "deceased" : "living";
 }
 
 export class NameRequiredError extends Error {

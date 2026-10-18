@@ -110,7 +110,7 @@ test("the tree box shows the name, then née and lifespan", async ({ page }) => 
   await page.getByTestId("tree-root").selectOption({ label: "Marie Dubois (née Martin)" });
   const box = page.getByTestId("tree-node").first();
   await expect(box).toContainText("Marie Dubois");
-  await expect(box.getByTestId("tree-lifespan")).toHaveText("née Martin · b. 1950");
+  await expect(box.getByTestId("tree-lifespan")).toHaveText("née Martin · 1950–");
 });
 
 test("a person edited with an existing single dated name shows detailed controls", async ({

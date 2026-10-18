@@ -59,16 +59,12 @@ test("add controls are disabled until two people exist", async ({ page }) => {
 test("adds a parent-child relationship and it survives a restart", async ({ page }) => {
   await familyWith(page, "Ada", "Byron");
   await link(page, "parent", "Ada", "Byron");
-  await expect(page.getByTestId("relationship-text")).toHaveText([
-    "Ada is parent of Byron (biological, confirmed)",
-  ]);
+  await expect(page.getByTestId("relationship-text")).toHaveText(["Ada is parent of Byron"]);
 
   await page.reload();
   await page.getByTestId("resume").click();
   await page.getByTestId("tab-list").click(); // a family with relationships opens on the tree
-  await expect(page.getByTestId("relationship-text")).toHaveText([
-    "Ada is parent of Byron (biological, confirmed)",
-  ]);
+  await expect(page.getByTestId("relationship-text")).toHaveText(["Ada is parent of Byron"]);
 });
 
 test("rejects a cycle, a duplicate and the same person twice", async ({ page }) => {
