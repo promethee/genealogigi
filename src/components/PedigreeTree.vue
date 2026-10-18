@@ -9,7 +9,7 @@ import {
   truncateName,
   type PedigreeDirection,
 } from "../data/pedigree.ts";
-import { displayName, lifespan } from "../data/people.ts";
+import { displayName, displayNameParts, lifespan } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
 
@@ -87,7 +87,22 @@ const edgePaths = computed(() =>
   }),
 );
 
-const lifespans = computed(() => new Map(people.value.map((p) => [p.id, lifespan(p)])));
+// Second line of a box: "née Martin · 1950–" (either part may be missing).
+const lifespans = computed(
+  () =>
+    new Map(
+      people.value.map((p) => {
+        const { birthName } = displayNameParts(p);
+        return [
+          p.id,
+          [birthName ? `née ${birthName}` : "", lifespan(p)].filter(Boolean).join(" · "),
+        ];
+      }),
+    ),
+);
+const shortNames = computed(
+  () => new Map(people.value.map((p) => [p.id, displayNameParts(p).name])),
+);
 
 function fullName(id: PersonId): string {
   return names.value.get(id) ?? "Unknown person";
@@ -204,7 +219,7 @@ function fullName(id: PersonId): string {
               font-size="14"
               fill="#111827"
             >
-              {{ truncateName(fullName(node.personId)) }}
+              {{ truncateName(shortNames.get(node.personId) ?? fullName(node.personId)) }}
             </text>
             <text
               v-if="lifespans.get(node.personId)"

@@ -4,6 +4,7 @@ import {
   canEditNames,
   DateOrderError,
   displayName,
+  displayNameParts,
   type FirstNameKind,
   inputFromPerson,
   type LastNameKind,
@@ -476,5 +477,35 @@ describe("several names per person", () => {
     expect(() => updatePerson(added, one(added).id, { firstName: "X", lastName: "" })).toThrow(
       NamesNotEditableError,
     );
+  });
+});
+
+describe("displayName with a birth last name", () => {
+  const blank = { year: "", month: "", day: "" };
+  const row = <K extends string>(value: string, kind: K, primary: boolean) => ({
+    value,
+    kind,
+    date: blank,
+    primary,
+  });
+  const person = (lastNames: ReturnType<typeof row<LastNameKind>>[]) =>
+    onlyPerson(
+      addPerson(EMPTY, { firstNames: [row("Marie", "birth" as FirstNameKind, true)], lastNames }),
+    );
+
+  it("shows née when the main last name differs from the birth name", () => {
+    const p = person([row("Martin", "birth", false), row("Dubois", "married", true)]);
+    expect(displayName(p)).toBe("Marie Dubois (née Martin)");
+    expect(displayNameParts(p)).toEqual({ name: "Marie Dubois", birthName: "Martin" });
+  });
+
+  it("shows no née when the birth name is the main one", () => {
+    const p = person([row("Martin", "birth", true), row("Dubois", "married", false)]);
+    expect(displayName(p)).toBe("Marie Martin");
+  });
+
+  it("shows no née without a birth-kind last name or with a single name", () => {
+    expect(displayName(person([row("Dubois", "married", true)]))).toBe("Marie Dubois");
+    expect(displayName(person([row("Martin", "birth", true)]))).toBe("Marie Martin");
   });
 });

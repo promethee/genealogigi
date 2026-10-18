@@ -178,3 +178,15 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 6   | Open a file in a repository without a remote                       | Hint "no remote"; no button.                                                                                                          |
 | 7   | Rename git temporarily so it is not on PATH, reopen the app        | Hint "git was not found".                                                                                                             |
 | 8   | No console window flashes during sync (Windows)                    | Confirmed.                                                                                                                            |
+
+## Name changes (marriage) and simple name form
+
+| #   | Action                                                                                       | Expected                                                                     |
+| --- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 1   | Click **Add person**                                                                         | One First name and one Last name field. No kind, date or Main name controls. |
+| 2   | Enter Marie / Martin. Click **+ Last name changed (e.g. marriage)**. Enter Dubois, year 2001 | A second row: kind Married, "Since year". Save.                              |
+| 3   | Look at the people list                                                                      | "Marie Dubois (née Martin)".                                                 |
+| 4   | Tree tab with Marie                                                                          | Box: "Marie Dubois" and, below, "née Martin · …".                            |
+| 5   | Edit Marie, mark the Martin row as **Main name**, save                                       | "Marie Martin" with no "née".                                                |
+| 6   | Add a person, click **+ First name changed**, enter Mia                                      | Saved as "Marie Martin": the new first name is not main until you choose it. |
+| 7   | Click into a year box in the form                                                            | No stray autofill suggestion (e.g. "1981") appears.                          |

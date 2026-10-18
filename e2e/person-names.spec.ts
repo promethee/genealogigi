@@ -63,7 +63,8 @@ test("adds a nickname and a married name with a year", async ({ page }) => {
   await page.getByTestId("last-name-year").nth(1).fill("1835");
   await save(page);
 
-  await expect(page.getByTestId("person-name")).toHaveText("Ada Byron");
+  // The new last name becomes the main name, so the birth name shows as "née".
+  await expect(page.getByTestId("person-name")).toHaveText("Ada King (née Byron)");
   const file = await page.evaluate(() => localStorage.getItem("fake:file:C:/families/names.json"));
   const names = JSON.parse(file ?? "null").people[0].names;
   expect(names.firstNames.map((n: { kind: string }) => n.kind)).toEqual(["birth", "nickname"]);
@@ -74,11 +75,13 @@ test("adds a nickname and a married name with a year", async ({ page }) => {
 test("rejects an invalid name date", async ({ page }) => {
   await newFamily(page);
   await startAda(page);
-  await page.getByTestId("first-name-year").first().fill("1815");
-  await page.getByTestId("first-name-month").first().selectOption("4");
-  await page.getByTestId("first-name-day").first().fill("31");
+  await page.getByTestId("add-last-name").click();
+  await page.getByTestId("last-name").nth(1).fill("King"); // blank rows are ignored
+  await page.getByTestId("last-name-year").nth(1).fill("1815");
+  await page.getByTestId("last-name-month").nth(1).selectOption("4");
+  await page.getByTestId("last-name-day").nth(1).fill("31");
   await save(page);
-  await expect(page.getByTestId("error")).toContainText("First name date");
+  await expect(page.getByTestId("error")).toContainText("Last name date");
   await expect(page.getByTestId("person-row")).toHaveCount(0);
 });
 

@@ -116,3 +116,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `portfolio-site`: static `docs/index.html` (free-as-the-pitch hero, feature cards, 3 screenshots of a fictional family, name note, build-from-source steps), screenshots in `docs/screenshots/`, README status and link. Checked at 1280 and 375 px, no horizontal overflow. Left for the user: enable GitHub Pages and set the "Website" field.
 
+- **2026-10-18 (cont.)** — Implemented change `name-change-ui`: person form is simple by default; "+ Last name changed (e.g. marriage)" adds a Married row that becomes the main name; "+ First name changed" adds a Current row (not main); detailed controls appear only with several names or a dated/kinded one; list/selects show "Marie Dubois (née Martin)", tree boxes show née before the lifespan; "Primary" is now "Main name"; autofill off. 144 unit tests. Existing name e2e updated for the new default.
+

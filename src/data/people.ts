@@ -218,10 +218,22 @@ export function inputFromPerson(person: Person): PersonFormValues {
   };
 }
 
-export function displayName(person: Person): string {
+/**
+ * The main name, plus the birth last name when it differs from the main one
+ * (a married woman: main "Marie Dubois", birth name "Martin").
+ */
+export function displayNameParts(person: Person): { name: string; birthName?: string } {
   const first = primaryOf(person.names?.firstNames)?.value;
   const last = primaryOf(person.names?.lastNames)?.value;
-  return [first, last].filter(Boolean).join(" ") || UNNAMED_PERSON_LABEL;
+  const name = [first, last].filter(Boolean).join(" ") || UNNAMED_PERSON_LABEL;
+  const birth = person.names?.lastNames?.find((n) => n.kind === "birth")?.value;
+  return last && birth && birth !== last ? { name, birthName: birth } : { name };
+}
+
+/** e.g. "Marie Dubois (née Martin)"; lists and selects use this. */
+export function displayName(person: Person): string {
+  const { name, birthName } = displayNameParts(person);
+  return birthName ? `${name} (née ${birthName})` : name;
 }
 
 /** e.g. "b. 10 Dec 1815 · d. 27 Nov 1852", "living", or "" when nothing is known. */

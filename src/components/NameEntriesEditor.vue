@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="K extends string">
+import { computed } from "vue";
 import { MONTH_NAMES } from "../data/dates.ts";
 import { blankNameEntry, type NameEntryInput } from "../data/people.ts";
 
@@ -10,6 +11,12 @@ const props = defineProps<{
   kinds: readonly K[];
   /** Prefix for data-testid attributes, e.g. "first-name". */
   testPrefix: string;
+  /** Link text that adds a changed name, e.g. "Last name changed (e.g. marriage)". */
+  addLabel: string;
+  /** Kind preselected for a changed name. */
+  addKind: K;
+  /** Whether a changed name becomes the main name straight away. */
+  newBecomesMain: boolean;
 }>();
 
 const entries = defineModel<NameEntryInput<K>[]>({ required: true });
@@ -20,9 +27,29 @@ function capitalise(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/**
+ * Detailed controls (kind, date, main name, reorder) only matter once a person has
+ * several names or a name that carries a kind or date; most people never change names.
+ */
+const detailed = computed(() => {
+  const list = entries.value;
+  if (list.length > 1) return true;
+  const only = list[0];
+  if (!only) return false;
+  const d = only.date;
+  return only.kind !== props.kinds[0] || Boolean(d.year || d.month || d.day);
+});
+
 function add(): void {
-  const firstKind = props.kinds[0] as K;
-  entries.value = [...entries.value, blankNameEntry(firstKind, entries.value.length === 0)];
+  const empty = entries.value.length === 0;
+  const entry = blankNameEntry(props.addKind, empty);
+  if (!empty && props.newBecomesMain) {
+    entries.value.forEach((e) => {
+      e.primary = false;
+    });
+    entry.primary = true;
+  }
+  entries.value = [...entries.value, entry];
 }
 
 function remove(index: number): void {
@@ -52,7 +79,9 @@ function makePrimary(index: number): void {
 
 <template>
   <fieldset class="flex flex-col gap-2" :data-testid="`${testPrefix}-list`">
-    <legend class="mb-1 text-sm font-medium text-gray-700">{{ title }}</legend>
+    <legend class="mb-1 text-sm font-medium text-gray-700">
+      {{ detailed ? title : capitalise(noun) }}
+    </legend>
     <div
       v-for="(entry, index) in entries"
       :key="index"
@@ -63,32 +92,47 @@ function makePrimary(index: number): void {
         v-model="entry.value"
         :data-testid="testPrefix"
         :placeholder="capitalise(noun)"
+        autocomplete="off"
         :class="inputClass"
       />
-      <select v-model="entry.kind" :data-testid="`${testPrefix}-kind`" :class="inputClass">
+      <select
+        v-if="detailed"
+        v-model="entry.kind"
+        :data-testid="`${testPrefix}-kind`"
+        :class="inputClass"
+      >
         <option v-for="kind in kinds" :key="kind" :value="kind">{{ capitalise(kind) }}</option>
       </select>
       <input
+        v-if="detailed"
         v-model="entry.date.year"
         :data-testid="`${testPrefix}-year`"
-        placeholder="Year"
+        :placeholder="index === 0 ? 'Year' : 'Since year'"
+        autocomplete="off"
         inputmode="numeric"
-        :class="[inputClass, 'w-20']"
+        :class="[inputClass, index === 0 ? 'w-20' : 'w-28']"
       />
-      <select v-model="entry.date.month" :data-testid="`${testPrefix}-month`" :class="inputClass">
+      <select
+        v-if="detailed"
+        v-model="entry.date.month"
+        :data-testid="`${testPrefix}-month`"
+        :class="inputClass"
+      >
         <option value="">Month</option>
         <option v-for="(name, i) in MONTH_NAMES" :key="name" :value="String(i + 1)">
           {{ name }}
         </option>
       </select>
       <input
+        v-if="detailed"
         v-model="entry.date.day"
         :data-testid="`${testPrefix}-day`"
         placeholder="Day"
+        autocomplete="off"
         inputmode="numeric"
         :class="[inputClass, 'w-16']"
       />
-      <label class="flex items-center gap-1 text-sm">
+      <label v-if="detailed" class="flex items-center gap-1 text-sm">
         <input
           type="radio"
           :name="`${testPrefix}-primary`"
@@ -96,9 +140,10 @@ function makePrimary(index: number): void {
           :data-testid="`${testPrefix}-primary`"
           @change="makePrimary(index)"
         />
-        Primary
+        Main name
       </label>
       <button
+        v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-up`"
         :aria-label="`Move ${noun} up`"
@@ -109,6 +154,7 @@ function makePrimary(index: number): void {
         ↑
       </button>
       <button
+        v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-down`"
         :aria-label="`Move ${noun} down`"
@@ -119,6 +165,7 @@ function makePrimary(index: number): void {
         ↓
       </button>
       <button
+        v-if="detailed"
         type="button"
         :data-testid="`${testPrefix}-remove`"
         :aria-label="`Remove ${noun}`"
@@ -134,7 +181,7 @@ function makePrimary(index: number): void {
       class="self-start text-sm text-emerald-700 hover:underline"
       @click="add"
     >
-      + Add {{ noun }}
+      + {{ addLabel }}
     </button>
   </fieldset>
 </template>

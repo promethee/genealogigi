@@ -29,6 +29,9 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
       noun="first name"
       :kinds="FIRST_NAME_KINDS"
       test-prefix="first-name"
+      add-label="First name changed"
+      add-kind="current"
+      :new-becomes-main="false"
     />
     <NameEntriesEditor
       v-model="form.lastNames"
@@ -36,6 +39,9 @@ const inputClass = "rounded border border-gray-300 px-2 py-1";
       noun="last name"
       :kinds="LAST_NAME_KINDS"
       test-prefix="last-name"
+      add-label="Last name changed (e.g. marriage)"
+      add-kind="married"
+      :new-becomes-main="true"
     />
 
     <fieldset class="flex flex-wrap items-end gap-3">
