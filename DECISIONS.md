@@ -278,3 +278,7 @@ Decision: `PlatformAPI.confirm` is unchanged but the Tauri shell answers it with
 ## Tree fit and focused person (2026-10-18)
 
 Decision: the tree scales down with CSS (viewBox, max-width 100%, floor 45%), no resize observer. The chart centre is called "focused person"; Generations defaults to All (sentinel 99) and a stats panel gives the focused person's counts. Direction default unchanged.
+
+## Person-card map: dropped (2026-10-18)
+
+Decision: no map. Online geocoding/tiles would break "your data never leaves your computer"; offline options (bundled city list, offline tiles) cost size and upkeep for little value. Revisit only if asked.

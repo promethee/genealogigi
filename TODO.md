@@ -174,3 +174,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (list polish)** — People list is a titled card with the users icon (like Relationships); the search box sits on the same line as the People/Tree switch.
 
 - **2026-10-18 (tree-defaults)** — Tree opens as Hourglass with siblings on; search suggestions close on Enter/Escape/choice/leaving the box; French "Personne centrale". Archived `tree-defaults`.
+
+- **2026-10-18 (map dropped)** — Person-card map considered and dropped by the owner (online needs network, offline needs a bundled gazetteer). Not planned.
