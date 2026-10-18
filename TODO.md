@@ -162,3 +162,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (tree-fit-width, focused-person)** — Tree SVG scales to the panel (floor 45%, then scrolls); "Root person" is now "Focused person" (fr "Personne ciblée"), Generations defaults to All, and a panel shows counts of ancestors/descendants per generation, siblings and partners (`focusStats`). Archived both.
 
 - **2026-10-18 (website)** — New landing page `docs/index.html` (hero, download CTA to Releases, tree/card/list screenshots in light+dark JPEGs from a seeded demo family, feature tiles, `.gigi` privacy section, FAQ). NOT public: GitHub Pages stays off until the owner reviews it (Settings → Pages, `main` `/docs`).
+
+- **2026-10-18 (update-invitation)** — Update banner now invites with the version ("Download version X"), shows the release link (click opens it through the shell), and shows the link to copy if the browser cannot be opened. Archived `update-invitation`.

@@ -26,9 +26,19 @@ watch(
       {{ t("update.available", { latest: app.update.latest, current: app.currentVersion }) }}
     </span>
     <button data-testid="update-download" class="btn btn-primary btn-sm" @click="app.download()">
-      <AppIcon name="copy" />
-      {{ t("update.download") }}
+      <AppIcon name="download" />
+      {{ t("update.download", { latest: app.update.latest }) }}
     </button>
+    <a
+      data-testid="update-link"
+      :href="app.update.url"
+      class="underline decoration-dotted underline-offset-2 hover:decoration-solid"
+      @click.prevent="app.download()"
+      >{{ app.update.url }}</a
+    >
+    <p v-if="app.openFailed" data-testid="update-open-failed" class="basis-full text-center">
+      {{ t("update.openFailed", { url: app.update.url }) }}
+    </p>
     <button data-testid="update-dismiss" class="btn btn-secondary btn-sm" @click="app.dismiss()">
       {{ t("update.dismiss") }}
     </button>

@@ -406,3 +406,11 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 1   | Open the Tree tab on a family of several generations | "Focused person" selector; Generations = All; whole tree drawn; no horizontal scroll if it fits at ≥45% size. |
 | 2   | Change the focused person                            | The panel lists parents, grandparents, children, grandchildren, siblings, partners with counts.               |
 | 3   | Narrow the window gradually                          | The chart shrinks with it; only below ~45% of its size does a scroll bar appear.                              |
+
+## Update invitation
+
+| #   | Action                                                             | Expected                                                             |
+| --- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| 1   | Launch with a newer release published (or click Check for updates) | Banner: "Download version X" button, the release link, Dismiss.      |
+| 2   | Click the button, then the link                                    | Your browser opens the release page each time. Nothing is installed. |
+| 3   | Block the browser opening (if possible)                            | The banner shows "Could not open your browser. Copy this link: ...". |

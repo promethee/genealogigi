@@ -1,0 +1,3 @@
+- [x] Banner wording, icon, visible link
+- [x] openFailed fallback
+- [x] Tests en/fr

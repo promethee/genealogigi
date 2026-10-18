@@ -33,7 +33,10 @@ async function boot(
       },
       git: { status: async () => "not-repo", sync: async () => "no-changes" },
       window: { setTitle: async (title: string) => localStorage.setItem("fake:title", title) },
-      openExternal: async (url: string) => localStorage.setItem("fake:opened", url),
+      openExternal: async (url: string) => {
+        if (localStorage.getItem("fake:openFails")) throw new Error("no browser");
+        localStorage.setItem("fake:opened", url);
+      },
       exit: async () => {},
     };
     let calls = 0;
@@ -86,6 +89,31 @@ test("Download opens the release page", async ({ page }) => {
   await page.getByTestId("update-download").click();
   expect(await stored(page, "fake:opened")).toBe(
     "https://github.com/promethee/genealogigi/releases/tag/v9.9.9",
+  );
+});
+
+test("the banner invites with the version and shows a link that opens the release", async ({
+  page,
+}) => {
+  await boot(page, { tag: "v9.9.9" });
+  await page.goto("/");
+  await expect(page.getByTestId("update-download")).toHaveText("Download version 9.9.9");
+  const link = page.getByTestId("update-link");
+  await expect(link).toHaveText("https://github.com/promethee/genealogigi/releases/tag/v9.9.9");
+  await link.click();
+  expect(await stored(page, "fake:opened")).toBe(
+    "https://github.com/promethee/genealogigi/releases/tag/v9.9.9",
+  );
+  await expect(page.getByTestId("update-open-failed")).toHaveCount(0);
+});
+
+test("if the browser cannot be opened the link is shown to copy", async ({ page }) => {
+  await boot(page, { tag: "v9.9.9" });
+  await page.addInitScript(() => localStorage.setItem("fake:openFails", "1"));
+  await page.goto("/");
+  await page.getByTestId("update-download").click();
+  await expect(page.getByTestId("update-open-failed")).toContainText(
+    "Copy this link: https://github.com/promethee/genealogigi/releases/tag/v9.9.9",
   );
 });
 
@@ -150,7 +178,7 @@ test("banner and button are French in French", async ({ page }) => {
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("check-update")).toContainText("Rechercher des mises à jour");
   await expect(page.getByTestId("update-text")).toContainText("La version 9.9.9 est disponible");
-  await expect(page.getByTestId("update-download")).toHaveText("Télécharger");
+  await expect(page.getByTestId("update-download")).toHaveText("Télécharger la version 9.9.9");
 });
 
 test("the app works when the shell has no title, link or update support", async ({ page }) => {

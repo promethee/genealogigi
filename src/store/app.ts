@@ -73,12 +73,16 @@ export function defineAppStore(
       }
     }
 
+    /** Set when the browser could not be opened, so the link is shown to copy by hand. */
+    const openFailed = ref(false);
+
     async function download(): Promise<void> {
       if (!update.value) return;
+      openFailed.value = false;
       try {
         await platform.openExternal(update.value.url);
       } catch {
-        // Nothing sensible to do if the browser cannot be opened.
+        openFailed.value = true;
       }
     }
 
@@ -96,6 +100,7 @@ export function defineAppStore(
       checkNow,
       dismiss,
       download,
+      openFailed,
       clearManualResult,
     };
   });

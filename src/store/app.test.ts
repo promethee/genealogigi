@@ -100,6 +100,16 @@ describe("app store", () => {
     expect(openExternal).toHaveBeenCalledWith("https://github.com/x/y/releases/v0.2.0");
   });
 
+  it("flags a browser that cannot be opened, and clears it on a later success", async () => {
+    const { store, openExternal } = make({ fetchFn: release("v0.2.0") });
+    await store.init();
+    openExternal.mockRejectedValueOnce(new Error("no browser"));
+    await store.download();
+    expect(store.openFailed).toBe(true);
+    await store.download();
+    expect(store.openFailed).toBe(false);
+  });
+
   it("works when the shell has no window or settings support", async () => {
     const { store } = make({ fetchFn: release("v0.2.0"), noWindow: true });
     await expect(store.init()).resolves.toBeUndefined();

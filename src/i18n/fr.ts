@@ -7,7 +7,8 @@ export const fr: Record<MessageKey, string> = {
   "theme.toLight": "Passer au thème clair",
 
   "update.available": "La version {latest} est disponible (vous avez la {current}).",
-  "update.download": "Télécharger",
+  "update.download": "Télécharger la version {latest}",
+  "update.openFailed": "Impossible d'ouvrir votre navigateur. Copiez ce lien : {url}",
   "update.dismiss": "Ignorer",
   "update.check": "Rechercher des mises à jour",
   "update.checking": "Recherche…",

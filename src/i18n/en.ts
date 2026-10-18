@@ -5,7 +5,8 @@ export const en = {
   "theme.toLight": "Switch to light theme",
 
   "update.available": "Version {latest} is available (you have {current}).",
-  "update.download": "Download",
+  "update.download": "Download version {latest}",
+  "update.openFailed": "Could not open your browser. Copy this link: {url}",
   "update.dismiss": "Dismiss",
   "update.check": "Check for updates",
   "update.checking": "Checking…",
