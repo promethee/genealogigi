@@ -62,7 +62,7 @@ export const fr: Record<MessageKey, string> = {
   "person.nee": "née {name}",
   "person.birthShort": "né(e) {date}",
   "person.deathShort": "décédé(e) {date}",
-  "person.living": "en vie",
+  "person.living": "vivant(e)",
   "person.deceased": "décédé(e)",
 
   "form.firstNames": "Prénoms",
@@ -106,7 +106,7 @@ export const fr: Record<MessageKey, string> = {
   "form.birthDate": "Date de naissance (chaque partie peut rester vide)",
   "form.lifeStatus": "Statut",
   "form.status.unknown": "Inconnu",
-  "form.status.living": "En vie",
+  "form.status.living": "Vivant(e)",
   "form.status.deceased": "Décédé(e)",
   "form.deathDate": "Date de décès (peut rester vide)",
 

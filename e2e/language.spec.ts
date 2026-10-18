@@ -171,3 +171,13 @@ test.describe("first launch on a French system", () => {
     await expect(page.getByTestId("create")).toHaveText("Create new family…");
   });
 });
+
+test("French says vivant(e) for a living person, in the list and the form", async ({ page }) => {
+  await newFamily(page);
+  await page.getByTestId("lang-fr").click();
+  await page.getByTestId("add-person").click();
+  await page.getByTestId("first-name").fill("Ada");
+  await expect(page.getByTestId("life-status")).toContainText("Vivant(e)");
+  await page.getByTestId("submit-person").click();
+  await expect(page.getByTestId("person-life")).toHaveText("vivant(e)");
+});

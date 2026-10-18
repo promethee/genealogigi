@@ -148,3 +148,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Fixes from hands-on use: timeline "Child born: X" now says "with" the child's other parent (never the child); the person card's **Close** button moved to the bottom right (also in the tree tab); **baptism** is no longer offered as an event type (old events still load, show and can be edited); every Delete (person list/tree card, relationship, event, photo) is covered by a test that proves it asks for confirmation first, in the active language.
 
+- **2026-10-18 (cont.)** — French: "living" is now "vivant(e)" (summary and the life-status choice), matching "décédé(e)".
+

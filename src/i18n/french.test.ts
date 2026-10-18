@@ -79,3 +79,15 @@ describe("French output of the data layer", () => {
     expect(displayName({ id: "x" as PersonId })).toBe("Personne sans nom");
   });
 });
+
+describe("French wording of the life status", () => {
+  it("says vivant(e) for living, not 'en vie'", () => {
+    const person = addPerson(EMPTY, {
+      firstName: "Ada",
+      lastName: "",
+      birth: { year: "1990", month: "", day: "" },
+      status: "living",
+    }).people[0]!;
+    expect(lifeSummary(person)).toBe("né(e) 1990 · vivant(e)");
+  });
+});
