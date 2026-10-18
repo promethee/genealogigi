@@ -2,12 +2,19 @@
 import { computed, reactive, ref, watch } from "vue";
 import { monthNames } from "../data/dates.ts";
 import { t } from "../i18n/index.ts";
+import type { NewPersonParents } from "../data/createPerson.ts";
 import {
   FIRST_NAME_KINDS,
   LAST_NAME_KINDS,
   suggestedStatus,
   type PersonFormValues,
 } from "../data/people.ts";
+import {
+  natureLabel,
+  PARENT_CHILD_NATURES,
+  type ParentChildNature,
+} from "../data/relationships.ts";
+import type { PersonId } from "../data/types.ts";
 import AppIcon from "./AppIcon.vue";
 import NameEntriesEditor from "./NameEntriesEditor.vue";
 
@@ -19,8 +26,15 @@ const props = defineProps<{
   lastNameSuggestions?: string[];
   /** Places already saved, offered in the birth and death place fields. */
   placeSuggestions?: string[];
+  /** People who can be chosen as parents; the Parents section only shows for a new person. */
+  parentChoices?: { id: PersonId; label: string }[];
+  /** True when the two people already have a partnership (hides the "record as partners" box). */
+  arePartners?: (a: PersonId, b: PersonId) => boolean;
 }>();
-const emit = defineEmits<{ submit: [input: PersonFormValues]; cancel: [] }>();
+const emit = defineEmits<{
+  submit: [input: PersonFormValues, parents?: NewPersonParents];
+  cancel: [];
+}>();
 
 // The form state is plain JSON, so a JSON round trip is a safe deep copy even when the
 // values are reactive proxies (structuredClone throws on those).
@@ -38,8 +52,35 @@ watch(
   },
 );
 
+const parentA = ref<PersonId | "">("");
+const parentB = ref<PersonId | "">("");
+const parentNature = ref<ParentChildNature>("biological-confirmed");
+const recordPartners = ref(false);
+
+/** The Parents section is for new people, and only when there is somebody to choose. */
+const showParents = computed(
+  () => props.autoStatus === true && (props.parentChoices?.length ?? 0) > 0,
+);
+const chosenParentCount = computed(() => [parentA.value, parentB.value].filter(Boolean).length);
+const canOfferPartners = computed(
+  () =>
+    parentA.value !== "" &&
+    parentB.value !== "" &&
+    parentA.value !== parentB.value &&
+    !props.arePartners?.(parentA.value, parentB.value),
+);
+
 function submit(): void {
-  emit("submit", clonePlain(form));
+  const ids = [parentA.value, parentB.value].filter((id): id is PersonId => id !== "");
+  const parents: NewPersonParents | undefined =
+    showParents.value && ids.length > 0
+      ? {
+          parentIds: ids,
+          nature: parentNature.value,
+          recordPartners: recordPartners.value && canOfferPartners.value,
+        }
+      : undefined;
+  emit("submit", clonePlain(form), parents);
 }
 
 const inputClass = "input";
@@ -161,6 +202,44 @@ const birthYearExample = computed(() =>
         </label>
       </fieldset>
     </div>
+
+    <fieldset v-if="showParents" class="flex flex-col gap-2" data-testid="new-parents">
+      <legend class="mb-1 text-sm font-semibold text-slate-700">{{ t("form.parents") }}</legend>
+      <p class="text-xs text-slate-400">{{ t("form.parentsHint") }}</p>
+      <div class="flex flex-wrap items-end gap-3">
+        <label class="label">
+          {{ t("rel.parent1") }}
+          <select v-model="parentA" data-testid="new-parent-a" :class="inputClass">
+            <option value="">{{ t("form.noParent") }}</option>
+            <option v-for="p in parentChoices" :key="p.id" :value="p.id">{{ p.label }}</option>
+          </select>
+        </label>
+        <label class="label">
+          {{ t("rel.parent2") }}
+          <select v-model="parentB" data-testid="new-parent-b" :class="inputClass">
+            <option value="">{{ t("form.noParent") }}</option>
+            <option v-for="p in parentChoices" :key="p.id" :value="p.id">{{ p.label }}</option>
+          </select>
+        </label>
+        <label v-if="chosenParentCount > 0" class="label">
+          {{ t("rel.nature") }}
+          <select v-model="parentNature" data-testid="new-parent-nature" :class="inputClass">
+            <option v-for="n in PARENT_CHILD_NATURES" :key="n" :value="n">
+              {{ natureLabel(n) }}
+            </option>
+          </select>
+        </label>
+        <label v-if="canOfferPartners" class="flex items-center gap-2 pb-2 text-sm text-slate-600">
+          <input
+            v-model="recordPartners"
+            type="checkbox"
+            data-testid="new-parent-partners"
+            class="size-4 accent-emerald-700"
+          />
+          {{ t("rel.alsoPartners") }}
+        </label>
+      </div>
+    </fieldset>
 
     <div class="flex gap-3">
       <button type="submit" data-testid="submit-person" class="btn btn-primary">

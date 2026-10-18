@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { t, tn } from "../i18n/index.ts";
-import { addPerson, removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
+import { addPersonWithParents, type NewPersonParents } from "../data/createPerson.ts";
+import { removePerson, updatePerson, type PersonFormInput } from "../data/people.ts";
 import {
   addParentChild,
   addParentsOfChild,
@@ -206,8 +207,8 @@ export function defineFamilyStore(platform: PlatformAPI) {
       return result;
     }
 
-    const addPersonNamed = (input: PersonFormInput) =>
-      mutate((current) => addPerson(current, input));
+    const addPersonNamed = (input: PersonFormInput, parents?: NewPersonParents) =>
+      mutate((current) => addPersonWithParents(current, input, parents));
 
     const editPerson = (id: PersonId, input: PersonFormInput) =>
       mutate((current) => updatePerson(current, id, input));

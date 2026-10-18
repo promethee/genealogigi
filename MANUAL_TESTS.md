@@ -287,3 +287,16 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 7   | Click **Dismiss**, relaunch                                                             | The banner stays hidden for 0.2.0.                                                |
 | 8   | Click **Check for updates** after dismissing                                            | The banner shows again.                                                           |
 | 9   | Publish v0.3.0, relaunch                                                                | The banner returns for 0.3.0.                                                     |
+
+## Parents while creating a person
+
+| #   | Action                                                                                   | Expected                                                                               |
+| --- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1   | Start a new family, click **Add person**                                                 | No Parents section (nobody to choose).                                                 |
+| 2   | Add Ada and Cleo. Click **Add person**, name Byron                                       | A **Parents (optional)** section with Parent 1 and Parent 2 (both "None").             |
+| 3   | Choose Ada and Cleo, Save                                                                | Byron is added; the list shows "Ada is parent of Byron" and "Cleo is parent of Byron". |
+| 4   | Add another person, choose only Parent 1, nature adoptive                                | One adoptive link.                                                                     |
+| 5   | Choose the same person for both parents                                                  | Error "must be different people"; nothing saved.                                       |
+| 6   | Birth year in the future with a parent chosen                                            | Error; neither the person nor the link is saved.                                       |
+| 7   | Choose two parents who are not partners and tick **Also record the parents as partners** | A partnership (unknown) is added too; the box is gone next time for that couple.       |
+| 8   | Edit an existing person                                                                  | No Parents section.                                                                    |

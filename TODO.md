@@ -132,3 +132,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 
 - **2026-10-18 (cont.)** — Implemented change `app-version-update`: version 0.1.0 (single source in package.json, test checks tauri.conf.json and Cargo.toml), window title "Genealogigi 0.1.0" set at runtime, startup check of the GitHub latest release (silent unless newer) with a Download/Dismiss banner (dismissal remembered per version), "Check for updates" button in the top bar, link opened in the system browser via `tauri-plugin-opener` (scoped to this repo). No auto-install: notify only; `tauri-plugin-updater` is the upgrade path once signed installers exist. 225 unit, 7 cargo, 123 e2e.
 
+- **2026-10-18 (cont.)** — Implemented change `person-parents`: the add-person form has an optional Parents section (Parent 1/2 from existing people, permanent natures, optional "also record as partners"); person and links are saved together or not at all (`createPerson.ts`). Hidden when nobody exists and when editing. Step/foster/guardian stay in the relationships form (they need dates). 234 unit, 131 e2e.
+

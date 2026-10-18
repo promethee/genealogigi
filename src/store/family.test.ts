@@ -331,6 +331,31 @@ describe("family store: relationships", () => {
     expect(store.data?.relationships).toHaveLength(2);
   });
 
+  it("adds a person with parents in a single save, and nothing when it fails", async () => {
+    const { store, save, a, b } = await twoPeople();
+    save.mockClear();
+    expect(
+      await store.addPerson(
+        { firstName: "Cleo", lastName: "" },
+        { parentIds: [a, b], nature: "adoptive" },
+      ),
+    ).toBe(true);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(store.data?.people).toHaveLength(3);
+    expect(store.data?.relationships).toHaveLength(2);
+
+    save.mockClear();
+    expect(
+      await store.addPerson(
+        { firstName: "Dan", lastName: "" },
+        { parentIds: [a, a], nature: "adoptive" },
+      ),
+    ).toBe(false);
+    expect(store.error).toMatch(/different people/);
+    expect(save).not.toHaveBeenCalled();
+    expect(store.data?.people).toHaveLength(3);
+  });
+
   it("deletes a relationship only after confirmation", async () => {
     const declined = await twoPeople({ confirmResult: false });
     await declined.store.addPartners({

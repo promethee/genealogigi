@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import type { NewPersonParents } from "../data/createPerson.ts";
+import { isParentChild } from "../data/relationships.ts";
 import AppIcon from "../components/AppIcon.vue";
 import { t, tn } from "../i18n/index.ts";
 import PedigreeTree from "../components/PedigreeTree.vue";
@@ -63,11 +65,25 @@ function avatarColor(person: Parameters<typeof displayName>[0]): string {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length] as string;
 }
 
-async function submit(input: PersonFormInput): Promise<void> {
+const parentChoices = computed(() =>
+  (family.data?.people ?? []).map((p) => ({ id: p.id, label: displayName(p) })),
+);
+
+function arePartners(a: PersonId, b: PersonId): boolean {
+  return (family.data?.relationships ?? []).some(
+    (r) =>
+      !isParentChild(r) &&
+      ((r.personAId === a && r.personBId === b) || (r.personAId === b && r.personBId === a)),
+  );
+}
+
+async function submit(input: PersonFormInput, parents?: NewPersonParents): Promise<void> {
   const target = formTarget.value;
   if (!target) return;
   const ok =
-    target === "new" ? await family.addPerson(input) : await family.editPerson(target, input);
+    target === "new"
+      ? await family.addPerson(input, parents)
+      : await family.editPerson(target, input);
   if (ok) {
     formTarget.value = null;
     // After editing someone, go back to their card.
@@ -175,6 +191,8 @@ async function submit(input: PersonFormInput): Promise<void> {
             :auto-status="formTarget === 'new'"
             :last-name-suggestions="lastNameSuggestions(family.data?.people ?? [])"
             :place-suggestions="placeSuggestions(family.data?.people ?? [])"
+            :parent-choices="parentChoices"
+            :are-partners="arePartners"
             @submit="submit"
             @cancel="formTarget = null"
           />
