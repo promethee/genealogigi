@@ -23,7 +23,6 @@ export const en = {
   "summary.relationships.one": "{count} relationship",
   "summary.relationships.other": "{count} relationships",
 
-  "header.saveCopy": "Save a copy…",
   "tab.people": "People",
   "tab.tree": "Tree",
 
@@ -288,7 +287,39 @@ export const en = {
   "store.invalidJson": "The file is not valid JSON.",
   "store.lastNotFound": "Last family file not found: {path}",
   "store.chooseDifferent": "Choose a different file: that one is the file currently open.",
-  "store.copySaved": "Copy saved to {path}",
+  "export.done": "Exported to {path}: {summary}.",
+  "summary.events.one": "{count} event",
+  "summary.events.other": "{count} events",
+  "summary.photos.one": "{count} photo",
+  "summary.photos.other": "{count} photos",
+  "header.export": "Export…",
+  "header.import": "Import…",
+  "header.close": "Close family",
+  "import.error.not-json": "This file is not valid JSON, so it cannot be imported.",
+  "import.error.not-family":
+    "This file is not a Genealogigi family file: it has no lists of people and relationships.",
+  "import.error.newer-version":
+    "This file was made by a newer version of Genealogigi. Update the app, then try again.",
+  "import.error.read": "Could not read the file: {detail}",
+  "import.error.backup": "The backup could not be written, so nothing was imported: {detail}",
+  "import.error.backupVerify": "The backup could not be verified, so nothing was imported.",
+  "import.error.sameFile": "That is the file currently open. Choose a different file to import.",
+  "import.identical": "That file has the same content as the current family: nothing to import.",
+  "import.confirm":
+    "Import “{file}”?\n\nThe file contains: {incoming}.\nThe current family contains: {current}.\n\nThe current family will be REPLACED by the content of the file. Before that, the current file is backed up as:\n{backup}{extra}\n\nContinue?",
+  "import.confirm.empty": "\n\nWarning: the file has no people. The family will become empty.",
+  "import.confirm.warnings":
+    "\n\nWarning: some items in the file are damaged and will be skipped:\n{list}",
+  "import.done": "Imported {file}: {incoming}. The previous data was backed up as {backup}.",
+  "import.warn.no-version": "The file has no version number; it was read as the current format.",
+  "import.warn.people": "{count} damaged people entries were skipped.",
+  "import.warn.duplicate-people": "{count} duplicate people were skipped.",
+  "import.warn.relationships":
+    "{count} relationships were skipped because they point to missing people.",
+  "import.warn.events":
+    "{count} events were skipped because they are damaged or have no known person.",
+  "import.warn.photos":
+    "{count} photos were skipped because they are not valid images or are over the limit.",
   "store.confirmDeletePerson": "Delete {label}{also}? This cannot be undone.",
   "store.alsoRelationships.one": " and {count} relationship",
   "store.alsoRelationships.other": " and {count} relationships",

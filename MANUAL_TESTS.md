@@ -70,20 +70,22 @@ Use a family with at least: Me, Mum, Dad, Gran (Mum's parent) and GreatGran
 | 8   | Add a person with a very long name (40+ letters) as a parent of Me | The box shows the name cut with an ellipsis. Hovering shows the full name.                |
 | 9   | Resize the window narrower than the chart                          | The chart scrolls inside its frame. The page layout does not break.                       |
 
-## Save a copy
+## Export, import and close
 
 Start from an open family with at least one person.
 
-| #   | Action                                                                 | Expected                                                                        |
-| --- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| 1   | Click **Save a copy…**, then Cancel                                    | Nothing happens. No message.                                                    |
-| 2   | Click **Save a copy…**, choose a new file name, Save                   | Green message "Copy saved to ...". The new file exists and has the same people. |
-| 3   | Check the header path                                                  | It still shows the original file.                                               |
-| 4   | Add a person, then open the copy in a text editor                      | The copy does not have the new person (it is a snapshot).                       |
-| 5   | Click **Save a copy…**, choose the file that is open, confirm replace  | Error "Choose a different file...". The open file is not modified.              |
-| 6   | Click **Save a copy…**, choose an existing other file, confirm replace | The file is replaced. Green message shown.                                      |
-| 7   | With the green message showing, add a person                           | The green message disappears.                                                   |
-| 8   | Quit and relaunch, click Resume                                        | The original file opens, not the copy.                                          |
+| #   | Action                                                             | Expected                                                                                                                                             |
+| --- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Click **Export…**, then Cancel                                     | Nothing happens. No message.                                                                                                                         |
+| 2   | Click **Export…**, choose a new file name, Save                    | Green message "Exported to ...: N people · ...". The file has the same people. Header path unchanged.                                                |
+| 3   | Click **Export…**, choose the open file                            | Error "Choose a different file...". The open file is not modified.                                                                                   |
+| 4   | Click **Import…**, then Cancel in the file dialog                  | Nothing happens.                                                                                                                                     |
+| 5   | **Import…** the exported file after adding a person                | A confirmation shows both counts, the REPLACE warning and the backup file name. Cancel changes nothing.                                              |
+| 6   | Confirm the import                                                 | Family is replaced. Green message names the backup. A `<name>.backup-<date>-<time>-<hash>.json` exists next to the file and holds the previous data. |
+| 7   | **Import…** a non-JSON file, then a JSON file that is not a family | A red error each time. The family is unchanged and no backup is written.                                                                             |
+| 8   | **Import…** the file that is open                                  | Error "That is the file currently open".                                                                                                             |
+| 9   | Click **Close family**                                             | Back to the welcome screen. **Resume** reopens the same family.                                                                                      |
+| 10  | Quit and relaunch, click Resume                                    | The original file opens, not the exported one.                                                                                                       |
 
 ## Person dates and life status
 
@@ -370,7 +372,7 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 9   | Click, then double-click a box with a portrait                   | Click opens the card below; double-click re-centres.                                                                                                            |
 | 10  | Open a card: the small family tree                               | Small portraits in each little box.                                                                                                                             |
 | 11  | Switch to the dark theme                                         | Portraits and initials discs are still clear.                                                                                                                   |
-| 12  | **Save a copy…**, open the copy                                  | The photos are in the copy.                                                                                                                                     |
+| 12  | **Export…**, open the export                                     | The photos are in the copy.                                                                                                                                     |
 | 13  | Try to add a 13th photo, a .txt renamed to .png, a corrupt image | Add is disabled at 12; bad files give "not a supported image" and are skipped; good ones in the same selection are still added.                                 |
 | 14  | Sync with git (if configured)                                    | The family file (with photos) is committed and pushed.                                                                                                          |
 

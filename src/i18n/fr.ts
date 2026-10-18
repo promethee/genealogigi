@@ -25,7 +25,6 @@ export const fr: Record<MessageKey, string> = {
   "summary.relationships.one": "{count} relation",
   "summary.relationships.other": "{count} relations",
 
-  "header.saveCopy": "Enregistrer une copie…",
   "tab.people": "Personnes",
   "tab.tree": "Arbre",
 
@@ -294,7 +293,44 @@ export const fr: Record<MessageKey, string> = {
   "store.lastNotFound": "Dernier fichier famille introuvable : {path}",
   "store.chooseDifferent":
     "Choisissez un autre fichier : celui-ci est le fichier actuellement ouvert.",
-  "store.copySaved": "Copie enregistrée dans {path}",
+  "export.done": "Exporté dans {path} : {summary}.",
+  "summary.events.one": "{count} événement",
+  "summary.events.other": "{count} événements",
+  "summary.photos.one": "{count} photo",
+  "summary.photos.other": "{count} photos",
+  "header.export": "Exporter…",
+  "header.import": "Importer…",
+  "header.close": "Fermer la famille",
+  "import.error.not-json": "Ce fichier n’est pas du JSON valide : il ne peut pas être importé.",
+  "import.error.not-family":
+    "Ce fichier n’est pas un fichier famille Genealogigi : il n’a pas de listes de personnes et de relations.",
+  "import.error.newer-version":
+    "Ce fichier a été créé par une version plus récente de Genealogigi. Mettez l’application à jour, puis réessayez.",
+  "import.error.read": "Impossible de lire le fichier : {detail}",
+  "import.error.backup":
+    "La sauvegarde n’a pas pu être écrite, rien n’a donc été importé : {detail}",
+  "import.error.backupVerify": "La sauvegarde n’a pas pu être vérifiée, rien n’a donc été importé.",
+  "import.error.sameFile":
+    "C’est le fichier actuellement ouvert. Choisissez un autre fichier à importer.",
+  "import.identical": "Ce fichier a le même contenu que la famille actuelle : rien à importer.",
+  "import.confirm":
+    "Importer « {file} » ?\n\nLe fichier contient : {incoming}.\nLa famille actuelle contient : {current}.\n\nLa famille actuelle sera REMPLACÉE par le contenu du fichier. Auparavant, le fichier actuel est sauvegardé sous :\n{backup}{extra}\n\nContinuer ?",
+  "import.confirm.empty":
+    "\n\nAttention : le fichier ne contient aucune personne. La famille deviendra vide.",
+  "import.confirm.warnings":
+    "\n\nAttention : certains éléments du fichier sont endommagés et seront ignorés :\n{list}",
+  "import.done":
+    "{file} importé : {incoming}. Les données précédentes ont été sauvegardées sous {backup}.",
+  "import.warn.no-version":
+    "Le fichier n’a pas de numéro de version ; il a été lu au format actuel.",
+  "import.warn.people": "{count} entrées de personnes endommagées ont été ignorées.",
+  "import.warn.duplicate-people": "{count} personnes en double ont été ignorées.",
+  "import.warn.relationships":
+    "{count} relations ont été ignorées car elles pointent vers des personnes absentes.",
+  "import.warn.events":
+    "{count} événements ont été ignorés car ils sont endommagés ou sans personne connue.",
+  "import.warn.photos":
+    "{count} photos ont été ignorées car ce ne sont pas des images valides ou la limite est dépassée.",
   "store.confirmDeletePerson": "Supprimer {label}{also} ? Cette action est irréversible.",
   "store.alsoRelationships.one": " et {count} relation",
   "store.alsoRelationships.other": " et {count} relations",

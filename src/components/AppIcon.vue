@@ -14,6 +14,9 @@ export type IconName =
   | "eye"
   | "sun"
   | "moon"
+  | "download"
+  | "upload"
+  | "home"
   | "x";
 
 defineProps<{ name: IconName }>();
@@ -35,6 +38,9 @@ const PATHS: Record<IconName, string> = {
   sun: "M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10ZM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4",
   moon: "M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z",
   eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
+  download: "M12 3v12M7 10l5 5 5-5M4 20h16",
+  upload: "M12 15V3M7 8l5-5 5 5M4 20h16",
+  home: "M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10",
   x: "M6 6l12 12M18 6L6 18",
 };
 </script>

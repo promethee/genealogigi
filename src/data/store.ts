@@ -17,6 +17,18 @@ export async function loadFamilyData(io: FileIO, filePath: string): Promise<Fami
   return JSON.parse(raw) as FamilyData; // TODO: validate shape, don't just trust the cast
 }
 
+/** The file's exact text. */
+export function readRawFile(io: FileIO, filePath: string): Promise<string> {
+  return io.readText(filePath);
+}
+
+/** Writes text as given, through a temporary file so a crash never leaves a half-written file. */
+export async function writeRawFile(io: FileIO, filePath: string, text: string): Promise<void> {
+  const tmpFile = `${filePath}.tmp`;
+  await io.writeText(tmpFile, text);
+  await io.rename(tmpFile, filePath);
+}
+
 export async function saveFamilyData(
   io: FileIO,
   filePath: string,

@@ -8,6 +8,14 @@ import {
   setPhotoCaption,
   type PhotoInput,
 } from "../data/photos.ts";
+import { backupPath, fileNameOf as baseName, hashText } from "../data/backup.ts";
+import {
+  ImportError,
+  parseFamilyFile,
+  summarize,
+  type FamilySummary,
+  type ImportWarning,
+} from "../data/importFamily.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
 import { addPersonWithParents, type NewPersonParents } from "../data/createPerson.ts";
@@ -27,7 +35,7 @@ import type { EventId, FamilyData, PersonId, PhotoId, RelationshipId } from "../
 import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.json";
-const COPY_FILE_NAME = "family-copy.json";
+const EXPORT_FILE_NAME = "family-export.json";
 
 function emptyFamily(): FamilyData {
   return { schemaVersion: 1, people: [], relationships: [] };
@@ -41,6 +49,21 @@ function fileNameOf(filePath: string): string {
 function samePath(a: string, b: string): boolean {
   const normalise = (path: string) => path.replaceAll("\\", "/").toLowerCase();
   return normalise(a) === normalise(b);
+}
+
+function summaryText(s: FamilySummary): string {
+  return [
+    tn("summary.people", s.people),
+    tn("summary.relationships", s.relationships),
+    tn("summary.events", s.events),
+    tn("summary.photos", s.photos),
+  ].join(" · ");
+}
+
+function warningText(w: ImportWarning): string {
+  return w.code === "no-version"
+    ? t("import.warn.no-version")
+    : t(`import.warn.${w.code}`, { count: w.count });
 }
 
 function describe(err: unknown): string {
@@ -60,6 +83,8 @@ export function defineFamilyStore(
     const error = ref<string | null>(null);
     /** Positive feedback (e.g. copy saved); cleared by the next action. */
     const notice = ref<string | null>(null);
+    /** Items skipped by the last import; cleared with the notice. */
+    const warnings = ref<string[]>([]);
     /** Remembered path whose file still exists, or null. */
     const resumePath = ref<string | null>(null);
 
@@ -85,6 +110,7 @@ export function defineFamilyStore(
       data.value = loaded;
       error.value = null;
       notice.value = null;
+      warnings.value = [];
       gitStatus.value = "unavailable";
       await refreshGitStatus();
     }
@@ -149,6 +175,7 @@ export function defineFamilyStore(
         const current = data.value;
         if (!path || !current) return false;
         notice.value = null;
+        warnings.value = [];
         try {
           const next = change(current);
           await platform.data.save(path, next);
@@ -166,13 +193,14 @@ export function defineFamilyStore(
     }
 
     /** Writes a snapshot elsewhere; the open file stays the open file. */
-    function saveCopy(): Promise<boolean> {
+    function exportFamily(): Promise<boolean> {
       const run = async (): Promise<boolean> => {
         const openPath = filePath.value;
         if (!openPath || !data.value) return false;
         notice.value = null;
+        warnings.value = [];
         try {
-          const target = await platform.saveFileDialog({ defaultName: COPY_FILE_NAME });
+          const target = await platform.saveFileDialog({ defaultName: EXPORT_FILE_NAME });
           if (!target) return false;
           if (samePath(target, openPath)) {
             error.value = t("store.chooseDifferent");
@@ -182,7 +210,10 @@ export function defineFamilyStore(
           if (!data.value) return false;
           await platform.data.save(target, data.value);
           error.value = null;
-          notice.value = t("store.copySaved", { path: target });
+          notice.value = t("export.done", {
+            path: target,
+            summary: summaryText(summarize(data.value)),
+          });
           return true;
         } catch (err) {
           error.value = describe(err);
@@ -194,12 +225,120 @@ export function defineFamilyStore(
       return result;
     }
 
+    /**
+     * Replaces the open family by the content of a chosen file, after a confirmation and a
+     * verified backup of the current file. Any failure leaves the current data untouched.
+     */
+    function importFamily(): Promise<boolean> {
+      const run = async (): Promise<boolean> => {
+        const openPath = filePath.value;
+        if (!openPath || !data.value) return false;
+        notice.value = null;
+        warnings.value = [];
+        try {
+          const source = await platform.openFileDialog();
+          if (!source) return false;
+          if (samePath(source, openPath)) {
+            error.value = t("import.error.sameFile");
+            return false;
+          }
+          let text: string;
+          try {
+            text = await platform.data.readRaw(source);
+          } catch (err) {
+            error.value = t("import.error.read", { detail: describe(err) });
+            return false;
+          }
+          const parsed = parseFamilyFile(text, {
+            "not-json": t("import.error.not-json"),
+            "not-family": t("import.error.not-family"),
+            "newer-version": t("import.error.newer-version"),
+          });
+          const current = data.value;
+          let previous: string;
+          try {
+            previous = await platform.data.readRaw(openPath);
+          } catch {
+            previous = JSON.stringify(current, null, 2);
+          }
+          const hash = await hashText(previous);
+          const identical = JSON.stringify(parsed.data) === JSON.stringify(current);
+          if (identical && parsed.warnings.length === 0) {
+            error.value = null;
+            notice.value = t("import.identical");
+            return false;
+          }
+          const backup = backupPath(openPath, new Date(), hash);
+          const list = parsed.warnings.map((w) => `• ${warningText(w)}`);
+          const extra =
+            (parsed.summary.people === 0 ? t("import.confirm.empty") : "") +
+            (list.length ? t("import.confirm.warnings", { list: list.join("\n") }) : "");
+          const confirmed = await platform.confirm(
+            t("import.confirm", {
+              file: baseName(source),
+              incoming: summaryText(parsed.summary),
+              current: summaryText(summarize(current)),
+              backup: baseName(backup),
+              extra,
+            }),
+          );
+          if (!confirmed) return false;
+          try {
+            await platform.data.writeRaw(backup, previous);
+          } catch (err) {
+            error.value = t("import.error.backup", { detail: describe(err) });
+            return false;
+          }
+          let written: string | null = null;
+          try {
+            written = await platform.data.readRaw(backup);
+          } catch {
+            written = null;
+          }
+          if (written !== previous || (await hashText(written)) !== hash) {
+            error.value = t("import.error.backupVerify");
+            return false;
+          }
+          await platform.data.save(openPath, parsed.data);
+          data.value = parsed.data;
+          error.value = null;
+          warnings.value = list;
+          notice.value = t("import.done", {
+            file: baseName(source),
+            incoming: summaryText(parsed.summary),
+            backup: baseName(backup),
+          });
+          return true;
+        } catch (err) {
+          error.value = err instanceof ImportError ? err.message : describe(err);
+          return false;
+        }
+      };
+      const result = pendingMutation.then(run);
+      pendingMutation = result;
+      return result;
+    }
+
+    /** Leaves the family (after pending saves finish) and goes back to the welcome screen. */
+    async function closeFamily(): Promise<void> {
+      await pendingMutation;
+      filePath.value = null;
+      data.value = null;
+      error.value = null;
+      notice.value = null;
+      warnings.value = [];
+      gitStatus.value = "unavailable";
+      syncing.value = false;
+      await init();
+    }
+
     /** Commits, pulls and pushes through git, then reloads the file it may have changed. */
     function syncGit(): Promise<boolean> {
       const run = async (): Promise<boolean> => {
         const path = filePath.value;
         if (!path || gitStatus.value !== "ready") return false;
         notice.value = null;
+        warnings.value = [];
         syncing.value = true;
         try {
           const result = await platform.git.sync(path);
@@ -308,6 +447,7 @@ export function defineFamilyStore(
       data,
       error,
       notice,
+      warnings,
       resumePath,
       resumeFileName,
       gitStatus,
@@ -333,7 +473,9 @@ export function defineFamilyStore(
       deleteEvent,
       editRelationship,
       deleteRelationship,
-      saveCopy,
+      exportFamily,
+      importFamily,
+      closeFamily,
     };
   });
 }

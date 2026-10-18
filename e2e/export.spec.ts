@@ -49,9 +49,11 @@ const setCopyPath = (page: Page, path: string) =>
 test("saves a copy with the same people and keeps the original open", async ({ page }) => {
   await familyWithAda(page);
   await setCopyPath(page, "C:/backup/copy.json");
-  await page.getByTestId("save-copy").click();
+  await page.getByTestId("export").click();
 
-  await expect(page.getByTestId("notice")).toHaveText("Copy saved to C:/backup/copy.json");
+  await expect(page.getByTestId("notice")).toHaveText(
+    "Exported to C:/backup/copy.json: 1 person · 0 relationships · 0 events · 0 photos.",
+  );
   await expect(page.getByTestId("loaded-path")).toHaveText("C:/families/orig.json");
 
   const copy = await page.evaluate(() => localStorage.getItem("fake:file:C:/backup/copy.json"));
@@ -63,7 +65,7 @@ test("saves a copy with the same people and keeps the original open", async ({ p
 test("cancelling the dialog shows nothing and writes nothing", async ({ page }) => {
   await familyWithAda(page);
   await page.evaluate(() => localStorage.removeItem("fake:copyPath"));
-  await page.getByTestId("save-copy").click();
+  await page.getByTestId("export").click();
   await expect(page.getByTestId("notice")).toHaveCount(0);
   await expect(page.getByTestId("error")).toHaveCount(0);
 });
@@ -71,7 +73,7 @@ test("cancelling the dialog shows nothing and writes nothing", async ({ page }) 
 test("refuses to copy onto the open file", async ({ page }) => {
   await familyWithAda(page);
   await setCopyPath(page, "c:/FAMILIES/orig.json");
-  await page.getByTestId("save-copy").click();
+  await page.getByTestId("export").click();
   await expect(page.getByTestId("error")).toContainText("different file");
   await expect(page.getByTestId("notice")).toHaveCount(0);
 });
@@ -79,7 +81,7 @@ test("refuses to copy onto the open file", async ({ page }) => {
 test("the copy-saved message disappears after another change", async ({ page }) => {
   await familyWithAda(page);
   await setCopyPath(page, "C:/backup/copy.json");
-  await page.getByTestId("save-copy").click();
+  await page.getByTestId("export").click();
   await expect(page.getByTestId("notice")).toBeVisible();
 
   await page.getByTestId("add-person").click();

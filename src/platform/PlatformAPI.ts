@@ -23,6 +23,10 @@ export interface PlatformAPI {
     exists(filePath: string): Promise<boolean>;
     load(filePath: string): Promise<FamilyData>;
     save(filePath: string, data: FamilyData): Promise<void>;
+    /** The exact text of a file (backups and imports work on text, not on parsed data). */
+    readRaw(filePath: string): Promise<string>;
+    /** Writes text exactly as given, atomically (a half-written file is never left behind). */
+    writeRaw(filePath: string, text: string): Promise<void>;
   };
   settings: {
     getLastFilePath(): Promise<string | null>;

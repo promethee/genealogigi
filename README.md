@@ -10,7 +10,7 @@ Working today:
 
 - Create, open and resume a family file (a single JSON file you choose).
 - Add, edit and delete people: several names (nickname, married...) with a primary, birth date, life status and death date (dates may be partial).
-- Save a copy of the open family to another file.
+- Export the open family to another file; import a family file to replace the open one (after a confirmation, with a verified backup next to it named `<name>.backup-<date>-<time>-<hash>.json`); Close family returns to the welcome screen.
 - Link people as parent-child (biological confirmed or presumed, adoptive, step, foster, guardian with status and dates) or as partners, with validation against duplicates and cycles. Relationships can be edited.
 - Photos for each person (several, with a main one and captions), shown as portraits in the cards and trees. They are shrunk to 480 px and stored inside the family file (about 30–100 KB each), so the family stays one portable file.
 - Person card with a timeline of their life, and events you add (marriage, residence...) that can involve other people.

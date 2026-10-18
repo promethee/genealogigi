@@ -79,9 +79,13 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           {{ tn("summary.relationships", family.data?.relationships.length ?? 0) }}
         </p>
         <div class="mt-3 flex flex-wrap items-center gap-2">
-          <button data-testid="save-copy" class="btn btn-secondary" @click="family.saveCopy()">
-            <AppIcon name="copy" />
-            {{ t("header.saveCopy") }}
+          <button data-testid="export" class="btn btn-secondary" @click="family.exportFamily()">
+            <AppIcon name="download" />
+            {{ t("header.export") }}
+          </button>
+          <button data-testid="import" class="btn btn-secondary" @click="family.importFamily()">
+            <AppIcon name="upload" />
+            {{ t("header.import") }}
           </button>
           <button
             v-if="family.gitStatus === 'ready'"
@@ -96,6 +100,14 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           <p v-else-if="family.gitStatus !== 'unavailable'" data-testid="git-hint" class="chip">
             {{ t(`git.hint.${family.gitStatus}`) }}
           </p>
+          <button
+            data-testid="close-family"
+            class="btn btn-secondary ml-auto"
+            @click="family.closeFamily()"
+          >
+            <AppIcon name="home" />
+            {{ t("header.close") }}
+          </button>
         </div>
         <p
           v-if="family.notice"
@@ -104,6 +116,13 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         >
           {{ family.notice }}
         </p>
+        <ul
+          v-if="family.warnings.length"
+          data-testid="import-warnings"
+          class="mt-2 list-disc rounded-lg bg-amber-50 px-3 py-2 pl-7 text-sm text-amber-900 dark:bg-amber-950/50 dark:text-amber-200"
+        >
+          <li v-for="w in family.warnings" :key="w">{{ w.replace(/^• /, "") }}</li>
+        </ul>
       </header>
 
       <nav class="inline-flex self-start rounded-xl bg-slate-200/70 p-1 text-sm font-medium">

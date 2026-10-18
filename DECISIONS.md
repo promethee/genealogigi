@@ -255,3 +255,14 @@ product promise is "one file you own": save-a-copy, git sync and backups keep wo
 extra to stage. Cost: a larger file that is rewritten on every save (about 30-100 KB per photo).
 Upgrade path if families outgrow this: photos in a sibling folder referenced by name.
 
+
+## Import, export and close (2026-10-18)
+
+Decision: Import REPLACES the open family (no merge), after a confirmation naming both sides'
+counts and the backup file. Reason: merging two trees needs identity matching that a
+single-family file does not have. Before replacing, the current file's exact text is written next
+to it as `<name>.backup-<yyyyMMdd>-<HHmmss>-<first 8 hex of SHA-256>.json`, read back and
+compared; if that fails nothing changes. Validation is structural: unreadable, wrong-shape or
+newer-schema files are refused; dangling links, duplicate people, bad photos and bad events are
+dropped and reported. Export replaces "Save a copy" (same behaviour, richer message). Close family
+awaits pending saves, then shows the welcome screen (Resume still offers the closed file).

@@ -5,7 +5,13 @@ import { exists, readFile, readTextFile, rename, writeTextFile } from "@tauri-ap
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { load as loadStore } from "@tauri-apps/plugin-store";
-import { loadFamilyData, saveFamilyData, type FileIO } from "../data/store.ts";
+import {
+  loadFamilyData,
+  readRawFile,
+  saveFamilyData,
+  writeRawFile,
+  type FileIO,
+} from "../data/store.ts";
 import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
 import type { GitStatus, PickedImage, PlatformAPI } from "./PlatformAPI.ts";
 
@@ -67,6 +73,8 @@ export function createPlatformAPI(): PlatformAPI {
       exists: (filePath) => exists(filePath),
       load: (filePath) => loadFamilyData(tauriFileIO, filePath),
       save: (filePath, data) => saveFamilyData(tauriFileIO, filePath, data),
+      readRaw: (filePath) => readRawFile(tauriFileIO, filePath),
+      writeRaw: (filePath, text) => writeRawFile(tauriFileIO, filePath, text),
     },
     settings: {
       getLastFilePath: async () => {

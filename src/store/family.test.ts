@@ -1,5 +1,7 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { addPerson, displayName } from "../data/people.ts";
+import { addPartners } from "../data/relationships.ts";
 import type { FamilyData } from "../data/types.ts";
 import type { PlatformAPI } from "../platform/PlatformAPI.ts";
 import { defineFamilyStore } from "./family.ts";
@@ -25,9 +27,12 @@ function fakePlatform(options: FakeOptions = {}) {
   const files = new Map<string, FamilyData>(
     (options.existingFiles ?? []).map((path) => [path, EMPTY]),
   );
+  /** Raw text of files written or seeded as text (imports, backups). */
+  const raw = new Map<string, string>();
   const save = vi.fn(async (path: string, data: FamilyData) => {
     if (options.saveError && failSaves) throw options.saveError;
     files.set(path, data);
+    raw.delete(path);
   });
   const platform: PlatformAPI = {
     openFileDialog: async () => options.openResult ?? null,
@@ -39,6 +44,16 @@ function fakePlatform(options: FakeOptions = {}) {
         return files.get(path) ?? EMPTY;
       },
       save,
+      readRaw: async (path) => {
+        const text = raw.get(path);
+        if (text !== undefined) return text;
+        const parsed = files.get(path);
+        if (!parsed) throw new Error(`no such file: ${path}`);
+        return JSON.stringify(parsed, null, 2);
+      },
+      writeRaw: async (path, text) => {
+        raw.set(path, text);
+      },
     },
     settings: {
       getLastFilePath: async () => lastPath,
@@ -66,6 +81,7 @@ function fakePlatform(options: FakeOptions = {}) {
     platform,
     save,
     files,
+    raw,
     getLastPath: () => lastPath,
     failSavesFromNowOn: () => {
       failSaves = true;
@@ -401,7 +417,7 @@ describe("family store: relationships", () => {
   });
 });
 
-describe("family store: save a copy", () => {
+describe("family store: export", () => {
   /** A loaded family whose save dialog returns the next path in `dialogPaths`. */
   async function loaded(dialogPaths: (string | null)[]) {
     const original = "/orig/family.json";
@@ -417,18 +433,20 @@ describe("family store: save a copy", () => {
 
   it("writes the same data to the chosen file and keeps the original open", async () => {
     const { store, files, original, getLastPath } = await loaded(["/backup/copy.json"]);
-    expect(await store.saveCopy()).toBe(true);
+    expect(await store.exportFamily()).toBe(true);
     expect(files.get("/backup/copy.json")).toEqual(files.get(original));
     expect(files.get("/backup/copy.json")?.people).toHaveLength(1);
     expect(store.filePath).toBe(original);
     expect(getLastPath()).toBe(original);
-    expect(store.notice).toBe("Copy saved to /backup/copy.json");
+    expect(store.notice).toBe(
+      "Exported to /backup/copy.json: 1 person · 0 relationships · 0 events · 0 photos.",
+    );
   });
 
   it("does nothing, silently, when cancelled", async () => {
     const { store, save } = await loaded([null]);
     save.mockClear();
-    expect(await store.saveCopy()).toBe(false);
+    expect(await store.exportFamily()).toBe(false);
     expect(save).not.toHaveBeenCalled();
     expect(store.notice).toBeNull();
     expect(store.error).toBeNull();
@@ -437,7 +455,7 @@ describe("family store: save a copy", () => {
   it("refuses the file that is currently open, ignoring case and slash style", async () => {
     const { store, save } = await loaded(["/ORIG\\Family.json"]);
     save.mockClear();
-    expect(await store.saveCopy()).toBe(false);
+    expect(await store.exportFamily()).toBe(false);
     expect(store.error).toContain("different file");
     expect(save).not.toHaveBeenCalled();
   });
@@ -447,7 +465,7 @@ describe("family store: save a copy", () => {
     platform.data.save = async () => {
       throw new Error("disk full");
     };
-    expect(await store.saveCopy()).toBe(false);
+    expect(await store.exportFamily()).toBe(false);
     expect(store.error).toBe("disk full");
     expect(store.notice).toBeNull();
     expect(store.data?.people).toHaveLength(1);
@@ -455,10 +473,125 @@ describe("family store: save a copy", () => {
 
   it("clears the notice when the user edits something else", async () => {
     const { store } = await loaded(["/b/copy.json"]);
-    await store.saveCopy();
+    await store.exportFamily();
     expect(store.notice).not.toBeNull();
     await store.addPerson({ firstName: "Byron", lastName: "" });
     expect(store.notice).toBeNull();
+  });
+});
+
+describe("family store: import and close", () => {
+  const withZed = addPerson(EMPTY, { firstName: "Zed", lastName: "" });
+  const incoming = JSON.stringify(withZed);
+  const firstName = (store: { data: FamilyData | null }) =>
+    store.data?.people[0] ? displayName(store.data.people[0]) : undefined;
+
+  async function loaded(source: string | null = "/in/other.json", confirmResult = true) {
+    const queue = ["/orig/family.json"];
+    const fake = fakePlatform({ openResult: source, confirmResult });
+    fake.platform.saveFileDialog = async () => queue.shift() ?? null;
+    const confirms: string[] = [];
+    const confirm = fake.platform.confirm;
+    fake.platform.confirm = async (m) => {
+      confirms.push(m);
+      return confirm(m);
+    };
+    setActivePinia(createPinia());
+    const store = defineFamilyStore(fake.platform)();
+    await store.createNew();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    if (source) fake.raw.set(source, incoming);
+    return { ...fake, store, confirms };
+  }
+
+  it("backs up the previous file, then replaces the family", async () => {
+    const { store, raw, files, confirms } = await loaded();
+    const previous = JSON.stringify(files.get("/orig/family.json"), null, 2);
+    expect(await store.importFamily()).toBe(true);
+    const backups = [...raw.keys()].filter((k) => k.includes(".backup-"));
+    expect(backups).toHaveLength(1);
+    expect(backups[0]).toMatch(/^\/orig\/family\.backup-\d{8}-\d{6}-[0-9a-f]{8}\.json$/);
+    expect(raw.get(backups[0]!)).toBe(previous);
+    expect(store.data?.people.map(displayName)).toEqual(["Zed"]);
+    expect(files.get("/orig/family.json")?.people).toHaveLength(1);
+    expect(confirms[0]).toContain("REPLACED");
+    expect(store.notice).toContain("Imported other.json");
+    expect(store.error).toBeNull();
+  });
+
+  it("does nothing when the file dialog or the confirmation is cancelled", async () => {
+    for (const [source, confirmResult] of [
+      [null, true],
+      ["/in/other.json", false],
+    ] as const) {
+      const { store, raw } = await loaded(source, confirmResult);
+      expect(await store.importFamily()).toBe(false);
+      expect(firstName(store)).toBe("Ada");
+      expect([...raw.keys()].filter((k) => k.includes(".backup-"))).toHaveLength(0);
+    }
+  });
+
+  it("refuses the open file and invalid files without touching the data", async () => {
+    const same = await loaded("/ORIG/family.json");
+    expect(await same.store.importFamily()).toBe(false);
+    expect(same.store.error).toContain("currently open");
+
+    const bad = await loaded();
+    bad.raw.set("/in/other.json", "{nope");
+    expect(await bad.store.importFamily()).toBe(false);
+    expect(bad.store.error).toContain("not valid JSON");
+    expect(firstName(bad.store)).toBe("Ada");
+  });
+
+  it("says so when the file is identical to the current family", async () => {
+    const { store, raw, files } = await loaded();
+    raw.set("/in/other.json", JSON.stringify(files.get("/orig/family.json")));
+    expect(await store.importFamily()).toBe(false);
+    expect(store.notice).toContain("same content");
+  });
+
+  it("aborts, importing nothing, when the backup cannot be written", async () => {
+    const { store, platform } = await loaded();
+    platform.data.writeRaw = async () => {
+      throw new Error("read-only disk");
+    };
+    expect(await store.importFamily()).toBe(false);
+    expect(store.error).toContain("read-only disk");
+    expect(firstName(store)).toBe("Ada");
+  });
+
+  it("aborts when the backup does not read back identically", async () => {
+    const { store, platform } = await loaded();
+    platform.data.writeRaw = async () => {};
+    expect(await store.importFamily()).toBe(false);
+    expect(store.error).toContain("could not be verified");
+    expect(firstName(store)).toBe("Ada");
+  });
+
+  it("lists skipped items as warnings and warns about an empty file", async () => {
+    const { store, raw, confirms } = await loaded();
+    const two = addPerson(withZed, { firstName: "Yan", lastName: "" });
+    const linked = addPartners(two, {
+      personAId: two.people[0]!.id,
+      personBId: two.people[1]!.id,
+      status: "ongoing",
+    });
+    raw.set("/in/other.json", JSON.stringify({ ...linked, people: [linked.people[0]] }));
+    expect(await store.importFamily()).toBe(true);
+    expect(store.warnings).toHaveLength(1);
+    expect(confirms[0]).toContain("will be skipped");
+
+    raw.set("/in/other.json", JSON.stringify({ schemaVersion: 1, people: [], relationships: [] }));
+    expect(await store.importFamily()).toBe(true);
+    expect(confirms[1]).toContain("no people");
+  });
+
+  it("closes the family and goes back to the welcome screen offering to resume it", async () => {
+    const { store } = await loaded();
+    await store.closeFamily();
+    expect(store.data).toBeNull();
+    expect(store.filePath).toBeNull();
+    expect(store.resumePath).toBe("/orig/family.json");
   });
 });
 
