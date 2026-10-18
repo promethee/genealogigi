@@ -4,7 +4,7 @@ Legend: [ ] not started · [~] in progress · [x] done
 
 ## Phase 1 — Ground work (complete entirely before any feature work)
 
-- [ ] Initialize repo (Deno project structure, deno.json) — deno.json drafted, run `deno init`/`git init` locally
+- [x] Initialize repo (npm project, package.json, Tauri `src-tauri/`)
 - [x] Add LICENSE (MIT)
 - [x] Add README.md (description, install/run instructions, link to Pages site once it exists)
 - [x] Add .gitignore (Deno cache, build output, etc.)
@@ -21,11 +21,16 @@ Legend: [ ] not started · [~] in progress · [x] done
 - [x] Add CI (lint + typecheck + unit tests on push) — added rather than deferred; see DECISIONS.md
 - [x] Confirm ground work checkpoint: lint, typecheck, and unit tests all pass cleanly on a clean checkout
 
+- [ ] Re-verify on a clean checkout after Deno→Tauri migration: `npm ci`, fmt, lint, check, test, `tauri build`
+- [ ] Replace placeholder app icon (`src-tauri/icons/source.png`, then `npx tauri icon`)
+
 ## Phase 2 — Features (one at a time, each with scoped e2e tests)
 
-- [~] Feature: define + persist a person record (core entity)
-- [ ] Feature: define + persist a relationship (parent/child, spouse)
-- [ ] Feature: basic family tree visualization (single chart type, e.g. pedigree)
+- [~] Feature: define + persist a person record (names only) — OpenSpec change `person-record`; archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [~] Feature: welcome screen (resume / open / create) — OpenSpec change `welcome-screen`; archived 2026-10-18; manual run of MANUAL_TESTS.md still unconfirmed
+- [~] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [~] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [x] Feature: save a copy of the open family (OpenSpec `save-copy`, archived 2026-10-18) — covers the JSON-export need, since the file is already JSON
 - [ ] Feature: data export (JSON)
 - [ ] (Add more features here as they're defined — keep one feature per checklist item, don't pre-plan too far ahead of current progress)
 
@@ -40,12 +45,16 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - [ ] Add download/install instructions (or a direct download link once releases exist)
 - [ ] Link the GitHub Pages site from the repo README and GitHub repo settings ("Website" field)
 
+## Testing policy
+
+Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features are done. Automated unit, e2e and lint/typecheck run on every feature.
+
 ## Backlog / later
 
 - [ ] Additional chart types (descendant, fan, hourglass)
 - [ ] Git-based sync (GitHub) via JSON export
-- [ ] Investigate true Vite HMR under `deno desktop` (current dev task rebuilds Vue then relaunches; `--hmr` / per-framework dev-server integration not yet verified for a plain Vite/Vue SPA)
-- [ ] Revisit frameless window once denoland/deno#35635 / #35969 are fixed upstream
+- [ ] Verify `npm run tauri:dev` HMR in the real window
+- [ ] Frameless/custom window chrome (Tauri supports it; not needed now)
 
 ## Checkpoint log
 
@@ -62,3 +71,19 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - **2026-09-09** — Worked through the full data model in `src/data/types.ts`: branded `UuidId<Brand>` (generic, replacing per-entity id types), `Person` built from optional facets (`NamedPerson` — first/last names as arrays with kind + `VariablePrecisionDate`, non-empty-array-enforced; `PersonBorn`; `PersonLiving`/`PersonDeceased` for life status).  `VariablePrecisionDate` models partial-precision dates (raw + known-flags, year-unknown sentinel 9999). `Relationship` split into `RelationshipFamilial` (permanent: biological/adoptive; temporary: step/foster/guardian, each with ongoing/ended/unknown status) and `RelationshipSocial` (same three-way status pattern). No relationship type hardcodes parent role/count or partner gender. Derived relationships (sibling, grandparent, etc.) are explicitly out of scope for storage — to be computed, not stored, when built. Fixed a duplicate `UnknownRelationship` declaration bug during review. Person/relationship persistence (the actual store/CRUD layer) is still to come — types only so far.
 
 - **2026-09-09 (cont.)** — Threaded an explicit `filePath` through the persistence layer end-to-end: `loadFamilyData`/`saveFamilyData` in `store.ts`, `PlatformAPI.data.load/save`, the `bindings` global, and `registerBindings` in `deno-desktop.ts` — replacing the earlier hardcoded `./data/family.json` path, per the "family = a single JSON file, user picks the location" UX decision. Added `schemaVersion` to `FamilyData`. Fixed `store.test.ts` (missing filePath args, missing schemaVersion in test fixture) using a temp file for the round-trip test. `deno task check` and `deno lint` both pass. Still stubbed: `openFileDialog`/`saveFileDialog` in `deno-desktop.ts` — needed next for the welcome screen (resume/create-new) to actually function.
+
+- **2026-10-18** — Migrated shell and toolchain: Deno Desktop → Tauri 2, Deno CLI → Node/npm (Vitest, ESLint, Prettier, vue-tsc, Tailwind v4). `store.ts` now takes an injected `FileIO`; `PlatformAPI` has a Tauri implementation (`src/platform/tauri.ts`) with real open/save dialogs; native chrome, so close/minimize removed from the API. Hook and CI rewritten for npm. fmt, lint, typecheck, 3 unit tests, `vite build` and `cargo check` pass. Not yet run: `tauri dev` in a real window. See DECISIONS.md.
+
+- **2026-10-18 (cont.)** — OpenSpec adopted for feature specs (`openspec/`, DECISIONS.md). Implemented change `welcome-screen`: `PlatformAPI` gained `data.exists` and `settings` (last file path via `@tauri-apps/plugin-store`), Pinia `useFamilyStore` (`src/store/family.ts`), `WelcomeView` + placeholder `FamilyLoadedView`. 10 new unit tests, 3 Playwright e2e (fake shell via dev-only `window.__GENEALOGIGI_PLATFORM__`), `MANUAL_TESTS.md` for real dialogs. Not yet verified by hand: the real dialogs and settings persistence.
+
+- **2026-10-18 (cont.)** — Implemented change `person-record` (names only): pure `src/data/people.ts` (add/update/remove, display name, preserves other facets), store actions with save-then-commit, rollback on failure and serialized saves, `PlatformAPI.confirm` (native dialog), `PeopleView` + `PersonForm` replacing the placeholder view. 22 new unit tests (35 total), 6 new Playwright e2e (9 total). Not yet verified by hand: real native confirm dialog and file persistence (see MANUAL_TESTS.md, Person record).
+
+- **2026-10-18 (cont.)** — Implemented and archived `relationship-record`: `src/data/relationships.ts` (parent-child with permanent natures, partners with status, self/duplicate/cycle validation), person delete now cascades relationships (confirm states the count), store actions, `RelationshipsSection.vue`. Unit tests 55 total, e2e 15 total. Temporary natures (step/foster/guardian) and date editing deferred. Manual steps for person-record and relationships still unconfirmed (MANUAL_TESTS.md).
+
+- **2026-10-18 (cont.)** — Implemented and archived `pedigree-tree`: pure layout `src/data/pedigree.ts` (any parent count, shared ancestors drawn per path, cycle/depth safe), `PedigreeTree.vue` (hand-rolled SVG, no new dependency, root picker, generation picker, dashed non-confirmed links, legend, click to re-root), People/Tree tabs. Unit tests 68 total, e2e 20 total. E2E caught a blank root dropdown (fixed). Not yet verified by hand: see MANUAL_TESTS.md.
+
+- **2026-10-18 (real-app run)** — Drove the real Tauri app (WebView2 over CDP) with genuine native open/save/confirm dialogs and a real app restart: 27 checks passed. Covered: welcome 1-9 (first launch, create, resume after restart, open, cancel, corrupt file, missing remembered file, cancelled create), settings.json persistence, atomic save (no .tmp), people add/edit/blank/persist, delete cancel/confirm with relationship cascade, parent-child add and cycle rejection, tree root/click re-root. Not covered (still manual): save failure on a read-only file, very long name ellipsis, narrow-window scrolling, visual styling in the real window, partner/duplicate/status steps (covered by e2e only), generation-limit and dashed-line steps (e2e only).
+
+- **2026-10-18 (save-copy)** — Implemented and archived `save-copy`: store `saveCopy` + `notice` (serialized with other saves, same-file guard ignoring case/slash style), Save a copy button in `PeopleView`. Unit tests 73 total, e2e 24 total. Real app (native dialogs): cancel, successful copy (file identical, no .tmp, notice, snapshot semantics) verified. NOT verified in the real app: same-file refusal and notice-clearing, because the harness could not answer Windows replace-existing-file prompt (covered by unit + e2e only). See MANUAL_TESTS.md Save a copy 5-7.
+
+- **2026-10-18 (checkpoint)** — Tauri 2 + Node migration done; features archived in OpenSpec: welcome-screen, person-record (names only), relationship-record, pedigree-tree, save-copy. 73 unit + 24 e2e tests, lint, typecheck, build, cargo check all pass. Manual tests deferred to the end (see Testing policy); real-app run covered the main flows. Next candidate: birth/death dates in the UI.

@@ -171,9 +171,7 @@ export interface RelationshipSocialUnknownStatus extends UnknownRelationship {
 }
 
 export type RelationshipSocial =
-  | RelationshipSocialOngoing
-  | RelationshipSocialEnded
-  | RelationshipSocialUnknownStatus;
+  RelationshipSocialOngoing | RelationshipSocialEnded | RelationshipSocialUnknownStatus;
 
 export type Relationship = RelationshipFamilial | RelationshipSocial;
 

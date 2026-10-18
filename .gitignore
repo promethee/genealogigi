@@ -1,13 +1,18 @@
-# Deno
-.deno/
-
 # Build output
 dist/
 *.exe
 
-# Vite/node interop
+# Node / Vite
 node_modules/
 .vite/
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+
+# Playwright
+test-results/
+playwright-report/
 
 # Local app data (dev) — anchored to repo root only, so it doesn't also match src/data/ (source code, not runtime data)
 /data/

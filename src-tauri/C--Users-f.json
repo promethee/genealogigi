@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "people": [
+    {
+      "id": "f6c9cb67-5f96-4e8f-9316-9942a6cd4d7d",
+      "names": {
+        "id": "f6c9cb67-5f96-4e8f-9316-9942a6cd4d7d",
+        "firstNames": [
+          {
+            "value": "Ada",
+            "kind": "birth",
+            "date": {
+              "raw": "9999-01-01T00:00",
+              "yearKnown": false,
+              "monthKnown": false,
+              "dayKnown": false,
+              "hourKnown": false,
+              "minuteKnown": false
+            }
+          }
+        ],
+        "lastNames": []
+      }
+    }
+  ],
+  "relationships": []
+}

@@ -6,9 +6,11 @@ export default defineConfig({
   retries: 0,
   use: {
     baseURL: "http://localhost:5173",
+    // Optional: reuse an already-installed Chromium instead of `playwright install`.
+    launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH },
   },
   webServer: {
-    command: "deno task dev",
+    command: "npm run dev",
     url: "http://localhost:5173",
     reuseExistingServer: true,
   },

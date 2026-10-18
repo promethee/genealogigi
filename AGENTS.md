@@ -5,7 +5,7 @@ and visualizing one family's ancestry data.
 
 ## Stack
 
-- Shell: Deno Desktop (native Windows title bar, Windows-primary target)
+- Shell: Tauri 2 (native Windows title bar, Windows-primary target)
 - Frontend: Vue 3 (`<script setup>`) + Pinia + Tailwind CSS
 - Language: TypeScript throughout
 - Storage: JSON (file/folder as source of truth); SQLite may be added later as a cache/index if needed
@@ -16,11 +16,11 @@ proposing changes that touch stack, architecture, or scope.
 
 ## Architectural rule: shell portability
 
-The desktop shell (Deno Desktop) is treated as a thin, swappable wrapper.
+The desktop shell (Tauri) is treated as a thin, swappable wrapper.
 All shell-specific calls (window lifecycle, file dialogs, DB bindings, exit)
 MUST go through a single `PlatformAPI` abstraction — never called directly
 from Vue components or Pinia stores. If you need a new shell capability, add
-it to the `PlatformAPI` interface first, then implement it for Deno Desktop.
+it to the `PlatformAPI` interface first, then implement it for Tauri.
 
 ## Workflow — follow this order strictly
 
@@ -29,11 +29,11 @@ it to the `PlatformAPI` interface first, then implement it for Deno Desktop.
 Set up the project skeleton and every tool that prevents regressions before
 writing feature code:
 
-- Project scaffold (Deno Desktop + Vue + TS + Tailwind wired together)
-- Linting + formatting (deno lint/fmt or equivalent) wired into a pre-commit step
+- Project scaffold (Tauri + Vue + TS + Tailwind wired together)
+- Linting + formatting (ESLint + Prettier) wired into a pre-commit step
 - Type-checking as a required, fast check
 - Unit test runner configured (even with zero tests yet)
-- The `PlatformAPI` interface + a Deno Desktop implementation stub
+- The `PlatformAPI` interface + a Tauri implementation
 - JSON storage layer (read/write, schema versioning for migrations) behind `PlatformAPI`
 - CI (if/when added) running lint + typecheck + unit tests
 
@@ -44,7 +44,12 @@ TODO.md.
 
 For each feature:
 
-1. Implement the feature (UI + store + data layer as needed).
+0. Spec first with OpenSpec: create a change (`/opsx:propose` or
+   `openspec new change <name>`), write proposal/specs/design/tasks, and wait
+   for the user's approval before writing code. Archive the change when done
+   (`/opsx:archive`).
+1. Implement the feature (UI + store + data layer as needed), following the
+   change's `tasks.md`.
 2. Write e2e test(s) covering ONLY this feature — do not write e2e tests for
    other features "while you're in there," and do not go back and add e2e
    coverage for previously shipped features unless asked.
@@ -78,7 +83,7 @@ option you'd lean toward.
 
 - TypeScript everywhere; no `any` without a comment explaining why.
 - Keep components/stores framework-agnostic where the logic isn't inherently
-  Vue/Deno-specific — favor plain TS modules for data/query logic, thin
+  Vue/Tauri-specific — favor plain TS modules for data/query logic, thin
   Vue wrappers on top.
 - When a decision is made or changed during a session (stack, data model,
   scope), record it in `DECISIONS.md` before moving on.

@@ -1,0 +1,20 @@
+[package]
+name = "genealogigi"
+version = "0.0.0"
+description = "Desktop genealogy app for one family's ancestry data"
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "genealogigi_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-process = "2"
+tauri-plugin-store = "2.5.0"
