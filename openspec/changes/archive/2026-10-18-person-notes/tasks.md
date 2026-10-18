@@ -1,0 +1,3 @@
+- [x] Model, form, card
+- [x] Search and import
+- [x] i18n, tests

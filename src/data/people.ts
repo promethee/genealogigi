@@ -67,6 +67,8 @@ export interface PersonFormInput {
   death?: PartialDateInput;
   /** Optional; only kept when the status is deceased. */
   deathPlace?: string;
+  /** Free text; trimmed, and empty removes the note. Left out = keep the stored note. */
+  notes?: string;
 }
 
 /** A fully-populated form state. */
@@ -78,6 +80,7 @@ export interface PersonFormValues {
   status: LifeStatusChoice;
   death: PartialDateInput;
   deathPlace: string;
+  notes: string;
 }
 
 export function emptyPersonForm(): PersonFormValues {
@@ -89,6 +92,7 @@ export function emptyPersonForm(): PersonFormValues {
     status: "living",
     death: emptyDateInput(),
     deathPlace: "",
+    notes: "",
   };
 }
 
@@ -255,6 +259,7 @@ export function inputFromPerson(person: Person): PersonFormValues {
     status: !status ? "unknown" : status.living ? "living" : "deceased",
     death: inputFromDate(status && !status.living ? status.dateOfDeath : undefined),
     deathPlace: status && !status.living ? (status.placeOfDeath ?? "") : "",
+    notes: person.notes ?? "",
   };
 }
 
@@ -355,6 +360,11 @@ export function lifespan(person: Person): string {
   return "";
 }
 
+/** The longest note kept (about ten pages); the form and imports enforce it. */
+export const MAX_NOTES_CHARS = 20000;
+
+const cleanNotes = (notes: string): string => notes.trim().slice(0, MAX_NOTES_CHARS);
+
 export function addPerson(data: FamilyData, input: PersonFormInput): FamilyData {
   const id = createUuidId<"PersonId">();
   const person: Person = { id, names: buildNames(id, input) };
@@ -367,6 +377,8 @@ export function addPerson(data: FamilyData, input: PersonFormInput): FamilyData 
   );
   if (born) person.born = born;
   if (lifeStatus) person.lifeStatus = lifeStatus;
+  const notes = cleanNotes(input.notes ?? "");
+  if (notes) person.notes = notes;
   assertDeathNotBeforeBirth(person);
   return { ...data, people: [...data.people, person] };
 }
@@ -388,6 +400,11 @@ export function updatePerson(data: FamilyData, id: PersonId, input: PersonFormIn
       : buildLifeStatus(id, input.status, input.death ?? emptyDateInput(), input.deathPlace);
   if (born) updated.born = born;
   if (lifeStatus) updated.lifeStatus = lifeStatus;
+  if (input.notes !== undefined) {
+    const notes = cleanNotes(input.notes);
+    if (notes) updated.notes = notes;
+    else delete updated.notes;
+  }
 
   assertDeathNotBeforeBirth(updated);
   return { ...data, people: data.people.map((p) => (p.id === id ? updated : p)) };

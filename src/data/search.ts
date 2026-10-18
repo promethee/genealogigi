@@ -16,6 +16,7 @@ function haystack(person: Person): string {
   if (person.born?.birthPlace) parts.push(person.born.birthPlace);
   const status = person.lifeStatus;
   if (status && !status.living && status.placeOfDeath) parts.push(status.placeOfDeath);
+  if (person.notes) parts.push(person.notes);
   return normalizeText(parts.join(" "));
 }
 

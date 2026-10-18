@@ -169,6 +169,12 @@ async function remove(): Promise<void> {
             {{ t("detail.nothingKnown") }}
           </p>
         </div>
+        <div v-if="person.notes" data-testid="detail-notes">
+          <h3 class="mb-1.5 text-xs font-semibold tracking-wide text-slate-400 uppercase">
+            {{ t("detail.notes") }}
+          </h3>
+          <p class="text-sm whitespace-pre-wrap text-slate-700">{{ person.notes }}</p>
+        </div>
         <PhotoGallery :person-id="personId" />
       </div>
 

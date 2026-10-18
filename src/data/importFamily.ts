@@ -1,4 +1,5 @@
 import { MAX_PHOTO_CHARS, MAX_PHOTOS_PER_PERSON } from "./photos.ts";
+import { MAX_NOTES_CHARS } from "./people.ts";
 import { EVENT_KINDS } from "./events.ts";
 import {
   UUID_RE,
@@ -188,5 +189,10 @@ function sanitizePerson(entry: Record<string, unknown>): Person {
   if ("born" in asRecord && !isObject(asRecord.born)) delete asRecord.born;
   if ("lifeStatus" in asRecord && !isObject(asRecord.lifeStatus)) delete asRecord.lifeStatus;
   if ("photos" in asRecord && !Array.isArray(asRecord.photos)) delete asRecord.photos;
+  if ("notes" in asRecord) {
+    if (typeof asRecord.notes === "string")
+      asRecord.notes = asRecord.notes.slice(0, MAX_NOTES_CHARS);
+    else delete asRecord.notes;
+  }
   return person;
 }

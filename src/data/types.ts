@@ -112,6 +112,8 @@ export interface PersonDeceased extends UnknownPerson {
  */
 export interface Person extends UnknownPerson {
   names?: NamedPerson;
+  /** Free text (memories, stories), line breaks kept. Optional: older files load unchanged. */
+  notes?: string;
   born?: PersonBorn;
   lifeStatus?: PersonLiving | PersonDeceased;
   /** The first photo is the main one. Optional: files saved before photos load unchanged. */

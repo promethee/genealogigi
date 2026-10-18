@@ -6,6 +6,7 @@ import type { NewPersonParents } from "../data/createPerson.ts";
 import {
   FIRST_NAME_KINDS,
   LAST_NAME_KINDS,
+  MAX_NOTES_CHARS,
   suggestedStatus,
   type PersonFormValues,
 } from "../data/people.ts";
@@ -202,6 +203,18 @@ const birthYearExample = computed(() =>
         </label>
       </fieldset>
     </div>
+
+    <label class="label max-w-2xl">
+      {{ t("form.notes") }}
+      <textarea
+        v-model="form.notes"
+        data-testid="notes"
+        rows="4"
+        :maxlength="MAX_NOTES_CHARS"
+        :placeholder="t('form.notesHint')"
+        :class="inputClass"
+      />
+    </label>
 
     <fieldset v-if="showParents" class="flex flex-col gap-2" data-testid="new-parents">
       <legend class="mb-1 text-sm font-semibold text-slate-700">{{ t("form.parents") }}</legend>

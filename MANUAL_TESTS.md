@@ -433,3 +433,12 @@ Setup: a folder that is a git repository with a remote (e.g. a private GitHub re
 | 3   | Click a faded person                                      | Their card opens as usual.                                                                |
 | 4   | Click Reset filters                                       | Everyone is back to normal; the count and button disappear.                               |
 | 5   | Use search and filters together                           | Matches get the amber outline, even when faded.                                           |
+
+## Person notes
+
+| #   | Action                                             | Expected                                                  |
+| --- | -------------------------------------------------- | --------------------------------------------------------- |
+| 1   | Add or edit a person, type a multi-line note, save | The card shows a Notes section with the same line breaks. |
+| 2   | Edit again and clear the note                      | The Notes section disappears.                             |
+| 3   | Search a word that only appears in a note          | The person is found.                                      |
+| 4   | Export, import into a fresh family                 | Notes are kept.                                           |

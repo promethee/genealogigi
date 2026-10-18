@@ -13,6 +13,7 @@ import {
   lifeSummary,
   placeSuggestions,
   lifespan,
+  MAX_NOTES_CHARS,
   type PersonFormInput,
   NameRequiredError,
   NamesNotEditableError,
@@ -308,6 +309,7 @@ describe("person dates and life status", () => {
       status: "deceased",
       death: d("1852", "11", "27"),
       deathPlace: "",
+      notes: "",
     });
   });
 
@@ -720,5 +722,43 @@ describe("placeSuggestions", () => {
       deathPlace: "Paris",
     });
     expect(placeSuggestions(data.people)).toEqual(["Lyon", "Paris", "Nice"]);
+  });
+});
+
+describe("person notes", () => {
+  const empty: FamilyData = { schemaVersion: 1, people: [], relationships: [] };
+
+  it("stores a trimmed note with its line breaks, and none when blank", () => {
+    const withNote = addPerson(empty, {
+      firstName: "Ada",
+      lastName: "",
+      notes: "  Line 1\nLine 2  ",
+    });
+    expect(withNote.people[0]?.notes).toBe("Line 1\nLine 2");
+    const blank = addPerson(empty, { firstName: "Ada", lastName: "", notes: "   " });
+    expect(blank.people[0]).not.toHaveProperty("notes");
+  });
+
+  it("caps the length", () => {
+    const long = "x".repeat(MAX_NOTES_CHARS + 50);
+    const d = addPerson(empty, { firstName: "Ada", lastName: "", notes: long });
+    expect(d.people[0]?.notes).toHaveLength(MAX_NOTES_CHARS);
+  });
+
+  it("keeps the note when an edit does not send one, replaces it, and removes it when emptied", () => {
+    let d = addPerson(empty, { firstName: "Ada", lastName: "", notes: "Kept" });
+    const id = d.people[0]!.id;
+    d = updatePerson(d, id, { firstName: "Ada", lastName: "" });
+    expect(d.people[0]?.notes).toBe("Kept");
+    d = updatePerson(d, id, { firstName: "Ada", lastName: "", notes: "New" });
+    expect(d.people[0]?.notes).toBe("New");
+    d = updatePerson(d, id, { firstName: "Ada", lastName: "", notes: "" });
+    expect(d.people[0]).not.toHaveProperty("notes");
+  });
+
+  it("round-trips through the form values", () => {
+    const d = addPerson(empty, { firstName: "Ada", lastName: "", notes: "Hello" });
+    expect(inputFromPerson(d.people[0]!).notes).toBe("Hello");
+    expect(emptyPersonForm().notes).toBe("");
   });
 });

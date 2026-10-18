@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ImportError, parseFamilyFile, summarize } from "./importFamily.ts";
-import { addPerson } from "./people.ts";
+import { MAX_NOTES_CHARS, addPerson } from "./people.ts";
 import { addParentChild } from "./relationships.ts";
 import { addEvent } from "./events.ts";
 import { addPhotos } from "./photos.ts";
@@ -207,5 +207,28 @@ describe("summarize", () => {
       events: 0,
       photos: 0,
     });
+  });
+});
+
+describe("notes on import", () => {
+  it("keeps text notes, drops notes that are not text, and caps the length", () => {
+    const base = real();
+    const [a, b, c] = [
+      base.people[0]!,
+      { ...base.people[1]!, id: ID(7) },
+      { ...base.people[1]!, id: ID(8) },
+    ];
+    const result = parse({
+      ...base,
+      people: [
+        { ...a, notes: "Fine" },
+        { ...b, notes: 42 },
+        { ...c, notes: "y".repeat(25000) },
+      ],
+      relationships: [],
+    });
+    expect(result.data.people[0]?.notes).toBe("Fine");
+    expect(result.data.people[1]).not.toHaveProperty("notes");
+    expect(result.data.people[2]?.notes).toHaveLength(20000);
   });
 });

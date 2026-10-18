@@ -180,3 +180,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (backlog)** — Family stats dashboard deferred to v2 (size, ages, names, patterns, timeline, upcoming birthdays, to-complete list). Undo/redo, print/PDF and keyboard shortcuts rejected.
 
 - **2026-10-18 (backlog v2)** — Automatic backups deferred to v2: on open, copy into `<name>.backups/` (skip if unchanged, keep last 10, same naming as import backups) plus a Restore… list (current file backed up first); optional second folder later. Needs `PlatformAPI` list-folder and delete. Accepted for next: person notes, single-file HTML share. Dropped: relationship calculator, guided start.
+
+- **2026-10-18 (person-notes)** — Free-text Notes per person (form + card, line breaks kept, 20 000 chars max, searchable, sanitised on import; optional `notes` field, no schema bump). Archived `person-notes`.

@@ -64,3 +64,15 @@ describe("searchPeople", () => {
     expect(names("   ")).toEqual([]);
   });
 });
+
+describe("searchPeople in notes", () => {
+  it("finds a word that only appears in a note", () => {
+    const d = addPerson(
+      { schemaVersion: 1, people: [], relationships: [] },
+      { firstName: "Ada", lastName: "Byron", notes: "Ran a bakery on Rue Victor Hugo" },
+    );
+    expect(searchPeople(d.people, "bakery")).toHaveLength(1);
+    expect(searchPeople(d.people, "bakery byron")).toHaveLength(1);
+    expect(searchPeople(d.people, "florist")).toHaveLength(0);
+  });
+});

@@ -282,3 +282,7 @@ Decision: the tree scales down with CSS (viewBox, max-width 100%, floor 45%), no
 ## Person-card map: dropped (2026-10-18)
 
 Decision: no map. Online geocoding/tiles would break "your data never leaves your computer"; offline options (bundled city list, offline tiles) cost size and upkeep for little value. Revisit only if asked.
+
+## Person notes (2026-10-18)
+
+Decision: `Person.notes?: string`, plain text, 20 000 chars, searchable; no rich text (portable, nothing to sanitise). Edits that do not send notes keep them.
