@@ -141,10 +141,23 @@ async function add(): Promise<void> {
 
 <template>
   <section data-testid="relationships-section">
-    <h2 class="mb-4 flex items-center gap-2 text-base font-semibold text-slate-900">
-      <AppIcon name="link" class="text-link" />
-      {{ t("rel.title") }}
-    </h2>
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <!-- The submit button sits left of the title but belongs to the form below. -->
+      <button
+        type="submit"
+        form="rel-form"
+        data-testid="rel-add"
+        :disabled="!canAdd"
+        class="btn btn-primary"
+      >
+        <AppIcon name="plus" />
+        {{ t("rel.add") }}
+      </button>
+      <h2 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+        <AppIcon name="link" class="text-link" />
+        {{ t("rel.title") }}
+      </h2>
+    </div>
 
     <p
       v-if="!canAdd"
@@ -154,7 +167,7 @@ async function add(): Promise<void> {
       {{ t("rel.hint") }}
     </p>
 
-    <form class="mb-5 flex flex-wrap items-end gap-3" @submit.prevent="add">
+    <form id="rel-form" class="mb-5 flex flex-wrap items-end gap-3" @submit.prevent="add">
       <label class="label">
         {{ t("rel.type") }}
         <select v-model="kind" data-testid="rel-kind" :disabled="!canAdd" class="input">
@@ -252,10 +265,6 @@ async function add(): Promise<void> {
         />
         {{ t("rel.alsoPartners") }}
       </label>
-      <button type="submit" data-testid="rel-add" :disabled="!canAdd" class="btn btn-primary">
-        <AppIcon name="plus" />
-        {{ t("rel.add") }}
-      </button>
     </form>
 
     <p

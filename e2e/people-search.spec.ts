@@ -91,27 +91,39 @@ test("the search is in French too", async ({ page }) => {
   await expect(page.getByTestId("search-none")).toHaveText("Aucune personne trouvée.");
 });
 
-test("toolbar: Add person on the left, search in the centre, People/Tree switch on the right", async ({
-  page,
-}) => {
+test("toolbar: search in the centre, People/Tree switch on the right", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await build(page);
   await page.getByTestId("tab-list").click();
-  const add = (await page.getByTestId("add-person").boundingBox())!;
   const search = (await page.getByTestId("search").boundingBox())!;
   const tab = (await page.getByTestId("tab-list").boundingBox())!;
   const middle = (b: { y: number; height: number }) => b.y + b.height / 2;
-  expect(Math.abs(middle(add) - middle(search))).toBeLessThan(20);
   expect(Math.abs(middle(tab) - middle(search))).toBeLessThan(20);
-  expect(add.x).toBeLessThan(search.x);
   expect(search.x + search.width).toBeLessThan(tab.x);
-  // The search box is centred in the window.
-  expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30);
+  expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30); // centred in the window
 });
 
-test("the Tree tab keeps the search centred and the switch on the right (no Add person)", async ({
+test("Add person sits left of the People title; Add relationship left of the Relationships title", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await build(page);
+  await page.getByTestId("tab-list").click();
+  const middle = (b: { y: number; height: number }) => b.y + b.height / 2;
+  const add = (await page.getByTestId("add-person").boundingBox())!;
+  const peopleTitle = (await page.getByTestId("people-section").locator("h2").boundingBox())!;
+  expect(add.x + add.width).toBeLessThanOrEqual(peopleTitle.x);
+  expect(Math.abs(middle(add) - middle(peopleTitle))).toBeLessThan(10);
+
+  const rel = (await page.getByTestId("rel-add").boundingBox())!;
+  const relTitle = (await page.getByTestId("relationships-section").locator("h2").boundingBox())!;
+  expect(rel.x + rel.width).toBeLessThanOrEqual(relTitle.x);
+  expect(Math.abs(middle(rel) - middle(relTitle))).toBeLessThan(10);
+  // The two panels' headers line up.
+  expect(Math.abs(middle(add) - middle(rel))).toBeLessThan(4);
+});
+
+test("the Tree tab keeps the search centred and the switch on the right", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await build(page);
   await page.getByTestId("tab-tree").click();
@@ -162,15 +174,10 @@ test("Escape and clicking elsewhere also close the suggestions", async ({ page }
   await expect(page.getByTestId("search-results")).toHaveCount(0);
 });
 
-test("Add person sits on the toolbar line, and the two lists start at the same height", async ({
-  page,
-}) => {
+test("the people list and the relationships panel start at the same height", async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
   await build(page);
   await page.getByTestId("tab-list").click();
-  const tab = (await page.getByTestId("tab-list").boundingBox())!;
-  const add = (await page.getByTestId("add-person").boundingBox())!;
-  expect(Math.abs(tab.y + tab.height / 2 - (add.y + add.height / 2))).toBeLessThan(20);
   const people = (await page.getByTestId("people-section").boundingBox())!;
   const rels = (await page.getByTestId("relationships-section").locator("xpath=..").boundingBox())!;
   expect(Math.abs(people.y - rels.y)).toBeLessThan(2);

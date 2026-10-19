@@ -141,17 +141,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         class="grid items-center gap-3 sm:grid-cols-[1fr_minmax(14rem,28rem)_1fr]"
         data-testid="toolbar"
       >
-        <div class="justify-self-start" data-testid="toolbar-left">
-          <button
-            v-if="tab === 'list' && !formTarget"
-            data-testid="add-person"
-            class="btn btn-primary"
-            @click="formTarget = 'new'"
-          >
-            <AppIcon name="plus" />
-            {{ t("person.add") }}
-          </button>
-        </div>
+        <div aria-hidden="true"></div>
         <div
           class="relative w-full min-w-0"
           data-testid="search-box"
@@ -270,10 +260,21 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           </p>
 
           <section class="card p-5" data-testid="people-section">
-            <h2 class="mb-4 flex items-center gap-2 text-base font-semibold text-slate-900">
-              <AppIcon name="users" class="text-link" />
-              {{ t("tab.people") }}
-            </h2>
+            <div class="mb-4 flex flex-wrap items-center gap-3">
+              <button
+                v-if="!formTarget"
+                data-testid="add-person"
+                class="btn btn-primary"
+                @click="formTarget = 'new'"
+              >
+                <AppIcon name="plus" />
+                {{ t("person.add") }}
+              </button>
+              <h2 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                <AppIcon name="users" class="text-link" />
+                {{ t("tab.people") }}
+              </h2>
+            </div>
             <p
               v-if="!family.data?.people.length"
               data-testid="empty-state"
