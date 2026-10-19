@@ -39,3 +39,31 @@ The exported page SHALL contain a Tree view with every person, working offline.
 #### Scenario: Open a person from the tree
 - **WHEN** a box in the shared page's Tree view is clicked
 - **THEN** that person's card opens
+
+### Requirement: No self-link
+A person SHALL never be selectable on both sides of a new link.
+
+#### Scenario: Same person twice
+- **WHEN** the person already chosen as parent is chosen as child
+- **THEN** the parent field is emptied and Add stays disabled
+
+### Requirement: Search narrows relationship lines
+While the search box is not empty, the relationship list SHALL show only links involving a matching person.
+
+#### Scenario: Search by name
+- **WHEN** the user searches "ada"
+- **THEN** only the lines involving Ada are listed; clearing the search shows all lines again
+
+### Requirement: Everyone by default
+The Tree tab SHALL open on the whole-family view.
+
+#### Scenario: First visit
+- **WHEN** the user opens the Tree tab
+- **THEN** the direction selector shows "Everyone" and every person is drawn once
+
+### Requirement: Shared tree portraits and centring
+The shared page's Tree view SHALL show each person's first photo in their box and centre a chart narrower than its frame.
+
+#### Scenario: Person with a photo
+- **WHEN** a person has a photo
+- **THEN** it replaces their initials in the tree box

@@ -53,6 +53,7 @@ async function buildFamily(page: Page): Promise<void> {
   await parentOf(page, "Gran", "Mum");
   await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
 }
 
 const chips = (page: Page) => page.getByTestId("focus-chip").allTextContents();
@@ -84,6 +85,7 @@ test("a person with no relatives says so, and French is used", async ({ page }) 
   await page.getByTestId("create").click();
   await addPerson(page, "Solo");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await expect(page.getByTestId("focus-stats")).toContainText("No known relatives yet.");
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("focus-stats")).toContainText("Aucun proche connu");

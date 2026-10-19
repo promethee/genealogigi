@@ -216,7 +216,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - the switch stays visible when a family is open, and labels, plurals and hints follow
 - switching language keeps what was typed in the form
 - the choice is remembered after a restart
-- relationship rows, errors and dates are French in French
+- relationship rows and dates are French in French
 - the saved file does not depend on the language
 - starts in French when nothing was saved
 - a saved choice wins over the system language
@@ -319,7 +319,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - creating a person with two parents saves the person and both links
 - one parent, with an adoptive nature
 - no parent chosen creates only the person
-- the same parent twice is refused and nothing is saved
+- choosing a parent who is already the other parent empties the other field
 - an invalid person saves no parent links either
 - optionally records the parents as partners, only when they are not yet
 - French labels
@@ -369,12 +369,18 @@ The lists below are generated from the test files; the counts drift, the files a
 
 - add controls are disabled until two people exist
 - adds a parent-child relationship and it survives a restart
-- rejects a cycle, a duplicate and the same person twice
+- rejects a cycle and a duplicate; the same person on both sides is impossible
 - adds partners; reversed duplicate is rejected
 - deleting a relationship respects cancel and confirm
 - deleting a person also removes their relationships
 
-### `e2e/share-web-page.spec.ts` (9)
+### `e2e/relationship-search.spec.ts` (3)
+
+- searching keeps only the relationship lines of the people found
+- a search that finds nobody says so; clearing it brings every line back
+- filtering the lines never narrows the choices of the relationship form
+
+### `e2e/share-web-page.spec.ts` (11)
 
 - Share is disabled until there are two people and one relationship
 - French explains why Share is disabled
@@ -385,6 +391,8 @@ The lists below are generated from the test files; the counts drift, the files a
 - the page is written in the app's language
 - the exported page has a Tree view with everyone; a box opens that person
 - the Tree view shows partners in their own colour and fits the window
+- the Tree view shows a person's portrait in their box, initials otherwise
+- the Tree view is centred in its frame when it is narrower than the window
 
 ### `e2e/temporary-parents.spec.ts` (4)
 
@@ -425,7 +433,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - adds both parents of a child in one step and survives a restart
 - the nature and dates apply to both links
 - the same person twice, missing choices and an existing link add nothing
-- a parent equal to the child is refused
+- a person can never end up as their own parent or as both parents
 - optionally records the parents as partners, once
 - French labels
 
@@ -467,12 +475,13 @@ The lists below are generated from the test files; the counts drift, the files a
 - create new, then resume after restart
 - opening a corrupt file shows an error and stays on welcome
 
-### `e2e/whole-family-tree.spec.ts` (4)
+### `e2e/whole-family-tree.spec.ts` (5)
 
 - Everyone shows every person exactly once, linked, with the controls it does not need hidden
 - Everyone joins partners with a segment in the partner colour
 - clicking a box in Everyone opens that person's card
 - switching back to a focused view restores the controls
+- the Tree tab opens on the whole family by default
 
 ### `e2e/wide-layout.spec.ts` (2)
 

@@ -70,6 +70,7 @@ test("tree view: matches are highlighted and a result focuses the tree on them",
 }) => {
   await build(page);
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("search").fill("dubois");
   await expect(page.locator('[data-testid="tree-node"][data-highlight="true"]')).toHaveCount(1);
   await page.getByTestId("search-result").first().click();

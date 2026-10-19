@@ -177,6 +177,7 @@ test("the tree and the small family tree use themed colours, not white boxes", a
   await populate(page);
   await page.getByTestId("theme-toggle").click();
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Byron" });
   const nodeFill = () =>
     page

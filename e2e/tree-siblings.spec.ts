@@ -61,6 +61,7 @@ async function build(page: Page): Promise<void> {
   await parents("Younger", "Mum", "Dad");
   await parents("Half", "Mum", "Step");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Me" });
 }
 
@@ -144,7 +145,7 @@ test("French label, and the card has an explicit Close button", async ({ page })
   await build(page);
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("tree-siblings").locator("xpath=..")).toContainText(
-    "Afficher la fratrie / sororité",
+    "Afficher les frères et sœurs",
   );
   await node(page, "Mum").click();
   await expect(page.getByTestId("detail-close")).toHaveText("Fermer");

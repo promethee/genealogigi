@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { emptyDateInput } from "../data/dates.ts";
 import { t } from "../i18n/index.ts";
 import { displayName } from "../data/people.ts";
@@ -23,6 +23,9 @@ import DateFields from "./DateFields.vue";
 import RelationshipEditForm from "./RelationshipEditForm.vue";
 import { useFamilyStore } from "../store/index.ts";
 
+/** While searching: only the links that involve someone who matches. */
+const props = defineProps<{ matchIds?: ReadonlySet<PersonId> }>();
+
 const family = useFamilyStore();
 
 // "parents" (two parents of a child) is the most common case, so it comes first.
@@ -40,7 +43,16 @@ const status = ref<PartnerStatus>("ongoing");
 const editingId = ref<RelationshipId | null>(null);
 
 const people = computed(() => family.data?.people ?? []);
-const relationships = computed(() => family.data?.relationships ?? []);
+const allRelationships = computed(() => family.data?.relationships ?? []);
+const relationships = computed(() => {
+  const ids = props.matchIds;
+  if (!ids) return allRelationships.value;
+  return allRelationships.value.filter((r) =>
+    isParentChild(r)
+      ? ids.has(r.parentId) || ids.has(r.childId)
+      : ids.has(r.personAId) || ids.has(r.personBId),
+  );
+});
 const allNatures = [...PARENT_CHILD_NATURES, ...TEMPORARY_NATURES];
 const isTemporary = computed(
   () => kind.value !== "partner" && (TEMPORARY_NATURES as readonly string[]).includes(nature.value),
@@ -48,7 +60,7 @@ const isTemporary = computed(
 
 /** The checkbox is pointless when the two chosen parents are already partners. */
 const alreadyPartners = computed(() =>
-  relationships.value.some(
+  allRelationships.value.some(
     (r) =>
       !isParentChild(r) &&
       ((r.personAId === firstId.value && r.personBId === otherParentId.value) ||
@@ -57,6 +69,19 @@ const alreadyPartners = computed(() =>
 );
 const canAdd = computed(() => people.value.length >= 2);
 /** The button stays disabled until both people of the link are selected. */
+/**
+ * A person cannot be linked to themselves: choosing someone who is already picked in another
+ * field empties that other field, so nobody ends up on both sides.
+ */
+function clearDuplicates(changed: "first" | "other" | "second", value: PersonId | ""): void {
+  if (!value) return;
+  if (changed !== "first" && firstId.value === value) firstId.value = "";
+  if (changed !== "other" && otherParentId.value === value) otherParentId.value = "";
+  if (changed !== "second" && secondId.value === value) secondId.value = "";
+}
+watch(firstId, (v) => clearDuplicates("first", v));
+watch(otherParentId, (v) => clearDuplicates("other", v));
+watch(secondId, (v) => clearDuplicates("second", v));
 const canSubmit = computed(() => Boolean(firstId.value && secondId.value));
 
 function nameOf(id: PersonId): string {
@@ -179,7 +204,9 @@ async function add(): Promise<void> {
         {{ kind === "parent" ? t("rel.parent") : t("rel.person") }}
         <select v-model="firstId" data-testid="rel-first" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
-          <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          <option v-for="p in people" :key="p.id" :value="p.id">
+            {{ displayName(p) }}
+          </option>
         </select>
       </label>
       <label v-if="kind === 'parent'" class="label">
@@ -191,14 +218,18 @@ async function add(): Promise<void> {
           class="input"
         >
           <option value="">{{ t("rel.noOtherParent") }}</option>
-          <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          <option v-for="p in people" :key="p.id" :value="p.id">
+            {{ displayName(p) }}
+          </option>
         </select>
       </label>
       <label class="label">
         {{ kind === "parent" ? t("rel.child") : t("rel.partner") }}
         <select v-model="secondId" data-testid="rel-second" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
-          <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+          <option v-for="p in people" :key="p.id" :value="p.id">
+            {{ displayName(p) }}
+          </option>
         </select>
       </label>
       <label v-if="kind !== 'partner'" class="label">
@@ -260,7 +291,7 @@ async function add(): Promise<void> {
       data-testid="relationships-empty"
       class="text-sm text-slate-400"
     >
-      {{ t("rel.empty") }}
+      {{ allRelationships.length ? t("search.none") : t("rel.empty") }}
     </p>
     <ul v-else class="divide-y divide-slate-100">
       <li v-for="r in relationships" :key="r.id" data-testid="relationship-row" class="py-2.5">

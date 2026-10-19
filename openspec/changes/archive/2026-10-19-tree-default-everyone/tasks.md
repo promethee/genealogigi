@@ -1,0 +1,1 @@
+- [x] Default view, portraits, centring, tests

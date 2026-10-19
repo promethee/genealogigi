@@ -99,12 +99,6 @@ test("the same person twice, missing choices and an existing link add nothing", 
   await familyWith(page, "Ada", "Cleo", "Byron");
   await expect(page.getByTestId("rel-add")).toBeDisabled(); // nothing chosen yet
 
-  await pick(page, "Byron", "Ada", "Ada");
-  await expect(page.getByTestId("rel-add")).toBeEnabled();
-  await page.getByTestId("rel-add").click();
-  await expect(page.getByTestId("error")).toContainText("must be different people");
-  await expect(page.getByTestId("relationship-row")).toHaveCount(0);
-
   await pick(page, "Byron", "Ada", "Cleo");
   await page.getByTestId("rel-add").click();
   await expect(page.getByTestId("relationship-row")).toHaveCount(2);
@@ -114,12 +108,14 @@ test("the same person twice, missing choices and an existing link add nothing", 
   await expect(page.getByTestId("relationship-row")).toHaveCount(2);
 });
 
-test("a parent equal to the child is refused", async ({ page }) => {
+test("a person can never end up as their own parent or as both parents", async ({ page }) => {
   await familyWith(page, "Ada", "Cleo", "Byron");
-  await pick(page, "Byron", "Byron", "Cleo");
-  await page.getByTestId("rel-add").click();
-  await expect(page.getByTestId("error")).toContainText("own parent");
-  await expect(page.getByTestId("relationship-row")).toHaveCount(0);
+  await pick(page, "Byron", "Ada", "Cleo");
+  await page.getByTestId("rel-first").selectOption({ label: "Cleo" }); // Cleo was the other parent
+  await expect(page.getByTestId("rel-parent-b")).toHaveValue("");
+  await page.getByTestId("rel-second").selectOption({ label: "Cleo" }); // and now the child
+  await expect(page.getByTestId("rel-first")).toHaveValue("");
+  await expect(page.getByTestId("rel-add")).toBeDisabled();
 });
 
 test("optionally records the parents as partners, once", async ({ page }) => {

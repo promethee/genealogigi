@@ -68,6 +68,13 @@ const recordPartners = ref(false);
 const showParents = computed(
   () => props.autoStatus === true && (props.parentChoices?.length ?? 0) > 0,
 );
+// The same person cannot be both parents: choosing one already picked empties the other field.
+watch(parentA, (v) => {
+  if (v && parentB.value === v) parentB.value = "";
+});
+watch(parentB, (v) => {
+  if (v && parentA.value === v) parentA.value = "";
+});
 const chosenParentCount = computed(() => [parentA.value, parentB.value].filter(Boolean).length);
 const canOfferPartners = computed(
   () =>
@@ -230,14 +237,18 @@ const birthYearExample = computed(() =>
           {{ t("rel.parent1") }}
           <select v-model="parentA" data-testid="new-parent-a" :class="inputClass">
             <option value="">{{ t("form.noParent") }}</option>
-            <option v-for="p in parentChoices" :key="p.id" :value="p.id">{{ p.label }}</option>
+            <option v-for="p in parentChoices" :key="p.id" :value="p.id">
+              {{ p.label }}
+            </option>
           </select>
         </label>
         <label class="label">
           {{ t("rel.parent2") }}
           <select v-model="parentB" data-testid="new-parent-b" :class="inputClass">
             <option value="">{{ t("form.noParent") }}</option>
-            <option v-for="p in parentChoices" :key="p.id" :value="p.id">{{ p.label }}</option>
+            <option v-for="p in parentChoices" :key="p.id" :value="p.id">
+              {{ p.label }}
+            </option>
           </select>
         </label>
         <label v-if="chosenParentCount > 0" class="label">

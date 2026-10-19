@@ -109,6 +109,7 @@ test("the Close button is at the bottom right of the person card", async ({ page
 test("the Close button is also at the bottom of the card in the tree tab", async ({ page }) => {
   await family(page);
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Kid" });
   await page.getByTestId("tree-node").filter({ hasText: /^Mum/ }).click();
   const panel = (await page.getByTestId("tree-detail-panel").boundingBox())!;
@@ -194,6 +195,7 @@ test.describe("every Delete asks for confirmation first", () => {
   test("person (tree card)", async ({ page }) => {
     await family(page);
     await page.getByTestId("tab-tree").click();
+    await page.getByTestId("tree-direction").selectOption("hourglass");
     await page.getByTestId("tree-root").selectOption({ label: "Kid" });
     await page.getByTestId("tree-node").filter({ hasText: /^Mum/ }).click();
     await answer(page, false);

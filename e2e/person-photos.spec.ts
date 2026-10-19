@@ -303,6 +303,7 @@ test.describe("in the trees", () => {
     await expect(page.getByTestId("photo-thumb")).toHaveCount(1);
     await page.getByTestId("detail-close").click();
     await page.getByTestId("tab-tree").click();
+    await page.getByTestId("tree-direction").selectOption("hourglass");
     await page.getByTestId("tree-root").selectOption({ label: "Child" });
   }
 

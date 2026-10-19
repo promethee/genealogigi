@@ -109,6 +109,7 @@ test("the tree box shows the name, then née and lifespan", async ({ page }) => 
   await page.getByTestId("rel-second").selectOption({ index: 2 });
   await page.getByTestId("rel-add").click();
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Marie Dubois (née Martin)" });
   const box = page.getByTestId("tree-node").first();
   await expect(box).toContainText("Marie Dubois");

@@ -116,6 +116,7 @@ test("tree draws a foster parent with a dashed link", async ({ page }) => {
   await pick(page, "Ada", "Byron", "foster");
   await page.getByTestId("rel-add").click();
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Byron" });
   await expect(page.locator('[data-testid="tree-edge"][data-dashed="true"]')).toHaveCount(1);
 });

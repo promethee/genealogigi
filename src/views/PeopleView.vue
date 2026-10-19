@@ -348,7 +348,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
           </section>
         </div>
         <div class="card min-w-0 p-5">
-          <RelationshipsSection />
+          <RelationshipsSection :match-ids="search.trim() ? matchIds : undefined" />
         </div>
       </div>
     </div>

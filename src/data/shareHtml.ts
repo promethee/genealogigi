@@ -59,7 +59,7 @@ body.tree-view main{display:none}
 body.tree-view #treeview{display:block}
 #treebar{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;margin-bottom:.6rem;color:var(--muted);font-size:.85rem}
 #treebox{overflow:auto;border:1px solid var(--line);border-radius:.9rem;background:var(--surface);max-height:calc(100vh - 11rem)}
-#treebox svg{display:block}
+#treebox svg{display:block;margin:0 auto}
 .tn{cursor:pointer}
 .tn rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
 .tn:hover rect,.tn.cur rect{stroke:var(--accent);stroke-width:2.5}
@@ -153,6 +153,7 @@ function clip(s,n){return s.length>n?s.slice(0,n-1)+"\u2026":s}
 var drawn=false,lastId=null;
 function drawTree(){
   var svg=$("treesvg");svg.setAttribute("viewBox","0 0 "+natW+" "+natH);
+  var defs=svgEl("defs",{},svg),cp=svgEl("clipPath",{id:"avc",clipPathUnits:"objectBoundingBox"},defs);svgEl("circle",{cx:.5,cy:.5,r:.5},cp);
   var pos={};T.nodes.forEach(function(n){pos[n.id]={x:PAD+n.slot*SW,y:PAD+n.level*LH}});
   T.edges.forEach(function(e){
     var a=pos[e.from],b=pos[e.to];if(!a||!b)return;
@@ -166,8 +167,10 @@ function drawTree(){
     var p=pos[n.id],g=svgEl("g",{"class":"tn","data-id":n.id,transform:"translate("+p.x+" "+p.y+")"},svg);
     svgEl("title",{},g).textContent=n.name;
     svgEl("rect",{width:BW,height:BH,rx:10},g);
-    var c=svgEl("circle",{cx:BH/2,cy:BH/2,r:18,fill:n.tint+"33"},g);
-    var i=svgEl("text",{x:BH/2,y:BH/2+4,"text-anchor":"middle",fill:n.ink},g);i.textContent=n.initials;i.style.fill=n.ink;
+    svgEl("circle",{cx:BH/2,cy:BH/2,r:18,fill:n.tint+"33"},g);
+    var who=byId[n.id],pic=who&&who.photos.length&&safeImg(who.photos[0].src)?who.photos[0].src:null;
+    if(pic){svgEl("image",{"class":"pic",href:pic,x:BH/2-18,y:BH/2-18,width:36,height:36,preserveAspectRatio:"xMidYMid slice","clip-path":"url(#avc)"},g)}
+    else{var i=svgEl("text",{x:BH/2,y:BH/2+4,"text-anchor":"middle",fill:n.ink},g);i.textContent=n.initials;i.style.fill=n.ink}
     svgEl("text",{x:BH+4,y:n.life?21:BH/2+4},g).textContent=clip(n.name,17);
     if(n.life)svgEl("text",{"class":"s",x:BH+4,y:38},g).textContent=clip(n.life,22);
     g.onclick=function(){show(n.id)}});

@@ -330,3 +330,11 @@ A failed write reads "Could not write to {file}. Check that the file is present 
 ## Whole-family tree, UI polish (2026-10-19)
 
 A pure `buildFamilyTree` lays out everyone once (rows by generation, couples together) for both the Tree tab ("Everyone") and the shared page's Tree view (layout computed at export, drawn with SVG). Share confirmation is a "safe" tone (green Confirm). Partner segments use their own colour. The window starts maximized. See `openspec/changes/whole-family-tree` and `ui-polish-3`.
+
+## No self-link, search narrows relationship lines (2026-10-19)
+
+Choosing a person already picked in another field empties that field (relationship form and new-person parents); the search box also filters the relationship lines to links involving a match. See `openspec/changes/no-self-link-and-search-lines`.
+
+## Tree opens on Everyone (2026-10-19)
+
+The Tree tab defaults to the whole-family view; the shared page tree shows portraits and is centred. See `openspec/changes/tree-default-everyone`.

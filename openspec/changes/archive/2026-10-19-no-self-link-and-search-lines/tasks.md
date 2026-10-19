@@ -1,0 +1,2 @@
+- [x] Self-link prevention, relationship search filter, French label
+- [x] e2e/relationship-search.spec.ts, updated two-parents/person-parents/relationship-record

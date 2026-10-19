@@ -281,7 +281,7 @@ export const fr: Record<MessageKey, string> = {
   "tree.everyone": "Tout le monde (toute la famille)",
   "tree.legend.partners": "partenaires",
   "tree.generations": "Générations",
-  "tree.siblings": "Afficher la fratrie / sororité",
+  "tree.siblings": "Afficher les frères et sœurs",
   "tree.legend.confirmed": "biologique, confirmé",
   "tree.legend.other": "présumé, adoptif, beau-parent, famille d’accueil ou tuteur",
 

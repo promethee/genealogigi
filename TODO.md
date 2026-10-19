@@ -264,3 +264,7 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (write errors, name case, relationship form)** — Relationship form: one "Parent of" type with an optional other parent; Add is disabled until people are selected. File-name suggestions normalized (NFC, capped). Write failures show a plain message naming the file instead of the OS error. Names are kept as typed and displayed with a capitalized first letter. Archived `friendly-write-error-and-name-case`.
 
 - **2026-10-19 (whole-family tree, UI polish)** — Tree tab has "Everyone": all people once, partners joined by a calm violet segment. The shared web page now has a Tree view (clickable, Fit/Actual size). Person form focuses the first name; People/Tree switch on the left; person name in the list is plain text; share confirmation green/neutral; window starts maximized. Archived `ui-polish-3` and `whole-family-tree`.
+
+- **2026-10-19 (no self-link, search lines)** — A person cannot be their own parent or both parents (choosing them again empties the other field). The search box also narrows the relationship lines. French sibling checkbox pluralized. Archived `no-self-link-and-search-lines`.
+
+- **2026-10-19 (tree default)** — Tree tab opens on Everyone. Shared page tree: portraits, centred. Archived `tree-default-everyone`.

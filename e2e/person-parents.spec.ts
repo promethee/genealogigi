@@ -88,16 +88,16 @@ test("no parent chosen creates only the person", async ({ page }) => {
   await expect(page.getByTestId("relationship-row")).toHaveCount(0);
 });
 
-test("the same parent twice is refused and nothing is saved", async ({ page }) => {
+test("choosing a parent who is already the other parent empties the other field", async ({
+  page,
+}) => {
   await start(page, "Ada");
+  await add(page, "Cleo");
   await page.getByTestId("add-person").click();
-  await page.getByTestId("first-name").fill("Byron");
   await page.getByTestId("new-parent-a").selectOption({ label: "Ada" });
   await page.getByTestId("new-parent-b").selectOption({ label: "Ada" });
-  await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("error")).toContainText("must be different people");
-  await expect(page.getByTestId("person-row")).toHaveCount(1);
-  await expect(page.getByTestId("relationship-row")).toHaveCount(0);
+  await expect(page.getByTestId("new-parent-a")).toHaveValue("");
+  await expect(page.getByTestId("new-parent-b")).not.toHaveValue("");
 });
 
 test("an invalid person saves no parent links either", async ({ page }) => {

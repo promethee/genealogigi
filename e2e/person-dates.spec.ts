@@ -136,6 +136,7 @@ test("the tree shows a lifespan under names that have dates", async ({ page }) =
   });
   await addPerson(page, "Byron");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Ada" });
   await expect(page.getByTestId("tree-lifespan")).toHaveText("1815–1852");
   await page.getByTestId("tree-root").selectOption({ label: "Byron" });

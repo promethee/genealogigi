@@ -70,7 +70,9 @@ test("adds a parent-child relationship and it survives a restart", async ({ page
   await expect(page.getByTestId("relationship-text")).toHaveText(["Ada is parent of Byron"]);
 });
 
-test("rejects a cycle, a duplicate and the same person twice", async ({ page }) => {
+test("rejects a cycle and a duplicate; the same person on both sides is impossible", async ({
+  page,
+}) => {
   await familyWith(page, "Ada", "Byron");
   await link(page, "parent", "Ada", "Byron");
 
@@ -80,8 +82,11 @@ test("rejects a cycle, a duplicate and the same person twice", async ({ page }) 
   await link(page, "parent", "Ada", "Byron");
   await expect(page.getByTestId("error")).toContainText("already exists");
 
-  await link(page, "parent", "Ada", "Ada");
-  await expect(page.getByTestId("error")).toContainText("own parent");
+  // The same person on both sides empties the first one: no self-link can be added.
+  await page.getByTestId("rel-first").selectOption({ label: "Ada" });
+  await page.getByTestId("rel-second").selectOption({ label: "Ada" });
+  await expect(page.getByTestId("rel-first")).toHaveValue("");
+  await expect(page.getByTestId("rel-add")).toBeDisabled();
   await expect(page.getByTestId("relationship-row")).toHaveCount(1);
 });
 

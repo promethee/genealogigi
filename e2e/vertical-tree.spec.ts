@@ -53,6 +53,7 @@ async function buildFamily(page: Page): Promise<void> {
   await parentOf(page, "Gran", "Mum");
   await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
 }
 
 const box = async (page: Page, name: string) =>

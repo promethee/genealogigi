@@ -57,9 +57,8 @@ const selectedId = ref<PersonId | null>(null);
 const editing = ref(false);
 // Everything is shown by default; the focused person only decides who the chart is centred on.
 const generations = ref(ALL_GENERATIONS);
-// Both directions and the root's siblings by default: the fullest picture of the family.
-// "everyone" draws the whole family, every person once (not centred on anyone).
-const direction = ref<PedigreeDirection | "everyone">("hourglass");
+// The whole family by default: the fullest picture. The other views centre on one person.
+const direction = ref<PedigreeDirection | "everyone">("everyone");
 const showSiblings = ref(true);
 
 const people = computed(() => family.data?.people ?? []);

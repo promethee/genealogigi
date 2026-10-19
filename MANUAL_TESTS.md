@@ -2,8 +2,8 @@
 
 What a machine cannot judge. Everything else runs by itself:
 
-- **Browser end-to-end tests** (`npm run e2e`, 249 tests): every screen and rule, against a fake shell.
-- **Real-app tests** (`npm run test:real`, 54 checks): the real Tauri window, real files, real settings,
+- **Browser end-to-end tests** (`npm run e2e`, 268 tests): every screen and rule, against a fake shell.
+- **Real-app tests** (`npm run test:real`, 53 checks): the real Tauri window, real files, real settings,
   real restarts, real image decoding, the update check against a fake release endpoint, OS dark mode
   and language. Native file dialogs are answered by a scripted seam there.
 
@@ -44,30 +44,31 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## 4. How it looks (light and dark: check both)
 
-| #   | Action                                                                | Expected                                                                                            |
-| --- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| 14  | Welcome screen, people list, forms, relationships                     | Consistent, readable, nothing cut off; flags render; **Tab** shows a visible focus ring everywhere. |
-| 15  | Person card with photos, timeline and the small family tree           | Round portraits look good, the small tree fits its column, timeline reads in order.                 |
-| 16  | Tree tab: hourglass, siblings, filters on, search highlight           | Layout is clear; faded people are "soft but readable"; the amber search outline stands out.         |
-| 17  | Resize the window from narrow to maximised                            | Tree shrinks with the window; people list and relationships go side by side only when wide.         |
-| 18  | Delete something (any Delete button)                                  | In-app dialog: **Cancel red**, **Confirm neutral**, readable in both themes.                        |
-| 19  | Dark mode: open a native dropdown (e.g. Month) and scroll a long page | Dropdown and scrollbars are dark and readable.                                                      |
+| #   | Action                                                                               | Expected                                                                                                                                                                          |
+| --- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 14  | Welcome screen, people list, forms, relationships                                    | Consistent, readable, nothing cut off; flags render; **Tab** shows a visible focus ring everywhere.                                                                               |
+| 15  | Person card with photos, timeline and the small family tree                          | Round portraits look good, the small tree fits its column, timeline reads in order.                                                                                               |
+| 16  | Tree tab: opens on **Everyone**; then hourglass, siblings, filters, search highlight | Everyone shows each person once, couples side by side joined by a **calm violet** segment (never red); faded people are "soft but readable"; the amber search outline stands out. |
+| 17  | Resize the window from narrow to maximised                                           | Tree shrinks with the window; people list and relationships go side by side only when wide.                                                                                       |
+| 18  | Delete something, then **Share as web page…**                                        | Delete: **Cancel red**, **Confirm neutral**. Share: **Confirm green**, **Cancel neutral**. Readable in both themes.                                                               |
+| 19  | Dark mode: open a native dropdown (e.g. Month) and scroll a long page                | Dropdown and scrollbars are dark and readable.                                                                                                                                    |
 
 ## 5. Wording and the outside world
 
-| #   | Action                                                                                  | Expected                                                                                                                        |
-| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Personne centrale".              |
-| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, **Tree** view shows everyone and fits a phone, print preview is clean. |
-| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone.                                                   |
+| #   | Action                                                                                  | Expected                                                                                                                                                                                         |
+| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Parent de" with "Autre parent (facultatif)", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Afficher les frères et sœurs", "Personne centrale". |
+| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, **Tree** view shows everyone (portraits in the boxes, violet partner segment) and fits a phone, print preview is clean.                 |
+| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone.                                                                                                                    |
 
 ## Last run
 
-| Date       | Who   | Result                                                     | Notes                                                                                                                |
-| ---------- | ----- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 2026-10-19 | owner | Section 1 (native dialogs): OK                             | Done before the family-name change: re-check rows 1 and 4 (name prompt, default names). Other sections still to run. |
-| 2026-10-19 | owner | Family creation (row 1): OK                                | Name prompt then save dialog checked after the family-name change. Row 4 (default names) still to re-check.          |
-| 2026-10-19 | owner | Section 3 (Windows settings, real browser, rows 10–13): OK |                                                                                                                      |
-| 2026-10-19 | owner | Section 4 (how it looks, rows 14–19, light and dark): OK   | Before the later UI changes (partner colour, tab switch, share confirm).                                             |
-| 2026-10-19 | owner | Row 20 (whole app in French): OK                           |                                                                                                                      |
-|            |       |                                                            |                                                                                                                      |
+| Date       | Who   | Result                                                     | Notes                                                                                                                             |
+| ---------- | ----- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-19 | owner | Section 1 (native dialogs): OK                             | Done before the family-name change: re-check rows 1 and 4 (name prompt, default names). Other sections still to run.              |
+| 2026-10-19 | owner | Family creation (row 1): OK                                | Name prompt then save dialog checked after the family-name change. Row 4 (default names) still to re-check.                       |
+| 2026-10-19 | owner | Section 3 (Windows settings, real browser, rows 10–13): OK |                                                                                                                                   |
+| 2026-10-19 | owner | Section 4 (how it looks, rows 14–19, light and dark): OK   | Passed twice. Both before the "Everyone" default, the violet partner segment and the share confirm tone: re-check rows 16 and 18. |
+| 2026-10-19 | owner | Row 20 (whole app in French): OK                           |                                                                                                                                   |
+| 2026-10-19 | owner | Row 7 (maximized start): OK                                | App opens full screen.                                                                                                            |
+|            |       |                                                            |                                                                                                                                   |

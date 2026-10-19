@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -267,5 +267,52 @@ test("the Tree view shows partners in their own colour and fits the window", asy
   expect(await viewer.locator("#treesvg").evaluate((el) => Number(el.getAttribute("width")))).toBe(
     fitted,
   );
+  await viewer.close();
+});
+
+test("the Tree view shows a person's portrait in their box, initials otherwise", async ({
+  page,
+  browser,
+}) => {
+  const url = await buildAndShare(page);
+  const file = url.replace("file://", "");
+  const html = readFileSync(file, "utf8");
+  const open = '<script type="application/json" id="data">';
+  const start = html.indexOf(open) + open.length;
+  const end = html.indexOf("</script>", start);
+  const model = JSON.parse(html.slice(start, end));
+  const png =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+  model.people.find((p: { name: string }) => p.name === "Odile Laurent").photos = [
+    { src: png, caption: "" },
+  ];
+  writeFileSync(
+    file,
+    html.slice(0, start) + JSON.stringify(model).replaceAll("<", "\\u003c") + html.slice(end),
+  );
+  const viewer = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+  await viewer.goto(`${url}#tree`);
+  const odile = viewer.locator("#treesvg .tn", { hasText: "Odile" });
+  await expect(odile.locator("image.pic")).toHaveCount(1);
+  await expect(odile.locator("text").filter({ hasText: /^OL$/ })).toHaveCount(0); // no initials
+  const paul = viewer.locator("#treesvg .tn", { hasText: "Paul" });
+  await expect(paul.locator("image.pic")).toHaveCount(0);
+  await expect(paul.locator("text").filter({ hasText: /^PL$/ })).toHaveCount(1);
+  await viewer.close();
+});
+
+test("the Tree view is centred in its frame when it is narrower than the window", async ({
+  page,
+  browser,
+}) => {
+  const url = await buildAndShare(page);
+  const viewer = await browser.newPage({ viewport: { width: 1600, height: 800 } });
+  await viewer.goto(`${url}#tree`);
+  const box = (await viewer.locator("#treebox").boundingBox())!;
+  const svg = (await viewer.locator("#treesvg").boundingBox())!;
+  expect(svg.width).toBeLessThan(box.width - 40); // a small family in a wide frame
+  const left = svg.x - box.x;
+  const right = box.x + box.width - (svg.x + svg.width);
+  expect(Math.abs(left - right)).toBeLessThan(4);
   await viewer.close();
 });

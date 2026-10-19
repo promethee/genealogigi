@@ -85,6 +85,7 @@ async function build(page: Page): Promise<void> {
     await page.getByTestId("rel-add").click();
   }
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Léa Dubois" });
   await page.getByTestId("filters-toggle").click();
 }

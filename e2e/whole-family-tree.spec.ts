@@ -101,3 +101,9 @@ test("switching back to a focused view restores the controls", async ({ page }) 
   await expect(page.getByTestId("tree-root")).toBeVisible();
   await expect(page.getByTestId("tree-generations")).toBeVisible();
 });
+
+test("the Tree tab opens on the whole family by default", async ({ page }) => {
+  await family(page);
+  await expect(page.getByTestId("tree-direction")).toHaveValue("everyone");
+  await expect(page.getByTestId("tree-node")).toHaveCount(6);
+});

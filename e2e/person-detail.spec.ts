@@ -197,6 +197,7 @@ test.describe("in the tree", () => {
   async function openTree(page: Page): Promise<void> {
     await sample(page);
     await page.getByTestId("tab-tree").click();
+    await page.getByTestId("tree-direction").selectOption("hourglass");
     await page.getByTestId("tree-root").selectOption({ label: "Byron King" });
   }
   const node = (page: Page, text: string) =>

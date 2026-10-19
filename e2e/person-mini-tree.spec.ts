@@ -133,6 +133,7 @@ test("French heading, and the tree also shows in the tree tab's card", async ({ 
   await expect(page.getByTestId("mini-tree")).toContainText("Famille proche");
   await page.getByTestId("detail-close").click();
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
   await page.getByTestId("tree-root").selectOption({ label: "Me" });
   await page.getByTestId("tree-node").filter({ hasText: /^Mum/ }).click();
   await expect(page.getByTestId("tree-detail-panel").getByTestId("mini-tree")).toBeVisible();

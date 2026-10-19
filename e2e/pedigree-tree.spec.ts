@@ -53,6 +53,7 @@ async function buildFamily(page: Page): Promise<void> {
   await parentOf(page, "Gran", "Mum");
   await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
+  await page.getByTestId("tree-direction").selectOption("hourglass");
 }
 
 test("tree tab explains when there is nobody to show, and tabs switch back", async ({ page }) => {
