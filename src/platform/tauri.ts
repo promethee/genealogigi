@@ -61,7 +61,12 @@ declare global {
      * one per call (null = cancelled). Everything after the dialog (files, settings store,
      * restarts) is real. Never read in a production build.
      */
-    __GENEALOGIGI_TEST_DIALOGS__?: { open?: (string | null)[]; save?: (string | null)[] };
+    __GENEALOGIGI_TEST_DIALOGS__?: {
+      open?: (string | null)[];
+      save?: (string | null)[];
+      /** One list of file paths per image-picker call (null = cancelled). */
+      images?: (string[] | null)[];
+    };
   }
 }
 
@@ -70,6 +75,14 @@ function scripted(kind: "open" | "save"): string | null | undefined {
   if (!import.meta.env.DEV) return undefined;
   const queue = window.__GENEALOGIGI_TEST_DIALOGS__?.[kind];
   return queue && queue.length > 0 ? queue.shift() : undefined;
+}
+
+/** The scripted image selection for the next picker call, if the dev-only seam is in use. */
+function scriptedImages(): string[] | undefined {
+  if (!import.meta.env.DEV) return undefined;
+  const queue = window.__GENEALOGIGI_TEST_DIALOGS__?.images;
+  if (!queue || queue.length === 0) return undefined;
+  return queue.shift() ?? [];
 }
 
 export function createPlatformAPI(): PlatformAPI {
@@ -159,11 +172,14 @@ export function createPlatformAPI(): PlatformAPI {
     },
     window: { setTitle: (title) => getCurrentWindow().setTitle(title) },
     pickImages: async (): Promise<PickedImage[]> => {
-      const selected = await open({
-        multiple: true,
-        directory: false,
-        filters: [{ name: "Images", extensions: IMAGE_EXTENSIONS }],
-      });
+      const scripted = scriptedImages();
+      const selected =
+        scripted ??
+        (await open({
+          multiple: true,
+          directory: false,
+          filters: [{ name: "Images", extensions: IMAGE_EXTENSIONS }],
+        }));
       const paths = selected === null ? [] : Array.isArray(selected) ? selected : [selected];
       const images: PickedImage[] = [];
       for (const path of paths) {

@@ -368,6 +368,8 @@ Start from an open family with at least one person.
 
 ## Photos
 
+🤖 Rows 2–7, 12 and 13 are automated: real image decoding and resizing in the real webview (a 3000×2000 image becomes a 480×320 JPEG), file growth, viewer paging, captions, Make main, Remove with cancel/confirm, Export keeps the photos, bad files skipped, the 12-photo limit, and a restart. The picker is answered by a scripted seam, so the **real Windows picker (row 1)**, real camera/HEIC files and the visual rows 8–11 stay yours.
+
 | #   | Action                                                           | Expected                                                                                                                                                        |
 | --- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | Open a person's card, click **Add photos**                       | The Windows file picker opens, filtered to images; several files can be selected.                                                                               |

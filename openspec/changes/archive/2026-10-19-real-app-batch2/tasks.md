@@ -1,0 +1,3 @@
+- [x] Seam and harness
+- [x] photos.test.mjs
+- [x] Docs

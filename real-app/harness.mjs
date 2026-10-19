@@ -116,7 +116,13 @@ class Session {
 
   async click(testId) {
     const el = await this.wait(testId);
-    await this.cmd("POST", `/element/${el}/click`, {});
+    try {
+      await this.cmd("POST", `/element/${el}/click`, {});
+    } catch (err) {
+      // A tooltip or an animating overlay can briefly cover the target: click it directly.
+      if (!/intercepted/.test(String(err.message))) throw err;
+      await this.eval("arguments[0].click();", { [ELEMENT]: el });
+    }
   }
 
   async type(testId, text) {
@@ -146,11 +152,12 @@ class Session {
   }
 
   /** Answers the next native file dialogs: paths (or null = cancel), consumed in order. */
-  async answerDialogs({ open = [], save = [] }) {
+  async answerDialogs({ open = [], save = [], images = [] }) {
     await this.eval(
-      "window.__GENEALOGIGI_TEST_DIALOGS__ = { open: arguments[0], save: arguments[1] };",
+      "window.__GENEALOGIGI_TEST_DIALOGS__ = { open: arguments[0], save: arguments[1], images: arguments[2] };",
       open,
       save,
+      images,
     );
   }
 

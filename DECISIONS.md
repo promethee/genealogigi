@@ -298,3 +298,7 @@ Decision: the Sync with Git button is hidden for v1 (v2 feature). The store acti
 ## Real-app tests (2026-10-19)
 
 Decision: automate the real-shell manual tests with WebDriver (tauri-driver) on Linux + Xvfb, with a dev-only seam answering the native file dialogs. Native dialog appearance and the window icon stay manual. CI runs it on demand and weekly, not on every push.
+
+## Real-app photos seam (2026-10-19)
+
+Decision: the image picker has the same dev-only seam as the file dialogs (`__GENEALOGIGI_TEST_DIALOGS__.images`); the files are then read, decoded and resized for real. Test images are generated PNGs (no image library); JPEG output size is read from its SOF marker.
