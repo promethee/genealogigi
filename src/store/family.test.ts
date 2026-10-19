@@ -595,6 +595,114 @@ describe("family store: import and close", () => {
   });
 });
 
+describe("family store: family name", () => {
+  /** A store whose shell can ask for a name; `answers` are consumed per question. */
+  function named(answers: (string | null)[], saveResult = "/f/Laurent.gigi") {
+    const made = makeStore({ saveResult });
+    const questions: { message: string; initial?: string }[] = [];
+    made.platform.promptText = async (options) => {
+      questions.push(options);
+      return answers.shift() ?? null;
+    };
+    const defaults: (string | undefined)[] = [];
+    const dialog = made.platform.saveFileDialog;
+    made.platform.saveFileDialog = (options) => {
+      defaults.push(options?.defaultName);
+      return dialog(options);
+    };
+    return { ...made, questions, defaults };
+  }
+
+  it("asks for the name first, suggests <name>.gigi, and stores the name in the file", async () => {
+    const { store, files, questions, defaults } = named(["  Famille   Laurent "]);
+    await store.createNew();
+    expect(questions).toHaveLength(1);
+    expect(defaults).toEqual(["Famille Laurent.gigi"]);
+    expect(files.get("/f/Laurent.gigi")?.name).toBe("Famille Laurent");
+    expect(store.familyTitle).toBe("Famille Laurent");
+  });
+
+  it("makes the suggested file name safe", async () => {
+    const { store, defaults } = named(["A/B: C"]);
+    await store.createNew();
+    expect(defaults).toEqual(["A-B- C.gigi"]);
+  });
+
+  it("creates nothing when the prompt is cancelled or left empty", async () => {
+    for (const answer of [null, "", "   "]) {
+      const { store, defaults, save } = named([answer]);
+      await store.createNew();
+      expect(defaults).toEqual([]); // the save dialog never opened
+      expect(save).not.toHaveBeenCalled();
+      expect(store.data).toBeNull();
+    }
+  });
+
+  it("a shell that cannot ask behaves as before: default file name, no name", async () => {
+    const { store, files, platform } = makeStore({ saveResult: "/f/x.gigi" });
+    expect(platform.promptText).toBeUndefined();
+    await store.createNew();
+    expect(files.get("/f/x.gigi")).not.toHaveProperty("name");
+    expect(store.canRename).toBe(false);
+    expect(store.familyTitle).toBe("x"); // the file name stands in
+  });
+
+  it("Rename saves the new name and keeps everything else", async () => {
+    const { store, files, questions } = named(["Laurent", "Dubois"]);
+    await store.createNew();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    expect(await store.renameFamily()).toBe(true);
+    expect(questions[1]?.initial).toBe("Laurent");
+    expect(files.get("/f/Laurent.gigi")?.name).toBe("Dubois");
+    expect(files.get("/f/Laurent.gigi")?.people).toHaveLength(1);
+  });
+
+  it("a cancelled or empty rename changes nothing", async () => {
+    const { store, files } = named(["Laurent", null, ""]);
+    await store.createNew();
+    expect(await store.renameFamily()).toBe(false);
+    expect(await store.renameFamily()).toBe(false);
+    expect(files.get("/f/Laurent.gigi")?.name).toBe("Laurent");
+  });
+
+  it("Resume is labelled with the name read from the remembered file, else the file name", async () => {
+    const withName = makeStore({ lastPath: "/f/a.gigi", existingFiles: ["/f/a.gigi"] });
+    withName.raw.set("/f/a.gigi", JSON.stringify({ ...EMPTY, name: "Famille Laurent" }));
+    await withName.store.init();
+    expect(withName.store.resumeLabel).toBe("Famille Laurent");
+
+    const without = makeStore({ lastPath: "/f/a.gigi", existingFiles: ["/f/a.gigi"] });
+    await without.store.init();
+    expect(without.store.resumeLabel).toBe("a.gigi");
+  });
+
+  it("an imported file without a name keeps the current name", async () => {
+    const { store, platform, raw } = named(["Laurent"]);
+    platform.openFileDialog = async () => "/in/other.gigi";
+    await store.createNew();
+    raw.set("/in/other.gigi", JSON.stringify({ ...EMPTY, people: [] }));
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    await store.importFamily();
+    expect(store.data?.name).toBe("Laurent");
+  });
+
+  it("shares and exports under fixed English default names, whatever the language", async () => {
+    const { store, platform, defaults } = named(["Laurent"]);
+    await store.createNew();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    await store.addPerson({ firstName: "Byron", lastName: "" });
+    const [a, b] = store.data?.people ?? [];
+    await store.addPartners({ personAId: a!.id, personBId: b!.id, status: "ongoing" });
+    platform.saveFileDialog = async (options) => {
+      defaults.push(options?.defaultName);
+      return `/out/${options?.defaultName}`;
+    };
+    await store.exportFamily();
+    await store.shareWebPage();
+    expect(defaults.slice(-2)).toEqual(["family-export.gigi", "family.html"]);
+  });
+});
+
 describe("family store: share as web page", () => {
   it("refuses a family without two people and a relationship, and writes nothing", async () => {
     const { store, platform, raw } = makeStore({

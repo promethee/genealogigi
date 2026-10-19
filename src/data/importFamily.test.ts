@@ -232,3 +232,12 @@ describe("notes on import", () => {
     expect(result.data.people[2]?.notes).toHaveLength(20000);
   });
 });
+
+describe("family name on import", () => {
+  it("keeps a text name (cleaned), drops anything else", () => {
+    expect(parse({ ...empty, name: "  Famille   Laurent " }).data.name).toBe("Famille Laurent");
+    expect(parse({ ...empty, name: 42 }).data).not.toHaveProperty("name");
+    expect(parse({ ...empty, name: "   " }).data).not.toHaveProperty("name");
+    expect(parse(empty).data).not.toHaveProperty("name");
+  });
+});

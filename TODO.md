@@ -10,7 +10,7 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 ### Before going public (owner)
 
-- [ ] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table (about 10 minutes).
+- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; re-check its rows 1 and 4 after the family-name change, then sections 2–5.
 - [ ] Fix anything that run finds (tell the agent what failed).
 - [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
 - [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
@@ -256,3 +256,7 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (E2E_TESTS.md)** — The automated checks are now catalogued in `E2E_TESTS.md` (generated lists of the 51 real-app and 239 browser tests, plus the former manual steps by feature with the test files that check them). `MANUAL_TESTS.md` keeps only the 22 human rows and points to it.
 
 - **2026-10-19 (share needs a family)** — Share as web page is disabled (with an explanation) until the family has at least two people and one relationship; the store refuses too (`canShareFamily`). Archived `share-needs-family`.
+
+- **2026-10-19 (family name)** — Creating a family asks for its name first (in-app prompt, required; stored in the file as optional `name`, no schema bump). The name titles the open family (with a Rename button), labels Resume on the welcome screen (read from the file), suggests `<Name>.gigi` in the save dialog (made file-system safe), titles a shared page, and survives an import of a nameless file. Default export/share names are fixed English constants: `family-export.gigi` and `family.html`. Shells without `promptText` behave as before. 396 unit, 249 browser e2e, 54 real-app (53 as root). Archived `family-name`. `scripts/e2e-catalog.py` regenerates the test lists in E2E_TESTS.md.
+
+- **2026-10-19 (tagline)** — Welcome tagline is now "Your family tree, your data." / "Votre arbre généalogique, vos données." (matches the project page pitch).

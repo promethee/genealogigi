@@ -19,6 +19,15 @@ export interface PlatformAPI {
   openFileDialog(options?: { extensions?: string[] }): Promise<string | null>;
   saveFileDialog(options?: { defaultName?: string; extensions?: string[] }): Promise<string | null>;
   confirm(message: string): Promise<boolean>;
+  /**
+   * Asks for a line of text (null = cancelled). Optional: a shell without it simply does not ask,
+   * and the app behaves as it did before the question existed.
+   */
+  promptText?(options: {
+    message: string;
+    initial?: string;
+    placeholder?: string;
+  }): Promise<string | null>;
   data: {
     exists(filePath: string): Promise<boolean>;
     load(filePath: string): Promise<FamilyData>;

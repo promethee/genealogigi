@@ -1,5 +1,6 @@
 import { createPinia } from "pinia";
 import { askConfirm } from "../lib/confirmDialog.ts";
+import { askText } from "../lib/promptDialog.ts";
 import type { PlatformAPI } from "../platform/PlatformAPI.ts";
 import { createPlatformAPI } from "../platform/tauri.ts";
 import { defineAppStore } from "./app.ts";
@@ -14,11 +15,16 @@ declare global {
     /** Dev-only seam: the e2e fake shell never touches the network unless a test provides this. */
     /** Dev-only seam: lets a fake shell show the real in-app confirmation dialog. */
     __GENEALOGIGI_CONFIRM__?: typeof askConfirm;
+    /** Dev-only seam: lets a fake shell show the real in-app text prompt. */
+    __GENEALOGIGI_PROMPT__?: typeof askText;
     __GENEALOGIGI_FETCH__?: Parameters<typeof defineAppStore>[1];
   }
 }
 
-if (import.meta.env.DEV) window.__GENEALOGIGI_CONFIRM__ = askConfirm;
+if (import.meta.env.DEV) {
+  window.__GENEALOGIGI_CONFIRM__ = askConfirm;
+  window.__GENEALOGIGI_PROMPT__ = askText;
+}
 
 export const pinia = createPinia();
 const platform =

@@ -18,6 +18,7 @@ import {
 } from "../data/importFamily.ts";
 import { renderShareHtml } from "../data/shareHtml.ts";
 import { buildShareModel, canShareFamily } from "../data/shareModel.ts";
+import { cleanFamilyName, fileNameForFamily } from "../data/familyName.ts";
 import { locale } from "../i18n/index.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
@@ -39,9 +40,11 @@ import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.gigi";
 const EXPORT_FILE_NAME = "family-export.gigi";
+// Default names are identifiers, not interface text: never translated.
+const SHARE_FILE_NAME = "family.html";
 
-function emptyFamily(): FamilyData {
-  return { schemaVersion: 1, people: [], relationships: [] };
+function emptyFamily(name?: string): FamilyData {
+  return { schemaVersion: 1, ...(name ? { name } : {}), people: [], relationships: [] };
 }
 
 function fileNameOf(filePath: string): string {
@@ -96,6 +99,18 @@ export function defineFamilyStore(
     const syncing = ref(false);
 
     const resumeFileName = computed(() => (resumePath.value ? fileNameOf(resumePath.value) : null));
+    /** The remembered family's name, read from its file at startup (null when it has none). */
+    const resumeFamilyName = ref<string | null>(null);
+    /** What the Resume button calls the remembered family: its name, else its file name. */
+    const resumeLabel = computed(() => resumeFamilyName.value ?? resumeFileName.value);
+    /** The open family's title: its name, else its file name without the extension. */
+    const familyTitle = computed(
+      () =>
+        data.value?.name ??
+        (filePath.value ? fileNameOf(filePath.value).replace(/\.[^.]+$/, "") : ""),
+    );
+    /** Whether the shell can ask for a name (so the Rename button is offered). */
+    const canRename = platform.promptText !== undefined;
 
     async function refreshGitStatus(): Promise<void> {
       const path = filePath.value;
@@ -129,12 +144,23 @@ export function defineFamilyStore(
 
     async function init(): Promise<void> {
       resumePath.value = null;
+      resumeFamilyName.value = null;
       error.value = null;
       await attempt(async () => {
         const remembered = await platform.settings.getLastFilePath();
         if (!remembered) return;
         if (await platform.data.exists(remembered)) {
           resumePath.value = remembered;
+          try {
+            const parsed: unknown = JSON.parse(await platform.data.readRaw(remembered));
+            const name =
+              typeof parsed === "object" && parsed !== null && "name" in parsed
+                ? cleanFamilyName(String((parsed as { name: unknown }).name))
+                : "";
+            resumeFamilyName.value = name || null;
+          } catch {
+            resumeFamilyName.value = null; // unreadable here: the file name stands in
+          }
         } else {
           error.value = t("store.lastNotFound", { path: remembered });
         }
@@ -157,9 +183,21 @@ export function defineFamilyStore(
 
     async function createNew(): Promise<void> {
       await attempt(async () => {
-        const path = await platform.saveFileDialog({ defaultName: DEFAULT_FILE_NAME });
+        // The family's name tells several families apart; asking is skipped by shells that cannot.
+        let name: string | undefined;
+        if (platform.promptText) {
+          const answer = await platform.promptText({
+            message: t("family.namePrompt"),
+            placeholder: t("family.namePlaceholder"),
+          });
+          name = cleanFamilyName(answer ?? "");
+          if (!name) return; // cancelled, or nothing typed
+        }
+        const path = await platform.saveFileDialog({
+          defaultName: name ? fileNameForFamily(name) : DEFAULT_FILE_NAME,
+        });
         if (!path) return;
-        const empty = emptyFamily();
+        const empty = emptyFamily(name);
         await platform.data.save(path, empty);
         await enter(path, empty);
       });
@@ -193,6 +231,20 @@ export function defineFamilyStore(
       const result = pendingMutation.then(run);
       pendingMutation = result;
       return result;
+    }
+
+    /** Asks for a new name and saves it; false when cancelled or unsupported. */
+    async function renameFamily(): Promise<boolean> {
+      const current = data.value;
+      if (!platform.promptText || !current) return false;
+      const answer = await platform.promptText({
+        message: t("family.renamePrompt"),
+        initial: familyTitle.value,
+        placeholder: t("family.namePlaceholder"),
+      });
+      const name = cleanFamilyName(answer ?? "");
+      if (!name) return false;
+      return mutate((now) => ({ ...now, name }));
     }
 
     /** Writes a snapshot elsewhere; the open file stays the open file. */
@@ -258,6 +310,9 @@ export function defineFamilyStore(
             "newer-version": t("import.error.newer-version"),
           });
           const current = data.value;
+          // A file without a name does not erase the name this family already has.
+          if (!parsed.data.name && current.name)
+            parsed.data = { ...parsed.data, name: current.name };
           let previous: string;
           try {
             previous = await platform.data.readRaw(openPath);
@@ -342,13 +397,17 @@ export function defineFamilyStore(
             return false;
           }
           const target = await platform.saveFileDialog({
-            defaultName: t("share.defaultName"),
+            defaultName: SHARE_FILE_NAME,
             extensions: ["html"],
           });
           if (!target) return false;
           if (!data.value) return false;
           const html = renderShareHtml(
-            buildShareModel(data.value, { title: base, lang: locale.value, today: new Date() }),
+            buildShareModel(data.value, {
+              title: data.value.name ?? base,
+              lang: locale.value,
+              today: new Date(),
+            }),
           );
           await platform.data.writeRaw(target, html);
           error.value = null;
@@ -495,6 +554,10 @@ export function defineFamilyStore(
       warnings,
       resumePath,
       resumeFileName,
+      resumeLabel,
+      familyTitle,
+      canRename,
+      renameFamily,
       gitStatus,
       syncing,
       refreshGitStatus,

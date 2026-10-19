@@ -19,7 +19,7 @@ export const fr: Record<MessageKey, string> = {
   "welcome.resumeLast": "Reprendre la dernière famille",
   "welcome.open": "Ouvrir un fichier famille…",
   "welcome.create": "Créer une nouvelle famille…",
-  "welcome.tagline": "Votre arbre généalogique, dans un seul fichier qui vous appartient.",
+  "welcome.tagline": "Votre arbre généalogique, vos données.",
 
   "summary.people.one": "{count} personne",
   "summary.people.other": "{count} personnes",
@@ -238,13 +238,17 @@ export const fr: Record<MessageKey, string> = {
   "header.share": "Partager en page web…",
   "share.needFamily":
     "Ajoutez au moins deux personnes et un lien de parenté pour partager la famille.",
+  "family.namePrompt": "Comment s'appelle cette famille ?",
+  "family.renamePrompt": "Renommer la famille",
+  "family.namePlaceholder": "ex. Famille Laurent",
+  "family.rename": "Renommer",
+  "prompt.ok": "OK",
   "share.back": "Retour à la liste",
   "share.footer": "Partagé depuis Genealogigi",
   "share.confirm":
     "Partager « {file} » en une page web ?\n\nLa page contient TOUTE la famille, personnes vivantes, notes et photos comprises. Toute personne qui reçoit le fichier peut tout lire.\n\nContinuer ?",
   "share.done":
     "Page web enregistrée : {path}. Envoyez ce fichier unique à vos proches : il s’ouvre dans n’importe quel navigateur, sans l’application.",
-  "share.defaultName": "page-famille.html",
   "tree.root": "Personne centrale",
   "tree.generations.all": "Toutes",
   "tree.stats.none": "Aucun proche connu pour l'instant.",

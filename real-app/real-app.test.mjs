@@ -62,18 +62,40 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
     assert.ok(out.trim().length > 0, "no window titled with the version");
   });
 
-  it("cancelling Create new writes nothing", async () => {
+  it("cancelling the name prompt writes nothing and never reaches the save dialog", async () => {
+    await app.answerDialogs({ save: [fam] });
+    await app.click("create");
+    await app.click("prompt-cancel");
+    await app.gone("prompt-dialog");
+    assert.equal(existsSync(fam), false);
+    assert.equal(await app.count("error"), 0);
+    // The scripted save answer was not consumed: the dialog was never opened.
+    assert.deepEqual(await app.eval("return window.__GENEALOGIGI_TEST_DIALOGS__.save"), [fam]);
+  });
+
+  it("the name is required: OK stays disabled until something is typed", async () => {
+    await app.click("create");
+    assert.equal(await app.disabled("prompt-ok"), true);
+    await app.type("prompt-input", "   ");
+    assert.equal(await app.disabled("prompt-ok"), true);
+    await app.click("prompt-cancel");
+    await app.gone("prompt-dialog");
+  });
+
+  it("cancelling the save dialog after naming the family writes nothing", async () => {
     await app.answerDialogs({ save: [null] });
     await app.click("create");
+    await app.type("prompt-input", "Lovelace family");
+    await app.click("prompt-ok");
     await app.wait("create");
     assert.equal(existsSync(fam), false);
     assert.equal(await app.count("error"), 0);
   });
 
-  it("Create new: loaded view, empty family, a real file with schemaVersion 1", async () => {
-    await app.answerDialogs({ save: [fam] });
-    await app.click("create");
-    await app.wait("loaded-path");
+  it("Create new: loaded view, titled with the name, a real file with schemaVersion 1", async () => {
+    await app.createFamily(fam, "Lovelace family");
+    assert.equal(await app.text("family-name"), "Lovelace family");
+    assert.equal(readJson(fam).name, "Lovelace family");
     assert.equal(await app.text("loaded-path"), fam);
     assert.match(await app.text("loaded-summary"), /0 people · 0 relationships/);
     assert.equal(readJson(fam).schemaVersion, 1);
@@ -99,7 +121,7 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
       "return document.querySelector('[data-testid=resume]')?.disabled === false",
       "Resume to be enabled",
     );
-    assert.match(await app.text("resume"), /family\.gigi/);
+    assert.equal(await app.text("resume"), "Resume Lovelace family"); // the name, read from the file
     await app.resume();
     await app.wait("loaded-path");
     assert.equal(await app.text("loaded-path"), fam);

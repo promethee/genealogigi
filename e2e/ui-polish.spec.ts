@@ -50,14 +50,12 @@ test("the language switch shows a flag and the language's own name", async ({ pa
 
 test("welcome screen: name, tagline and three icon buttons", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("tagline")).toHaveText(
-    "Your family tree, kept in one file you own.",
-  );
+  await expect(page.getByTestId("tagline")).toHaveText("Your family tree, your data.");
   for (const id of ["resume", "open", "create"]) {
     await expect(page.getByTestId(id).locator("svg")).toBeVisible();
   }
   await page.getByTestId("lang-fr").click();
-  await expect(page.getByTestId("tagline")).toContainText("Votre arbre généalogique");
+  await expect(page.getByTestId("tagline")).toHaveText("Votre arbre généalogique, vos données.");
 });
 
 test("rows have a View button with an eye icon; Edit and Delete are on the person card", async ({

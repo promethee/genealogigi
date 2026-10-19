@@ -1,4 +1,5 @@
 import { MAX_PHOTO_CHARS, MAX_PHOTOS_PER_PERSON } from "./photos.ts";
+import { cleanFamilyName } from "./familyName.ts";
 import { MAX_NOTES_CHARS } from "./people.ts";
 import { EVENT_KINDS } from "./events.ts";
 import {
@@ -172,8 +173,10 @@ export function parseFamilyFile(
   }
   warn("events", droppedEvents);
 
+  const name = typeof raw.name === "string" ? cleanFamilyName(raw.name) : "";
   const data: FamilyData = {
     schemaVersion: 1,
+    ...(name ? { name } : {}),
     people,
     relationships,
     ...(events.length > 0 ? { events } : {}),

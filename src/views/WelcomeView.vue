@@ -45,8 +45,8 @@ onMounted(() => family.init());
         >
           <AppIcon name="play" />
           {{
-            family.resumeFileName
-              ? t("welcome.resume", { file: family.resumeFileName })
+            family.resumeLabel
+              ? t("welcome.resume", { file: family.resumeLabel })
               : t("welcome.resumeLast")
           }}
         </button>

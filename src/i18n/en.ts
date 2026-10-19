@@ -17,7 +17,7 @@ export const en = {
   "welcome.resumeLast": "Resume last family",
   "welcome.open": "Open family file…",
   "welcome.create": "Create new family…",
-  "welcome.tagline": "Your family tree, kept in one file you own.",
+  "welcome.tagline": "Your family tree, your data.",
 
   "summary.people.one": "{count} person",
   "summary.people.other": "{count} people",
@@ -234,13 +234,17 @@ export const en = {
   "detail.notes": "Notes",
   "header.share": "Share as web page…",
   "share.needFamily": "Add at least two people and one relationship to share the family.",
+  "family.namePrompt": "What is this family called?",
+  "family.renamePrompt": "Rename the family",
+  "family.namePlaceholder": "e.g. Laurent family",
+  "family.rename": "Rename",
+  "prompt.ok": "OK",
   "share.back": "Back to the list",
   "share.footer": "Shared from Genealogigi",
   "share.confirm":
     "Share “{file}” as one web page?\n\nThe page contains EVERYONE in the family, living people, notes and photos included. Anyone who gets the file can read all of it.\n\nContinue?",
   "share.done":
     "Web page saved to {path}. Send this single file to your relatives: it opens in any web browser, no app needed.",
-  "share.defaultName": "family-page.html",
   "tree.root": "Focused person",
   "tree.generations.all": "All",
   "tree.stats.none": "No known relatives yet.",

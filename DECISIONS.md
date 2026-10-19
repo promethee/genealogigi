@@ -318,3 +318,7 @@ Decision: keep manual tests only for what automation cannot judge. Rows already 
 ## Share needs a family (2026-10-19)
 
 Decision: one pure rule, `canShareFamily` (>= 2 people and >= 1 relationship), drives both the disabled button (with a tooltip) and the store guard. The button stays visible so the feature is discoverable.
+
+## Family name (2026-10-19)
+
+Decision: the family name is asked at creation and lives in the file (`FamilyData.name?`), because several families are several files and the file name alone is a weak label. The prompt is an optional `PlatformAPI.promptText` (in-app dialog) so tests and shells without it keep working. Default file names for Export and Share are fixed English constants, not interface text.

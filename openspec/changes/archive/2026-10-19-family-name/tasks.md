@@ -1,0 +1,4 @@
+- [x] Name in the file, prompt on create, rename
+- [x] Resume label, page title, suggested file name
+- [x] Untranslated default export/share names
+- [x] Tests (unit, store, e2e, real-app)

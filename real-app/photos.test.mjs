@@ -74,9 +74,7 @@ let app;
 before(async () => {
   stop = await startStack();
   app = await launch();
-  await app.answerDialogs({ save: [fam] });
-  await app.click("create");
-  await app.wait("loaded-path");
+  await app.createFamily(fam, "Photos family");
   await app.click("add-person");
   await app.type("first-name", "Ada");
   await app.click("submit-person");

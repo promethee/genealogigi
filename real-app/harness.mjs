@@ -218,6 +218,15 @@ class Session {
     return this.cmd("POST", "/execute/sync", { script, args });
   }
 
+  /** Creates a family from the welcome screen: asks the name in the in-app prompt, then saves. */
+  async createFamily(path, name = "Test family") {
+    await this.answerDialogs({ save: [path] });
+    await this.click("create");
+    await this.type("prompt-input", name);
+    await this.click("prompt-ok");
+    await this.wait("loaded-path");
+  }
+
   /** Answers the next native file dialogs: paths (or null = cancel), consumed in order. */
   async answerDialogs({ open = [], save = [], images = [] }) {
     await this.eval(

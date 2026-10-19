@@ -5,9 +5,9 @@ is in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
 
 | Suite                           | Command             | Checks          | What it drives                                                                                             |
 | ------------------------------- | ------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| Unit (Vitest)                   | `npm test`          | 381             | The data layer, i18n parity, contrast, version consistency                                                 |
-| Browser end-to-end (Playwright) | `npm run e2e`       | 241             | The real UI and store in a browser against a fake shell, one spec per feature                              |
-| Real app (WebDriver)            | `npm run test:real` | 51 (50 as root) | The real Tauri window: real files, settings, restarts, image decoding, update check, OS theme and language |
+| Unit (Vitest)                   | `npm test`          | 396             | The data layer, i18n parity, contrast, version consistency                                                 |
+| Browser end-to-end (Playwright) | `npm run e2e`       | 249             | The real UI and store in a browser against a fake shell, one spec per feature                              |
+| Real app (WebDriver)            | `npm run test:real` | 54 (53 as root) | The real Tauri window: real files, settings, restarts, image decoding, update check, OS theme and language |
 | Rust                            | `cargo test --lib`  | 7               | Native commands                                                                                            |
 
 The lists below are generated from the test files; the counts drift, the files are the truth.
@@ -18,6 +18,7 @@ The lists below are generated from the test files; the counts drift, the files a
 
 - **people: saved file, restart, delete**
   - a new family shows the empty message
+  - Rename changes the title, is saved in the file, and shows on Resume after a restart
   - dates and a deceased status are written the way the file format says
   - a last name alone is enough; no name at all is refused
   - both people are still there after a real restart
@@ -67,8 +68,10 @@ The lists below are generated from the test files; the counts drift, the files a
 - **welcome screen (real file dialogs seam, real files and settings)**
   - first launch: welcome screen, Resume greyed out, no error
   - the window title carries the version
-  - cancelling Create new writes nothing
-  - Create new: loaded view, empty family, a real file with schemaVersion 1
+  - cancelling the name prompt writes nothing and never reaches the save dialog
+  - the name is required: OK stays disabled until something is typed
+  - cancelling the save dialog after naming the family writes nothing
+  - Create new: loaded view, titled with the name, a real file with schemaVersion 1
   - a person is saved to the real file, atomically
   - after a real restart, Resume offers the file and reopens it
   - Close family returns to the welcome screen, Resume still offered
@@ -174,6 +177,17 @@ The lists below are generated from the test files; the counts drift, the files a
 - cancelling the dialog shows nothing and writes nothing
 - refuses to copy onto the open file
 - the copy-saved message disappears after another change
+
+### `e2e/family-name.spec.ts` (8)
+
+- Create new asks for the family name before the save dialog
+- the name is required: OK is disabled when empty; Cancel and Escape create nothing
+- Enter in the field confirms
+- characters a file name cannot hold are replaced in the suggestion only
+- Rename changes the title and is remembered by Resume after a restart
+- a family without a name is titled by its file name
+- default export and share names are never translated; a shared page carries the family name
+- the prompt is in French in French
 
 ### `e2e/focused-person.spec.ts` (4)
 

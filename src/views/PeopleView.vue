@@ -95,6 +95,24 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
   <main class="h-full w-full overflow-auto">
     <div class="mx-auto flex max-w-[120rem] flex-col gap-5 px-6 py-6">
       <header class="card p-5">
+        <div class="mb-1 flex items-center gap-2">
+          <h1
+            data-testid="family-name"
+            class="min-w-0 truncate text-2xl font-semibold tracking-tight text-slate-900"
+          >
+            {{ family.familyTitle }}
+          </h1>
+          <button
+            v-if="family.canRename"
+            data-testid="rename-family"
+            class="btn btn-ghost btn-sm"
+            :aria-label="t('family.rename')"
+            :title="t('family.rename')"
+            @click="family.renameFamily()"
+          >
+            <AppIcon name="pencil" />
+          </button>
+        </div>
         <p data-testid="loaded-path" class="truncate font-mono text-xs text-slate-400">
           {{ family.filePath }}
         </p>

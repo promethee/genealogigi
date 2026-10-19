@@ -16,6 +16,7 @@ import { toGitSyncError, type GitSyncResult } from "./gitSync.ts";
 import type { GitStatus, PickedImage, PlatformAPI } from "./PlatformAPI.ts";
 
 import { askConfirm } from "../lib/confirmDialog.ts";
+import { askText } from "../lib/promptDialog.ts";
 
 const FAMILY_FILE_FILTER_NAME = "Genealogigi family";
 const OPEN_EXTENSIONS = ["gigi", "json"];
@@ -113,6 +114,7 @@ export function createPlatformAPI(): PlatformAPI {
       });
     },
     confirm: askConfirm,
+    promptText: askText,
     data: {
       exists: (filePath) => exists(filePath),
       load: (filePath) => loadFamilyData(tauriFileIO, filePath),

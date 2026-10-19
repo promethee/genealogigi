@@ -37,9 +37,7 @@ async function restartAndResume() {
 async function newFamily(name) {
   if ((await app.count("close-family")) > 0) await app.click("close-family");
   file = join(work, `${name}.gigi`);
-  await app.answerDialogs({ save: [file] });
-  await app.click("create");
-  await app.wait("loaded-path");
+  await app.createFamily(file, name);
 }
 
 async function addPerson(first, last = "", more = async () => {}) {
@@ -56,6 +54,29 @@ describe("people: saved file, restart, delete", () => {
   it("a new family shows the empty message", async () => {
     await newFamily("people");
     assert.match(await app.text("empty-state"), /No people yet/);
+  });
+
+  it("Rename changes the title, is saved in the file, and shows on Resume after a restart", async () => {
+    await app.click("rename-family");
+    assert.equal(
+      await app.eval("return document.querySelector('[data-testid=prompt-input]').value"),
+      "people",
+    );
+    await app.type("prompt-input", "Byron family");
+    await app.click("prompt-ok");
+    await app.until(
+      "return document.querySelector('[data-testid=family-name]')?.textContent.trim() === 'Byron family'",
+      "the new title",
+    );
+    assert.equal(readJson(file).name, "Byron family");
+    await app.quit();
+    app = await launch();
+    await app.until(
+      "return document.querySelector('[data-testid=resume]')?.textContent.trim() === 'Resume Byron family'",
+      "Resume to carry the name",
+    );
+    await app.resume();
+    await app.wait("loaded-path");
   });
 
   it("dates and a deceased status are written the way the file format says", async () => {

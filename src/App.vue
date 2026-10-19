@@ -3,6 +3,7 @@ import { onMounted } from "vue";
 import { TREE_ICON_PATH } from "./brand.ts";
 import AppIcon from "./components/AppIcon.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
+import PromptDialog from "./components/PromptDialog.vue";
 import LanguageSwitch from "./components/LanguageSwitch.vue";
 import ThemeSwitch from "./components/ThemeSwitch.vue";
 import UpdateBanner from "./components/UpdateBanner.vue";
@@ -63,6 +64,7 @@ onMounted(async () => {
     </header>
     <UpdateBanner />
     <ConfirmDialog />
+    <PromptDialog />
     <div class="min-h-0 flex-1">
       <PeopleView v-if="family.filePath" />
       <WelcomeView v-else />

@@ -225,6 +225,8 @@ export interface FamilyEvent {
 
 export interface FamilyData {
   schemaVersion: 1;
+  /** What this family is called, to tell several files apart. Optional: older files have none. */
+  name?: string;
   people: Person[];
   relationships: Relationship[];
   /** Optional so files saved before events existed load unchanged. */
