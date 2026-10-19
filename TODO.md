@@ -2,6 +2,44 @@
 
 Legend: [ ] not started · [~] in progress · [x] done
 
+## What's left (read this first)
+
+State on 2026-10-19: every planned v1 feature is built and archived; CI is green (main pipeline and the
+on-demand `Real app` workflow); the repo scan found no secrets or personal data (decided: author email
+and the LICENSE name stay, old `Claude-Session` commit links stay).
+
+### Before going public (owner)
+
+- [ ] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table (about 10 minutes).
+- [ ] Fix anything that run finds (tell the agent what failed).
+- [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
+- [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
+
+### Release 1.0.0 (waiting for the owner's go: "bump to 1.0.0")
+
+When the owner says so, the agent will:
+
+- [ ] Bump the version to 1.0.0 in `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` (and `Cargo.lock`); a unit test keeps the three equal.
+- [ ] Build the Windows installer (`npm run tauri:build`) and check it installs, starts, shows the tree icon and uninstalls (manual rows 7–9).
+- [ ] Tag `v1.0.0`, publish the GitHub release with the installer (unsigned: say so in the notes, Windows SmartScreen will warn).
+- [ ] Check the app's update banner stays quiet on 1.0.0 and the README/project-page Download buttons land on the release.
+
+### v2 backlog (not planned for 1.0.0)
+
+- [ ] Automatic backups on open (`<name>.backups/`, keep the last 10) with a Restore… list.
+- [ ] Family statistics dashboard (size, ages, names, patterns, upcoming birthdays, "to complete" list).
+- [ ] Git sync button back in the UI (the code, `PlatformAPI.git` and Rust commands exist; only the UI is parked).
+- [ ] Signed installers and an in-app updater (needs a code-signing certificate).
+- [ ] Photo crop/rotate; add photos from the person form.
+- [ ] Frameless/custom window chrome; confirm `npm run tauri:dev` HMR in the real window.
+
+### Decided against
+
+Undo/redo, print/PDF export, keyboard shortcuts (beyond the view toggle), a guided first run, a
+"how are we related" calculator, a person-card map, a fan chart.
+
+---
+
 ## Phase 1 — Ground work (complete entirely before any feature work)
 
 - [x] Initialize repo (npm project, package.json, Tauri `src-tauri/`)
@@ -26,14 +64,14 @@ Legend: [ ] not started · [~] in progress · [x] done
 
 ## Phase 2 — Features (one at a time, each with scoped e2e tests)
 
-- [~] Feature: define + persist a person record (names only) — OpenSpec change `person-record`; archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
-- [~] Feature: welcome screen (resume / open / create) — OpenSpec change `welcome-screen`; archived 2026-10-18; manual run of MANUAL_TESTS.md still unconfirmed
+- [x] Feature: define + persist a person record (names only) — OpenSpec change `person-record`; archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [x] Feature: welcome screen (resume / open / create) — OpenSpec change `welcome-screen`; archived 2026-10-18; manual run of MANUAL_TESTS.md still unconfirmed
 - [x] Feature: birth date, life status and death date (OpenSpec `person-dates`, archived 2026-10-18)
 - [x] Feature: several names per person with primary marker, kinds, dates, ordering (OpenSpec `person-names`, archived 2026-10-18)
 - [x] Feature: step, foster and guardian parents with status and dates (OpenSpec `temporary-parents`, archived 2026-10-18)
 - [x] Feature: edit relationships and partner dates (OpenSpec `edit-relationships`, archived 2026-10-18)
-- [~] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
-- [~] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [x] Feature: define + persist a relationship (parent-child permanent natures, partners) — OpenSpec change `relationship-record` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
+- [x] Feature: basic family tree visualization (pedigree) — OpenSpec change `pedigree-tree` archived 2026-10-18; real-app run 2026-10-18 passed (see checkpoint log); remaining manual steps listed there
 - [x] Feature: save a copy of the open family (OpenSpec `save-copy`, archived 2026-10-18) — covers the JSON-export need, since the file is already JSON
 - [x] Feature: data export (JSON) — closed: covered by save-copy, the family file is already JSON
 - [ ] (Add more features here as they're defined — keep one feature per checklist item, don't pre-plan too far ahead of current progress)
@@ -47,18 +85,18 @@ Do this once the app has enough working, screenshot/demo-worthy features to show
 - [x] Capture polished screenshots (fictional family; no GIFs) of the app in use (tree visualization is the priority visual — it's the most demo-able feature)
 - [x] Build the page (`docs/index.html`; neutral style, fountain-editor alignment not checked) (static, consistent with existing portfolio project pages — check fountain-editor's docs/index.html approach for style consistency)
 - [x] Add download/install instructions (build from source; releases page linked) (or a direct download link once releases exist)
-- [~] Link the GitHub Pages site: README done; still to do in GitHub: Settings → Pages → deploy from `main` `/docs`, then set the repo "Website" field
+- [x] Link the GitHub Pages site (Pages enabled on `main` `/docs`; repo Website field set by the owner)
 
 ## Testing policy
 
-Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features are done. Automated unit, e2e and lint/typecheck run on every feature.
+Automated on every feature: unit tests, browser e2e (fake shell), format, lint, type-check, build. The real-app suite (`npm run test:real`) drives the real window on Linux and runs on demand in CI. `MANUAL_TESTS.md` (22 rows) is only what a human must judge, run before each release.
 
 ## Backlog / later
 
 - [x] Descendant chart (OpenSpec `descendant-chart`, archived 2026-10-18)
 - [x] Hourglass chart (OpenSpec `hourglass-chart`, archived 2026-10-18)
 - [x] Fan chart — dropped 2026-10-18 (judged ugly; not how relationships should be shown). Code in git history, commit 2ab97d3
-- [x] Git-based sync (OpenSpec `git-sync`, archived 2026-10-18): manual button, runs the user's own git
+- [x] Git-based sync (OpenSpec `git-sync`, archived 2026-10-18): runs the user's own git; UI parked for v2 (see "What's left")
 - [ ] Verify `npm run tauri:dev` HMR in the real window
 - [ ] Frameless/custom window chrome (Tauri supports it; not needed now)
 
@@ -212,3 +250,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-19 (real-app CI green, 50 checks)** — The `Real app` workflow passes on GitHub with the full 50-check suite, including the two CI-only parts: the generated fr_FR locale (first launch in French) and the failing-save test run as a non-root user.
 
 - **2026-10-19 (manual tests pruned)** — `MANUAL_TESTS.md` cut from 253 rows to 22: only what a human must judge (native dialogs, window icon and installer, Windows settings and the real browser, visual quality in light and dark, French wording, the shared page and project page in real browsers). The old list is in git history; every removed row is covered by the 239 browser e2e tests or the 50 real-app checks.
+
+- **2026-10-19 (what's left)** — TODO.md now starts with "What's left": before going public (manual run, fixes, switch visibility), the 1.0.0 release (waits for the owner's go), the v2 backlog and what was decided against. Stale `[~]` statuses closed. The owner confirmed: author email stays, LICENSE name stays, old session links stay.
