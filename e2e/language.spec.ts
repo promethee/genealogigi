@@ -186,3 +186,11 @@ test("French says vivant(e) for a living person in the form only, not in the lis
   await page.getByTestId("view-person").click();
   await expect(page.getByTestId("detail-status")).toHaveCount(0);
 });
+
+test("French: the relationships panel is titled 'Lien / filiation'", async ({ page }) => {
+  await newFamily(page);
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("relationships-section").locator("h2")).toHaveText(
+    "Lien / filiation",
+  );
+});

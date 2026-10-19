@@ -117,7 +117,7 @@ export const fr: Record<MessageKey, string> = {
   "kind.other": "Autre",
   "kind.married": "Mariage",
 
-  "rel.title": "Relations",
+  "rel.title": "Lien / filiation",
   "rel.hint": "Ajoutez au moins deux personnes avant d’ajouter des relations.",
   "rel.type": "Type",
   "rel.parentOf": "Parent de",
