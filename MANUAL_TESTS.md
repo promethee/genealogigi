@@ -63,12 +63,13 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## Last run
 
-| Date       | Who   | Result                                                     | Notes                                                                                                                             |
-| ---------- | ----- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-10-19 | owner | Section 1 (native dialogs): OK                             | Done before the family-name change: re-check rows 1 and 4 (name prompt, default names). Other sections still to run.              |
-| 2026-10-19 | owner | Family creation (row 1): OK                                | Name prompt then save dialog checked after the family-name change. Row 4 (default names) still to re-check.                       |
-| 2026-10-19 | owner | Section 3 (Windows settings, real browser, rows 10–13): OK |                                                                                                                                   |
-| 2026-10-19 | owner | Section 4 (how it looks, rows 14–19, light and dark): OK   | Passed twice. Both before the "Everyone" default, the violet partner segment and the share confirm tone: re-check rows 16 and 18. |
-| 2026-10-19 | owner | Row 20 (whole app in French): OK                           |                                                                                                                                   |
-| 2026-10-19 | owner | Row 7 (maximized start): OK                                | App opens full screen.                                                                                                            |
-|            |       |                                                            |                                                                                                                                   |
+| Date       | Who   | Result                                                     | Notes                                                                                                                                    |
+| ---------- | ----- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-19 | owner | Section 1 (native dialogs): OK                             | Done before the family-name change: re-check rows 1 and 4 (name prompt, default names). Other sections still to run.                     |
+| 2026-10-19 | owner | Family creation (row 1): OK                                | Name prompt then save dialog checked after the family-name change. Row 4 (default names) still to re-check.                              |
+| 2026-10-19 | owner | Section 3 (Windows settings, real browser, rows 10–13): OK |                                                                                                                                          |
+| 2026-10-19 | owner | Section 4 (how it looks, rows 14–19, light and dark): OK   | Passed twice; rows 16 and 18 re-checked after the "Everyone" default, the violet partner segment and the share confirm tone (see below). |
+| 2026-10-19 | owner | Row 20 (whole app in French): OK                           |                                                                                                                                          |
+| 2026-10-19 | owner | Row 7 (maximized start): OK                                | App opens full screen.                                                                                                                   |
+| 2026-10-19 | owner | Rows 16, 18 and 21: OK                                     | After the Everyone default, violet partner segment, green share confirm, shared page Tree view (portraits, centred).                     |
+|            |       |                                                            |                                                                                                                                          |
