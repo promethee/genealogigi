@@ -29,7 +29,7 @@ after(async () => {
 async function restartAndResume() {
   await app.quit();
   app = await launch();
-  await app.click("resume");
+  await app.resume();
   await app.wait("loaded-path");
 }
 

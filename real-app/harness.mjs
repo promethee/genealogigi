@@ -28,7 +28,7 @@ export const openLog = join(dataHome, "opened-urls.log");
  * A fake GitHub "latest release" endpoint. `mode`: "none" (404, no release yet), "release"
  * (a release tagged `tag`) or "down" (the connection is cut, like no network).
  */
-export const mock = { mode: "none", tag: "v9.9.9", port: 5174 };
+export const mock = { mode: "none", tag: "v9.9.9", port: 5174, hits: 0 };
 
 /** The latest-release address the app is pointed to, and the page the release links to. */
 export const releasePage = () =>
@@ -42,6 +42,7 @@ function startMock() {
       res.statusCode = 204;
       return res.end();
     }
+    mock.hits += 1;
     if (mock.mode === "down") return req.socket.destroy();
     if (mock.mode === "none") {
       res.statusCode = 404;
@@ -146,6 +147,15 @@ class Session {
       value: this.css(testId),
     });
     return el[ELEMENT];
+  }
+
+  /** Clicks Resume once the remembered file has been found (it is read after the first screen). */
+  async resume() {
+    await this.until(
+      "return document.querySelector('[data-testid=resume]')?.disabled === false",
+      "Resume to be enabled",
+    );
+    await this.click("resume");
   }
 
   /** What the stubbed browser opener has been asked to open so far. */

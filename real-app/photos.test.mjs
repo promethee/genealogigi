@@ -192,7 +192,7 @@ describe("photos", () => {
   it("the photos are still there after a real restart", async () => {
     await app.quit();
     app = await launch();
-    await app.click("resume");
+    await app.resume();
     await app.wait("loaded-path");
     await app.click("tab-list").catch(() => {});
     await app.clickInRow("person-row", "Ada", "view-person");

@@ -94,9 +94,13 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
 
   it("after a real restart, Resume offers the file and reopens it", async () => {
     await restart();
-    assert.equal(await app.disabled("resume"), false);
+    // The remembered file is read asynchronously after the first screen appears.
+    await app.until(
+      "return document.querySelector('[data-testid=resume]')?.disabled === false",
+      "Resume to be enabled",
+    );
     assert.match(await app.text("resume"), /family\.gigi/);
-    await app.click("resume");
+    await app.resume();
     await app.wait("loaded-path");
     assert.equal(await app.text("loaded-path"), fam);
     await app.wait("person-row");
@@ -105,7 +109,10 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
   it("Close family returns to the welcome screen, Resume still offered", async () => {
     await app.click("close-family");
     await app.wait("create");
-    assert.equal(await app.disabled("resume"), false);
+    await app.until(
+      "return document.querySelector('[data-testid=resume]')?.disabled === false",
+      "Resume to be enabled",
+    );
   });
 
   it("cancelling Open shows no error", async () => {
@@ -241,7 +248,11 @@ describe("settings survive a real restart", () => {
       await new Promise((r) => setTimeout(r, 200));
     }
     await restart();
-    assert.equal(await app.attr("lang-fr", "aria-pressed"), "true");
+    // Settings are loaded asynchronously after the first screen appears.
+    await app.until(
+      "return document.querySelector('[data-testid=lang-fr]')?.getAttribute('aria-pressed') === 'true'",
+      "French to be selected",
+    );
     await app.until("return document.documentElement.classList.contains('dark')", "the dark theme");
     assert.match(readFileSync(settings, "utf8"), /"theme": "dark"/);
   });

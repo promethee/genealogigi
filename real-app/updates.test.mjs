@@ -13,6 +13,16 @@ const settings = join(dataHome, "data", "app.genealogigi", "settings.json");
 let stop;
 let app;
 
+/** Waits until the app has asked the fake endpoint (the startup check), then lets the answer land. */
+async function checked(hitsBefore) {
+  const end = Date.now() + 20_000;
+  while (mock.hits <= hitsBefore) {
+    assert.ok(Date.now() < end, "the startup check never asked for the latest release");
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  await new Promise((r) => setTimeout(r, 500));
+}
+
 /** Quits and starts the app again: the startup check runs against the current fake release. */
 async function relaunch() {
   await app.quit();
@@ -31,8 +41,9 @@ after(async () => {
 describe("update check", () => {
   it("no release published yet: no banner, no error", async () => {
     mock.mode = "none";
+    const hitsBefore = mock.hits;
     app = await launch();
-    await new Promise((r) => setTimeout(r, 2000)); // give the startup check time to finish
+    await checked(hitsBefore);
     assert.equal(await app.count("update-banner"), 0);
     assert.equal(await app.count("error"), 0);
   });
@@ -79,13 +90,14 @@ describe("update check", () => {
   it("Dismiss hides the banner, and it stays hidden after a restart", async () => {
     await app.click("update-dismiss");
     await app.gone("update-banner");
+    const hitsBefore = mock.hits;
     const end = Date.now() + 10_000;
     while (!(existsSync(settings) && /dismissedUpdate/.test(readFileSync(settings, "utf8")))) {
       assert.ok(Date.now() < end, "the dismissal was not saved");
       await new Promise((r) => setTimeout(r, 200));
     }
     await relaunch();
-    await new Promise((r) => setTimeout(r, 2000)); // give the startup check time to finish
+    await checked(hitsBefore);
     assert.equal(await app.count("update-banner"), 0);
   });
 
