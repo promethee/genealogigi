@@ -1,0 +1,2 @@
+- [x] Theme and language checks
+- [x] CI locale, docs

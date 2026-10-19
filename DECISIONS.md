@@ -306,3 +306,7 @@ Decision: the image picker has the same dev-only seam as the file dialogs (`__GE
 ## Real-app update check (2026-10-19)
 
 Decision: in dev only, the update check can be pointed at a local fake endpoint (`VITE_GENEALOGIGI_RELEASES_URL` on the dev server) and the browser opener is replaced by a PATH stub that logs addresses. The production build has neither: the address stays the public GitHub API and links open in the system browser.
+
+## Real-app OS settings (2026-10-19)
+
+Decision: the OS dark mode and language are exercised with real settings (GTK_THEME and a real fr_FR locale), one stack per file because the environment is fixed when the driver starts. The window icon stays manual: it cannot be observed on Linux, and Windows is the target.

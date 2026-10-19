@@ -202,7 +202,7 @@ Start from an open family with at least one person.
 
 ## Language (English / French)
 
-🤖 Rows 8 and 10 are automated (language kept across restarts; no French text in the file).
+🤖 Rows 8, 9 and 10 are automated (language kept across restarts; first launch on a French system starts in French and a saved choice wins; no French text in the file).
 
 | #   | Action                                                                    | Expected                                                                        |
 | --- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -358,6 +358,8 @@ Start from an open family with at least one person.
 
 ## Light / dark theme
 
+🤖 Rows 1, 2 and 5 are automated on Linux with a real dark GTK setting (first launch follows the system and saves nothing; the toggle saves a choice; the choice wins after a restart). By hand: rows 3, 4, 6, 7 (every surface in dark, native selects, following a live OS change, colours of panels) and the Windows dark-mode setting itself.
+
 | #   | Action                                                                                                      | Expected                                                                   |
 | --- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | 1   | Delete the app's saved settings, set Windows to dark mode, launch                                           | The app starts dark. With Windows in light mode it starts light.           |
@@ -470,7 +472,7 @@ Start from an open family with at least one person.
 
 ## Window icon
 
-Not automatable on the virtual display (no window manager); check by hand after a rebuild.
+Not automatable: on Linux the window icon is not exposed even under a window manager, and Windows is the real target. Check by hand after a rebuild.
 
 | #   | Action                                                        | Expected                                                  |
 | --- | ------------------------------------------------------------- | --------------------------------------------------------- |

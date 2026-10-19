@@ -70,6 +70,7 @@ One-time setup (Debian/Ubuntu):
 ```sh
 sudo apt-get install -y xvfb xdotool webkit2gtk-driver   # plus the Tauri system packages
 cargo install tauri-driver --locked
+sudo locale-gen fr_FR.UTF-8                              # the French-system check (skipped without it)
 cargo build --manifest-path src-tauri/Cargo.toml          # debug binary used by the tests
 npm run test:real                                          # ~30 s
 ```

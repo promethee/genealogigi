@@ -84,7 +84,7 @@ function run(command, args, env = {}) {
 }
 
 /** Starts the dev web server and tauri-driver; returns a function that stops them. */
-export async function startStack() {
+export async function startStack(extraEnv = {}) {
   if (!existsSync(APP)) {
     throw new Error(
       `App binary not found: ${APP}. Build it first: cargo build --manifest-path src-tauri/Cargo.toml`,
@@ -95,6 +95,7 @@ export async function startStack() {
     XDG_CONFIG_HOME: join(dataHome, "config"),
     XDG_CACHE_HOME: join(dataHome, "cache"),
     WEBKIT_DISABLE_COMPOSITING_MODE: "1",
+    ...extraEnv,
   };
   const mockServer = await startMock();
   // A stand-in for the system browser: record what the app asks to open instead of opening it.
