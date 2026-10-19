@@ -5,7 +5,11 @@
 
 #### Scenario: Everyone
 - **WHEN** the Tree tab shows "Everyone"
-- **THEN** one box per person, no root styling, root/generations/siblings controls hidden
+- **THEN** there is one box per person, no root styling, and the root, generations and siblings controls are hidden
 
 ### Requirement: Shared page tree
 The exported page SHALL contain a Tree view with every person, working offline.
+
+#### Scenario: Open a person from the tree
+- **WHEN** a box in the shared page's Tree view is clicked
+- **THEN** that person's card opens
