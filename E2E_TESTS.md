@@ -5,7 +5,7 @@ is in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
 
 | Suite                           | Command             | Checks          | What it drives                                                                                             |
 | ------------------------------- | ------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| Unit (Vitest)                   | `npm test`          | 379             | The data layer, i18n parity, contrast, version consistency                                                 |
+| Unit (Vitest)                   | `npm test`          | 381             | The data layer, i18n parity, contrast, version consistency                                                 |
 | Browser end-to-end (Playwright) | `npm run e2e`       | 241             | The real UI and store in a browser against a fake shell, one spec per feature                              |
 | Real app (WebDriver)            | `npm run test:real` | 51 (50 as root) | The real Tauri window: real files, settings, restarts, image decoding, update check, OS theme and language |
 | Rust                            | `cargo test --lib`  | 7               | Native commands                                                                                            |
