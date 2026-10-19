@@ -1,0 +1,1 @@
+- [x] Remove the line and strings; e2e in tree-filters.spec.ts

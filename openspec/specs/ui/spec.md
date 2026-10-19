@@ -67,3 +67,10 @@ The shared page's Tree view SHALL show each person's first photo in their box an
 #### Scenario: Person with a photo
 - **WHEN** a person has a photo
 - **THEN** it replaces their initials in the tree box
+
+### Requirement: No filter explanation line
+The tree filter panel SHALL not show an explanatory title.
+
+#### Scenario: Panel open
+- **WHEN** the filters are open
+- **THEN** only the filter controls are shown

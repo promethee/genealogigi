@@ -219,7 +219,6 @@ export const fr: Record<MessageKey, string> = {
   "search.more.one": "{count} autre résultat, continuez à taper",
   "search.more.other": "{count} autres résultats, continuez à taper",
   "filter.toggle": "Filtres",
-  "filter.title": "Estomper les personnes qui ne correspondent pas",
   "filter.status": "Statut",
   "filter.any": "Tous",
   "filter.living": "Vivant(e)s",

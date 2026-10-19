@@ -349,7 +349,6 @@ function fullName(id: PersonId): string {
           >
             {{ t("filter.reset") }}
           </button>
-          <span v-if="filtersOpen" class="text-slate-500">{{ t("filter.title") }}</span>
         </div>
         <div v-if="filtersOpen" class="mt-2 flex flex-wrap items-end gap-3">
           <label class="label">

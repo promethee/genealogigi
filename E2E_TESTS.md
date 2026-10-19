@@ -406,13 +406,14 @@ The lists below are generated from the test files; the counts drift, the files a
 - opens on the tree when relationships exist, on the people list otherwise
 - a family without relationships resumes on the people list
 
-### `e2e/tree-filters.spec.ts` (6)
+### `e2e/tree-filters.spec.ts` (7)
 
 - filters are collapsed by default and stay open while one is on
 - nothing is faded until a filter is chosen
 - Living fades the deceased, and keeps them clickable
 - filters add up: place, month and last name
 - links to faded people fade, and Reset brings everything back
+- the filter panel has no explanatory title: the fading speaks for itself
 - filters are offered in French with month names
 
 ### `e2e/tree-siblings.spec.ts` (8)

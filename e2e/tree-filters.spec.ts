@@ -146,10 +146,18 @@ test("links to faded people fade, and Reset brings everything back", async ({ pa
   await expect(page.getByTestId("filter-reset")).toHaveCount(0);
 });
 
+test("the filter panel has no explanatory title: the fading speaks for itself", async ({
+  page,
+}) => {
+  await build(page);
+  await expect(page.getByTestId("filters")).not.toContainText("Fade people");
+});
+
 test("filters are offered in French with month names", async ({ page }) => {
   await build(page);
   await page.getByTestId("lang-fr").click();
-  await expect(page.getByTestId("filters")).toContainText("Estomper les personnes");
+  await expect(page.getByTestId("filters")).toContainText("Nom de famille");
+  await expect(page.getByTestId("filters")).not.toContainText("Estomper");
   await expect(page.getByTestId("filter-birth-month")).toContainText("mars");
   await page.getByTestId("filter-status").selectOption("living");
   await expect(page.getByTestId("filter-count")).toHaveText("2 personnes correspondent");

@@ -216,7 +216,6 @@ export const en = {
   "search.more.one": "{count} more result, keep typing",
   "search.more.other": "{count} more results, keep typing",
   "filter.toggle": "Filters",
-  "filter.title": "Fade people who do not match",
   "filter.status": "Life status",
   "filter.any": "Any",
   "filter.living": "Living",

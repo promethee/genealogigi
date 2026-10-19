@@ -268,3 +268,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (no self-link, search lines)** — A person cannot be their own parent or both parents (choosing them again empties the other field). The search box also narrows the relationship lines. French sibling checkbox pluralized. Archived `no-self-link-and-search-lines`.
 
 - **2026-10-19 (tree default)** — Tree tab opens on Everyone. Shared page tree: portraits, centred. Archived `tree-default-everyone`.
+
+- **2026-10-19 (filter title)** — Removed the "Fade people who do not match" line from the tree filters. Archived `remove-filter-title`.
