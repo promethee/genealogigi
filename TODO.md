@@ -274,3 +274,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (screenshots)** — Retook the six README/project-page screenshots with the current UI (whole-family tree, violet partner links, new fictional family of 11); `scripts/screenshots/take.mjs` makes them repeatable.
 
 - **2026-10-19 (savedWith)** — Family files record the app version that last wrote them (`savedWith`). Archived `saved-with-version`. Also fixed lint for `scripts/**/*.mjs` (the screenshot script had turned CI lint red).
+
+- **2026-10-19 (project page language)** — The project page opens in French or English by itself (browser language; `?lang=` and footer links override), with French screenshots. Archived `project-page-language`.

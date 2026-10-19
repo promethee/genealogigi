@@ -365,6 +365,13 @@ The lists below are generated from the test files; the counts drift, the files a
 - names with dates, children and partnerships appear on the timeline
 - French timeline and form
 
+### `e2e/project-page.spec.ts` (4)
+
+- the page is in French without any click
+- the page stays in English
+- falls back to English
+- ?lang=en wins over the browser, and the footer links switch and are remembered
+
 ### `e2e/relationship-record.spec.ts` (6)
 
 - add controls are disabled until two people exist

@@ -3,13 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Genealogigi — your family's story, your data</title>
+    <title data-i18n="title">Genealogigi — your family's story, your data</title>
     <meta
       name="description"
+      id="meta-desc"
       content="Genealogigi is a free, simple app to build your family tree on your own computer. No account, no cloud: your family stays yours."
     />
-    <meta property="og:title" content="Genealogigi — your family's story, your data" />
     <meta
+      id="og-title"
+      property="og:title"
+      content="Genealogigi — your family's story, your data"
+    />
+    <meta
+      id="og-desc"
       property="og:description"
       content="A free family tree for your computer. No account, no cloud, no subscription."
     />
@@ -474,6 +480,10 @@
         margin-right: auto;
         max-width: 18ch;
       }
+      .langs a[aria-current="true"] {
+        color: var(--fg);
+        font-weight: 700;
+      }
       footer {
         margin-top: 4rem;
         padding: 2rem 0 3rem;
@@ -532,14 +542,18 @@
           Genealogigi
         </a>
         <div class="links">
-          <a href="https://github.com/promethee/genealogigi/releases/latest">Download</a>
+          <a
+            href="https://github.com/promethee/genealogigi/releases/latest"
+            data-i18n="nav_download"
+            >Download</a
+          >
         </div>
       </nav>
 
       <header class="hero" id="top">
-        <span class="pill"><b>Free forever</b> · for Windows</span>
-        <h1>Your family's story. <span class="grad">Your data.</span></h1>
-        <p class="lead">
+        <span class="pill" data-i18n-html="pill"><b>Free forever</b> · for Windows</span>
+        <h1 data-i18n-html="h1">Your family's story. <span class="grad">Your data.</span></h1>
+        <p class="lead" data-i18n="lead">
           A free family tree for your computer. No account, no cloud, no subscription.
         </p>
         <div class="cta">
@@ -560,25 +574,29 @@
             >
               <path d="M12 3v12M7 10l5 5 5-5M4 20h16" />
             </svg>
-            Download for Windows
+            <span data-i18n="dl_win">Download for Windows</span>
           </a>
         </div>
-        <p class="fine">Free · nothing to sign up for</p>
+        <p class="fine" data-i18n="fine">Free · nothing to sign up for</p>
 
         <div class="frame">
           <div class="bar"><i></i><i></i><i></i></div>
           <img
             class="light-only"
             src="screenshots/tree-light.jpg"
+            data-src-fr="screenshots/tree-light-fr.jpg"
             width="2880"
             height="1800"
+            data-i18n-alt="alt_tree"
             alt="The whole family tree in Genealogigi: grandparents at the top down to a great-grandchild, couples joined by a violet line."
           />
           <img
             class="dark-only"
             src="screenshots/tree-dark.jpg"
+            data-src-fr="screenshots/tree-dark-fr.jpg"
             width="2880"
             height="1800"
+            data-i18n-alt="alt_tree_dark"
             alt="The same family tree in the dark theme."
           />
         </div>
@@ -588,21 +606,23 @@
         <div class="trio">
           <div class="tile">
             <div class="ico" aria-hidden="true">🌱</div>
-            <h3>Simple</h3>
-            <p>
+            <h3 data-i18n="t1_h">Simple</h3>
+            <p data-i18n="t1_p">
               Add yourself, then your parents, then keep going. Everything is a plain form with
               clear words. No manual needed.
             </p>
           </div>
           <div class="tile">
             <div class="ico" aria-hidden="true">🎁</div>
-            <h3>Free</h3>
-            <p>No trial, no subscription, no ads. Genealogigi is free today and stays free.</p>
+            <h3 data-i18n="t2_h">Free</h3>
+            <p data-i18n="t2_p">
+              No trial, no subscription, no ads. Genealogigi is free today and stays free.
+            </p>
           </div>
           <div class="tile">
             <div class="ico" aria-hidden="true">🔒</div>
-            <h3>Yours</h3>
-            <p>
+            <h3 data-i18n="t3_h">Yours</h3>
+            <p data-i18n="t3_p">
               Your family stays on your computer, in a file you can copy like a photo. No account,
               nothing uploaded, nobody watching.
             </p>
@@ -613,32 +633,42 @@
       <section>
         <div class="split flip">
           <div class="copy">
-            <div class="eyebrow">Beyond names and dates</div>
-            <h2>Every person has a story.</h2>
-            <p class="sub">
+            <div class="eyebrow" data-i18n="eyebrow">Beyond names and dates</div>
+            <h2 data-i18n="story_h">Every person has a story.</h2>
+            <p class="sub" data-i18n="story_sub">
               Open anyone to see their whole life on one page, in order, with their close family
               around them.
             </p>
             <ul class="ticks">
-              <li><b>Photos</b> for everyone, or neat initials until you find one.</li>
-              <li><b>A timeline</b> of births, marriages, children and new names.</li>
-              <li><b>Add what you know.</b> A year is enough; fill in the rest later.</li>
+              <li data-i18n-html="li1">
+                <b>Photos</b> for everyone, or neat initials until you find one.
+              </li>
+              <li data-i18n-html="li2">
+                <b>A timeline</b> of births, marriages, children and new names.
+              </li>
+              <li data-i18n-html="li3">
+                <b>Add what you know.</b> A year is enough; fill in the rest later.
+              </li>
             </ul>
           </div>
           <div class="shot">
             <img
               class="light-only"
               src="screenshots/card-light.jpg"
+              data-src-fr="screenshots/card-light-fr.jpg"
               width="1372"
               height="1604"
+              data-i18n-alt="alt_card"
               alt="A person's page with their names, a small family tree and a timeline of their life."
               loading="lazy"
             />
             <img
               class="dark-only"
               src="screenshots/card-dark.jpg"
+              data-src-fr="screenshots/card-dark-fr.jpg"
               width="1372"
               height="1604"
+              data-i18n-alt="alt_card_dark"
               alt="A person's page in the dark theme."
               loading="lazy"
             />
@@ -647,22 +677,154 @@
       </section>
 
       <div class="final">
-        <h2>Your family tree starts here.</h2>
+        <h2 data-i18n="final_h">Your family tree starts here.</h2>
         <div class="cta">
           <a class="btn primary big" href="https://github.com/promethee/genealogigi/releases/latest"
-            >Download Genealogigi</a
+            ><span data-i18n="final_btn">Download Genealogigi</span></a
           >
         </div>
       </div>
 
       <footer>
-        <span>English &amp; Français</span>
+        <span class="langs"
+          ><a href="?lang=en" data-lang="en">English</a> ·
+          <a href="?lang=fr" data-lang="fr">Français</a></span
+        >
         <span>
-          <a href="https://github.com/promethee/genealogigi/releases">All versions</a> ·
-          <a href="https://github.com/promethee/genealogigi">Open source</a> ·
-          <a href="https://github.com/promethee/genealogigi/issues">Feedback</a>
+          <a href="https://github.com/promethee/genealogigi/releases" data-i18n="f_all"
+            >All versions</a
+          >
+          · <a href="https://github.com/promethee/genealogigi" data-i18n="f_src">Open source</a> ·
+          <a href="https://github.com/promethee/genealogigi/issues" data-i18n="f_fb">Feedback</a>
         </span>
       </footer>
     </div>
+    <script>
+      // The page is written in English; French replaces the texts when the browser prefers it.
+      // Choice order: ?lang=fr|en, then the last manual choice, then the browser language.
+      (function () {
+        var FR = {
+          title: "Genealogigi — l’histoire de votre famille, vos données",
+          desc: "Genealogigi est une application gratuite et simple pour construire votre arbre généalogique sur votre ordinateur. Pas de compte, pas de cloud : votre famille vous appartient.",
+          og_desc:
+            "Un arbre généalogique gratuit pour votre ordinateur. Pas de compte, pas de cloud, pas d’abonnement.",
+          nav_download: "Télécharger",
+          pill: "<b>Gratuit pour toujours</b> · pour Windows",
+          h1: 'L’histoire de votre famille. <span class="grad">Vos données.</span>',
+          lead: "Un arbre généalogique gratuit pour votre ordinateur. Pas de compte, pas de cloud, pas d’abonnement.",
+          dl_win: "Télécharger pour Windows",
+          fine: "Gratuit · rien à créer, aucune inscription",
+          t1_h: "Simple",
+          t1_p: "Ajoutez-vous, puis vos parents, et continuez ainsi. Tout se fait avec de simples formulaires, en mots clairs. Aucun mode d’emploi nécessaire.",
+          t2_h: "Gratuit",
+          t2_p: "Pas d’essai, pas d’abonnement, pas de publicité. Genealogigi est gratuit aujourd’hui et le restera.",
+          t3_h: "À vous",
+          t3_p: "Votre famille reste sur votre ordinateur, dans un fichier que vous copiez comme une photo. Pas de compte, rien n’est envoyé, personne ne vous regarde.",
+          eyebrow: "Au-delà des noms et des dates",
+          story_h: "Chaque personne a son histoire.",
+          story_sub:
+            "Ouvrez n’importe qui pour voir toute sa vie sur une page, dans l’ordre, entourée de ses proches.",
+          li1: "<b>Des photos</b> pour chacun, ou de jolies initiales en attendant d’en trouver une.",
+          li2: "<b>Une chronologie</b> des naissances, mariages, enfants et changements de nom.",
+          li3: "<b>Ajoutez ce que vous savez.</b> Une année suffit ; complétez le reste plus tard.",
+          final_h: "Votre arbre généalogique commence ici.",
+          final_btn: "Télécharger Genealogigi",
+          f_all: "Toutes les versions",
+          f_src: "Code source ouvert",
+          f_fb: "Vos remarques",
+          alt_tree:
+            "L’arbre de toute la famille dans Genealogigi : des grands-parents en haut jusqu’à une arrière-petite-fille, les couples reliés par un trait violet.",
+          alt_tree_dark: "Le même arbre généalogique en thème sombre.",
+          alt_card:
+            "La page d’une personne avec ses noms, un petit arbre familial et la chronologie de sa vie.",
+          alt_card_dark: "La page d’une personne en thème sombre.",
+        };
+        var EN = {}; // the English texts, read from the page itself the first time
+        var nodes = document.querySelectorAll("[data-i18n],[data-i18n-html],[data-i18n-alt]");
+        nodes.forEach(function (el) {
+          var key =
+            el.getAttribute("data-i18n") ||
+            el.getAttribute("data-i18n-html") ||
+            el.getAttribute("data-i18n-alt");
+          EN[key] = el.hasAttribute("data-i18n-alt")
+            ? el.getAttribute("alt")
+            : el.hasAttribute("data-i18n-html")
+              ? el.innerHTML
+              : el.textContent;
+        });
+        var head = {
+          title: document.title,
+          desc: document.getElementById("meta-desc").getAttribute("content"),
+          og_desc: document.getElementById("og-desc").getAttribute("content"),
+        };
+        function pick() {
+          var asked = null;
+          try {
+            asked = new URLSearchParams(location.search).get("lang");
+          } catch (e) {}
+          if (asked === "fr" || asked === "en") {
+            try {
+              localStorage.setItem("gigi-lang", asked);
+            } catch (e) {}
+            return asked;
+          }
+          try {
+            var saved = localStorage.getItem("gigi-lang");
+            if (saved === "fr" || saved === "en") return saved;
+          } catch (e) {}
+          var prefs =
+            navigator.languages && navigator.languages.length
+              ? navigator.languages
+              : [navigator.language || "en"];
+          for (var i = 0; i < prefs.length; i++) {
+            var code = String(prefs[i]).slice(0, 2).toLowerCase();
+            if (code === "fr" || code === "en") return code;
+          }
+          return "en";
+        }
+        function apply(lang) {
+          var T = lang === "fr" ? FR : EN;
+          var H = lang === "fr" ? { title: FR.title, desc: FR.desc, og_desc: FR.og_desc } : head;
+          document.documentElement.lang = lang;
+          document.title = H.title;
+          document.getElementById("og-title").setAttribute("content", H.title);
+          document.getElementById("meta-desc").setAttribute("content", H.desc);
+          document.getElementById("og-desc").setAttribute("content", H.og_desc);
+          nodes.forEach(function (el) {
+            if (el.hasAttribute("data-i18n-alt"))
+              el.setAttribute("alt", T[el.getAttribute("data-i18n-alt")]);
+            else if (el.hasAttribute("data-i18n-html"))
+              el.innerHTML = T[el.getAttribute("data-i18n-html")];
+            else el.textContent = T[el.getAttribute("data-i18n")];
+          });
+          // The screenshots show the app in the same language.
+          document.querySelectorAll("img[data-src-fr]").forEach(function (img) {
+            if (!img.hasAttribute("data-src-en"))
+              img.setAttribute("data-src-en", img.getAttribute("src"));
+            img.setAttribute(
+              "src",
+              img.getAttribute(lang === "fr" ? "data-src-fr" : "data-src-en"),
+            );
+          });
+          document.querySelectorAll("[data-lang]").forEach(function (a) {
+            a.setAttribute("aria-current", a.getAttribute("data-lang") === lang ? "true" : "false");
+          });
+        }
+        document.querySelectorAll("[data-lang]").forEach(function (a) {
+          a.addEventListener("click", function (e) {
+            e.preventDefault();
+            var lang = a.getAttribute("data-lang");
+            try {
+              localStorage.setItem("gigi-lang", lang);
+            } catch (err) {}
+            try {
+              history.replaceState(null, "", "?lang=" + lang); // a reload keeps the choice
+            } catch (err) {}
+            apply(lang);
+          });
+        });
+        apply(pick());
+      })();
+    </script>
   </body>
 </html>

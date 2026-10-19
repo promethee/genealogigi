@@ -1,0 +1,1 @@
+- [x] Dictionary, auto language, footer links, French screenshots, e2e/project-page.spec.ts

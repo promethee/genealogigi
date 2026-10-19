@@ -342,3 +342,7 @@ The Tree tab defaults to the whole-family view; the shared page tree shows portr
 ## App version in the family file (2026-10-19)
 
 Every write adds `savedWith` (informational, no schema bump). See `openspec/changes/saved-with-version`.
+
+## Project page language (2026-10-19)
+
+One static page, English in the HTML and a French dictionary swapped by a small script from the browser language (`?lang=` and footer links override); French screenshots from `scripts/screenshots/take.mjs`. See `openspec/changes/project-page-language`.
