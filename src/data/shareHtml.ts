@@ -18,8 +18,8 @@ const escapeHtml = (text: string): string =>
     .replaceAll('"', "&quot;");
 
 const STYLE = `
-:root{--bg:#f7f8fb;--surface:#fff;--fg:#0f172a;--muted:#55627a;--line:#e3e7ef;--accent:#047857;--hover:#eef2f7;--edge:#94a3b8;--partner:#e11d48}
-@media (prefers-color-scheme:dark){:root{--bg:#070d19;--surface:#0e1627;--fg:#eef2f9;--muted:#98a4bb;--line:#1c2740;--accent:#34d399;--hover:#16213a;--edge:#64748b;--partner:#fb7185}}
+:root{--bg:#f7f8fb;--surface:#fff;--fg:#0f172a;--muted:#55627a;--line:#e3e7ef;--accent:#047857;--hover:#eef2f7;--edge:#94a3b8;--partner:#8b5cf6}
+@media (prefers-color-scheme:dark){:root{--bg:#070d19;--surface:#0e1627;--fg:#eef2f9;--muted:#98a4bb;--line:#1c2740;--accent:#34d399;--hover:#16213a;--edge:#64748b;--partner:#a78bfa}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 header{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;padding:.8rem 1rem;background:var(--surface);border-bottom:1px solid var(--line)}
