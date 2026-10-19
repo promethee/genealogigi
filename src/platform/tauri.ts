@@ -54,9 +54,29 @@ const tauriFileIO: FileIO = {
   rename: (from, to) => rename(from, to),
 };
 
+declare global {
+  interface Window {
+    /**
+     * Dev-only seam for the real-app test suite: answers for the native file dialogs, consumed
+     * one per call (null = cancelled). Everything after the dialog (files, settings store,
+     * restarts) is real. Never read in a production build.
+     */
+    __GENEALOGIGI_TEST_DIALOGS__?: { open?: (string | null)[]; save?: (string | null)[] };
+  }
+}
+
+/** The scripted answer for a dialog, when the dev-only seam is in use; undefined otherwise. */
+function scripted(kind: "open" | "save"): string | null | undefined {
+  if (!import.meta.env.DEV) return undefined;
+  const queue = window.__GENEALOGIGI_TEST_DIALOGS__?.[kind];
+  return queue && queue.length > 0 ? queue.shift() : undefined;
+}
+
 export function createPlatformAPI(): PlatformAPI {
   return {
     openFileDialog: async (options) => {
+      const answer = scripted("open");
+      if (answer !== undefined) return answer;
       const selected = await open({
         multiple: false,
         directory: false,
@@ -66,8 +86,10 @@ export function createPlatformAPI(): PlatformAPI {
       });
       return selected ?? null;
     },
-    saveFileDialog: (options) =>
-      save({
+    saveFileDialog: async (options) => {
+      const answer = scripted("save");
+      if (answer !== undefined) return answer;
+      return save({
         defaultPath: options?.defaultName,
         filters: [
           {
@@ -75,7 +97,8 @@ export function createPlatformAPI(): PlatformAPI {
             extensions: options?.extensions ?? SAVE_EXTENSIONS,
           },
         ],
-      }),
+      });
+    },
     confirm: askConfirm,
     data: {
       exists: (filePath) => exists(filePath),

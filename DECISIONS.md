@@ -294,3 +294,7 @@ Decision: sharing = one self-contained HTML file built from a pre-computed, alre
 ## Git sync parked (2026-10-18)
 
 Decision: the Sync with Git button is hidden for v1 (v2 feature). The store action, `PlatformAPI.git` and the Rust commands stay in place and tested by unit and cargo tests; only the UI and its e2e spec were removed.
+
+## Real-app tests (2026-10-19)
+
+Decision: automate the real-shell manual tests with WebDriver (tauri-driver) on Linux + Xvfb, with a dev-only seam answering the native file dialogs. Native dialog appearance and the window icon stay manual. CI runs it on demand and weekly, not on every push.

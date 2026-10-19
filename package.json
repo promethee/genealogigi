@@ -14,7 +14,8 @@
     "fmt:check": "prettier --check .",
     "check": "vue-tsc --noEmit",
     "test": "vitest run",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "test:real": "xvfb-run -a node --test --test-concurrency=1 --test-timeout=240000 real-app/*.test.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.4",

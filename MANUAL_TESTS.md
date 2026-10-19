@@ -3,9 +3,13 @@
 Run with `npm run tauri:dev`. These cover what automated tests cannot: the real
 native dialogs, real files, and the Tauri settings store.
 
+> 🤖 **Automated:** the rows marked 🤖 below run by themselves against the real app with `npm run test:real` (see [DEVELOPMENT.md](./DEVELOPMENT.md#real-app-tests)). Native file dialogs are answered by a scripted seam, so how the OS dialogs look and behave is still yours to check once per release.
+
 > **Editing a person:** click **View** on the person's row (or their name) to open the card, then **Edit** on the card. **Delete** is only on the card too.
 
 ## Welcome screen
+
+🤖 Rows 1–9 are automated (real files, real settings, real restarts). By hand, once: the native dialog look, and the "replace existing file" prompt of the save dialog.
 
 | #   | Action                                                                  | Expected                                                                                            |
 | --- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
@@ -71,6 +75,8 @@ Use a family with at least: Me, Mum, Dad, Gran (Mum's parent) and GreatGran
 | 9   | Resize the window narrower than the chart                          | The chart scrolls inside its frame. The page layout does not break.                       |
 
 ## Export, import and close
+
+🤖 Rows 2, 4, 6–10 are automated (real export file, dated and hashed backup, settings after restart). By hand: rows 1, 3 and 5 (cancel flows and the confirmation wording on real dialogs).
 
 Family files use the `.gigi` extension (JSON inside); old `.json` files still open. The file dialogs offer `.gigi`; Open also lists `.json`.
 
@@ -430,6 +436,8 @@ Start from an open family with at least one person.
 
 ## Share as web page
 
+🤖 Row 2 is automated (the file is written, self-contained, with everyone). By hand: rows 3–5 (opening it in a browser; the e2e suite also opens it).
+
 | #   | Action                                            | Expected                                                                                     |
 | --- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | 1   | Click **Share as web page…**, then Cancel         | Nothing is written.                                                                          |
@@ -439,6 +447,8 @@ Start from an open family with at least one person.
 | 5   | Search a word that is only in a note              | The person is found.                                                                         |
 
 ## Window icon
+
+Not automatable on the virtual display (no window manager); check by hand after a rebuild.
 
 | #   | Action                                                        | Expected                                                  |
 | --- | ------------------------------------------------------------- | --------------------------------------------------------- |

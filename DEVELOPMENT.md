@@ -59,8 +59,25 @@ npm run e2e
 
 Enable the pre-commit hook once: `git config core.hooksPath .githooks`.
 
-Things automation cannot cover (real file dialogs, real files) are listed in
-[MANUAL_TESTS.md](./MANUAL_TESTS.md).
+Things automation cannot cover are listed in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
+
+### Real-app tests
+
+`npm run test:real` drives the **real** Tauri app (window, files, settings store, restarts)
+through WebDriver on Linux under a virtual display. It replaces most of the manual list.
+One-time setup (Debian/Ubuntu):
+
+```sh
+sudo apt-get install -y xvfb xdotool webkit2gtk-driver   # plus the Tauri system packages
+cargo install tauri-driver --locked
+cargo build --manifest-path src-tauri/Cargo.toml          # debug binary used by the tests
+npm run test:real                                          # ~30 s
+```
+
+Native file dialogs cannot be clicked by WebDriver, so a dev-only seam
+(`window.__GENEALOGIGI_TEST_DIALOGS__`) answers them; everything after the dialog is real. Each
+run uses temporary data folders, so your own settings are untouched. CI: the on-demand /
+weekly workflow `.github/workflows/real-app.yml`.
 
 ## Project layout
 

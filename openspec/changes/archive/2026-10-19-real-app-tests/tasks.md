@@ -1,0 +1,3 @@
+- [x] Dialog seam, harness, 15 real-app tests
+- [x] npm script, workflow, docs
+- [x] MANUAL_TESTS rows marked
