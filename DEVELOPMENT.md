@@ -59,7 +59,7 @@ npm run e2e
 
 Enable the pre-commit hook once: `git config core.hooksPath .githooks`.
 
-Things automation cannot cover are listed in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
+All automated checks are catalogued in [E2E_TESTS.md](./E2E_TESTS.md); things automation cannot cover are listed in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
 
 ### Real-app tests
 

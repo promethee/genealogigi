@@ -252,3 +252,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (manual tests pruned)** — `MANUAL_TESTS.md` cut from 253 rows to 22: only what a human must judge (native dialogs, window icon and installer, Windows settings and the real browser, visual quality in light and dark, French wording, the shared page and project page in real browsers). The old list is in git history; every removed row is covered by the 239 browser e2e tests or the 50 real-app checks.
 
 - **2026-10-19 (what's left)** — TODO.md now starts with "What's left": before going public (manual run, fixes, switch visibility), the 1.0.0 release (waits for the owner's go), the v2 backlog and what was decided against. Stale `[~]` statuses closed. The owner confirmed: author email stays, LICENSE name stays, old session links stay.
+
+- **2026-10-19 (E2E_TESTS.md)** — The automated checks are now catalogued in `E2E_TESTS.md` (generated lists of the 51 real-app and 239 browser tests, plus the former manual steps by feature with the test files that check them). `MANUAL_TESTS.md` keeps only the 22 human rows and points to it.

@@ -3,12 +3,13 @@
 What a machine cannot judge. Everything else runs by itself:
 
 - **Browser end-to-end tests** (`npm run e2e`, 239 tests): every screen and rule, against a fake shell.
-- **Real-app tests** (`npm run test:real`, 50 checks): the real Tauri window, real files, real settings,
+- **Real-app tests** (`npm run test:real`, 51 checks): the real Tauri window, real files, real settings,
   real restarts, real image decoding, the update check against a fake release endpoint, OS dark mode
   and language. Native file dialogs are answered by a scripted seam there.
 
-The long step-by-step list that used to live here is in git history (`git log -- MANUAL_TESTS.md`);
-every row of it is covered by one of the two suites above or by the rows below.
+Everything that used to be a manual step and is now automated is catalogued in
+[E2E_TESTS.md](./E2E_TESTS.md): the test lists, and the former steps feature by feature with the test
+files that check them. Only what a human must judge is left below.
 
 Run these on **Windows** (the main target) with `npm run tauri:dev`, or with the installer once it
 exists. Takes about 10 minutes. Note the date and result at the bottom.
