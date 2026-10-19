@@ -31,4 +31,8 @@ describe("fileNameForFamily", () => {
     expect(fileNameForFamily("NUL")).toBe("NUL-family.gigi");
     expect(fileNameForFamily("COM1")).toBe("COM1-family.gigi");
   });
+
+  it("keeps accents and composes them (NFC)", () => {
+    expect(fileNameForFamily("He\u0301rault")).toBe("H\u00e9rault.gigi");
+  });
 });

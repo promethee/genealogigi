@@ -43,15 +43,15 @@ async function parentOf(page: Page, parent: string, child: string, nature?: stri
   await page.getByTestId("rel-add").click();
 }
 
-/** Me <- Mum <- Gran <- GreatGran, plus Dad (adoptive) as a second parent of Me. */
+/** Me <- Mum <- Gran <- Greatgran, plus Dad (adoptive) as a second parent of Me. */
 async function buildFamily(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByTestId("create").click();
-  for (const name of ["Me", "Mum", "Dad", "Gran", "GreatGran"]) await addPerson(page, name);
+  for (const name of ["Me", "Mum", "Dad", "Gran", "Greatgran"]) await addPerson(page, name);
   await parentOf(page, "Mum", "Me");
   await parentOf(page, "Dad", "Me", "adoptive");
   await parentOf(page, "Gran", "Mum");
-  await parentOf(page, "GreatGran", "Gran");
+  await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
 }
 
@@ -68,12 +68,12 @@ test("shows the first person as root with ancestors, limited by generations", as
   await buildFamily(page);
   await expect(page.getByTestId("tree-root")).toHaveValue(/.+/);
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Me");
-  // Default 4 ancestor generations: Me, Mum, Dad, Gran, GreatGran.
+  // Default 4 ancestor generations: Me, Mum, Dad, Gran, Greatgran.
   await expect(page.getByTestId("tree-node")).toHaveCount(5);
 
   await page.getByTestId("tree-generations").selectOption("2");
   await expect(page.getByTestId("tree-node")).toHaveCount(4);
-  await expect(page.getByTestId("tree-node").filter({ hasText: "GreatGran" })).toHaveCount(0);
+  await expect(page.getByTestId("tree-node").filter({ hasText: "Greatgran" })).toHaveCount(0);
 });
 
 test("draws adoptive links dashed and confirmed links solid, with a legend", async ({ page }) => {
@@ -87,12 +87,12 @@ test("clicking a person re-roots the chart", async ({ page }) => {
   await buildFamily(page);
   await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
-  await expect(page.getByTestId("tree-node")).toHaveCount(4); // hourglass: Mum, Gran, GreatGran above, Me below
+  await expect(page.getByTestId("tree-node")).toHaveCount(4); // hourglass: Mum, Gran, Greatgran above, Me below
 });
 
 test("the root can be chosen from the list", async ({ page }) => {
   await buildFamily(page);
   await page.getByTestId("tree-root").selectOption({ label: "Gran" });
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Gran");
-  await expect(page.getByTestId("tree-node")).toHaveCount(4); // GreatGran above; Mum and Me below
+  await expect(page.getByTestId("tree-node")).toHaveCount(4); // Greatgran above; Mum and Me below
 });

@@ -1,3 +1,4 @@
+import { toDisplayName } from "./nameCase.ts";
 import { describe, expect, it } from "vitest";
 import { addPerson } from "./people.ts";
 import {
@@ -46,7 +47,7 @@ function family(): FamilyData {
 const who = (filters: Partial<TreeFilters>) =>
   family()
     .people.filter((p) => matchesFilters(p, { ...NO_FILTERS, ...filters }))
-    .map((p) => p.names?.firstNames?.[0]?.value);
+    .map((p) => toDisplayName(p.names?.firstNames?.[0]?.value ?? ""));
 
 describe("matchesFilters", () => {
   it("matches everyone when no filter is on", () => {

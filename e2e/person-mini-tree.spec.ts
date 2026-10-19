@@ -39,8 +39,8 @@ async function family(page: Page): Promise<void> {
   await page.getByTestId("create").click();
   for (const n of ["Mum", "Dad", "Me", "Pat", "Kid", "Solo"]) await add(page, n);
   const parents = async (child: string, a: string, b: string, nature = "biological-confirmed") => {
-    await page.getByTestId("rel-child").selectOption({ label: child });
-    await page.getByTestId("rel-parent-a").selectOption({ label: a });
+    await page.getByTestId("rel-second").selectOption({ label: child });
+    await page.getByTestId("rel-first").selectOption({ label: a });
     await page.getByTestId("rel-parent-b").selectOption({ label: b });
     await page.getByTestId("rel-nature").selectOption(nature);
     await page.getByTestId("rel-add").click();

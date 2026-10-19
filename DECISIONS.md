@@ -322,3 +322,7 @@ Decision: one pure rule, `canShareFamily` (>= 2 people and >= 1 relationship), d
 ## Family name (2026-10-19)
 
 Decision: the family name is asked at creation and lives in the file (`FamilyData.name?`), because several families are several files and the file name alone is a weak label. The prompt is an optional `PlatformAPI.promptText` (in-app dialog) so tests and shells without it keep working. Default file names for Export and Share are fixed English constants, not interface text.
+
+## Friendly write errors and name case (2026-10-19)
+
+A failed write reads "Could not write to {file}. Check that the file is present and writable." (detail in the console). Names are stored lowercase and shown capitalized per word/hyphen/apostrophe; existing files are not migrated. Known limit: "McDonald" displays "Mcdonald". See `openspec/changes/friendly-write-error-and-name-case`.

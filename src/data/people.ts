@@ -1,3 +1,4 @@
+import { toDisplayName, toStoredName } from "./nameCase.ts";
 import {
   dateFromInput,
   emptyDateInput,
@@ -155,7 +156,7 @@ interface StoredName<K extends string> {
  */
 function buildEntries<K extends string>(rows: NameEntryInput<K>[], label: string): StoredName<K>[] {
   const kept = rows
-    .map((row) => ({ row, value: row.value.trim() }))
+    .map((row) => ({ row, value: toStoredName(row.value) }))
     .filter((item) => item.value !== "");
   const chosen = kept.findIndex((item) => item.row.primary);
   const primaryIndex = chosen === -1 ? 0 : chosen;
@@ -242,7 +243,7 @@ function rowsFromStored<K extends string>(
   if (!entries || entries.length === 0) return [blankNameEntry(fallbackKind, true)];
   const primary = primaryOf(entries);
   return entries.map((entry) => ({
-    value: entry.value,
+    value: toDisplayName(entry.value),
     kind: entry.kind,
     date: inputFromDate(entry.date),
     primary: entry === primary,
@@ -268,10 +269,11 @@ export function inputFromPerson(person: Person): PersonFormValues {
  * (a married woman: main "Marie Dubois", birth name "Martin").
  */
 export function displayNameParts(person: Person): { name: string; birthName?: string } {
-  const first = primaryOf(person.names?.firstNames)?.value;
-  const last = primaryOf(person.names?.lastNames)?.value;
+  const show = (v: string | undefined) => (v ? toDisplayName(v) : v);
+  const first = show(primaryOf(person.names?.firstNames)?.value);
+  const last = show(primaryOf(person.names?.lastNames)?.value);
   const name = [first, last].filter(Boolean).join(" ") || t("person.unnamed");
-  const birth = person.names?.lastNames?.find((n) => n.kind === "birth")?.value;
+  const birth = show(person.names?.lastNames?.find((n) => n.kind === "birth")?.value);
   return last && birth && birth !== last ? { name, birthName: birth } : { name };
 }
 
@@ -312,7 +314,7 @@ function rankedSuggestions(values: string[]): string[] {
       return [spelling, total] as [string, number];
     })
     .sort(byCountThenName)
-    .map(([name]) => name);
+    .map(([name]) => toDisplayName(name));
 }
 
 /** Every last name already saved, for suggestions. */

@@ -110,7 +110,7 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
     await app.wait("person-row");
     const data = readJson(fam);
     assert.equal(data.people.length, 1);
-    assert.equal(data.people[0].names.firstNames[0].value, "Ada");
+    assert.equal(data.people[0].names.firstNames[0].value, "ada");
     assert.deepEqual(tmpFiles(), []);
   });
 

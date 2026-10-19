@@ -52,8 +52,8 @@ async function family(page: Page): Promise<void> {
   await person(page, "Mum", "1950");
   await person(page, "Dad", "1948");
   await person(page, "Kid", "1980");
-  await page.getByTestId("rel-child").selectOption({ label: "Kid" });
-  await page.getByTestId("rel-parent-a").selectOption({ label: "Mum" });
+  await page.getByTestId("rel-second").selectOption({ label: "Kid" });
+  await page.getByTestId("rel-first").selectOption({ label: "Mum" });
   await page.getByTestId("rel-parent-b").selectOption({ label: "Dad" });
   await page.getByTestId("rel-add").click();
 }

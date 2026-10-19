@@ -122,12 +122,12 @@ export const fr: Record<MessageKey, string> = {
   "rel.type": "Type",
   "rel.parentOf": "Parent de",
   "rel.partnerOf": "Partenaire de",
-  "rel.parent": "Parent",
-  "rel.parentsOf": "Parents de",
+  "rel.otherParent": "Autre parent (facultatif)",
+  "rel.noOtherParent": "Aucun",
   "rel.parent1": "Parent 1",
   "rel.parent2": "Parent 2",
+  "rel.parent": "Parent",
   "rel.alsoPartners": "Enregistrer aussi les parents comme partenaires",
-  "rel.chooseParents": "Choisissez un enfant et deux parents.",
   "rel.person": "Personne",
   "rel.child": "Enfant",
   "rel.partner": "Partenaire",
@@ -350,6 +350,8 @@ export const fr: Record<MessageKey, string> = {
   "err.relTypeChange": "Une relation ne peut pas passer de parent-enfant à partenaires.",
   "err.relPeopleChange": "Les personnes d’une relation ne peuvent pas être modifiées.",
 
+  "store.writeFailed":
+    "Impossible d'écrire dans {file}. Vérifiez que le fichier est présent et modifiable.",
   "store.invalidJson": "Le fichier n’est pas du JSON valide.",
   "store.lastNotFound": "Dernier fichier famille introuvable : {path}",
   "store.chooseDifferent":

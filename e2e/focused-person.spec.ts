@@ -43,15 +43,15 @@ async function parentOf(page: Page, parent: string, child: string, nature?: stri
   await page.getByTestId("rel-add").click();
 }
 
-/** Me <- Mum <- Gran <- GreatGran, plus Dad (adoptive) as a second parent of Me. */
+/** Me <- Mum <- Gran <- Greatgran, plus Dad (adoptive) as a second parent of Me. */
 async function buildFamily(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByTestId("create").click();
-  for (const name of ["Me", "Mum", "Dad", "Gran", "GreatGran"]) await addPerson(page, name);
+  for (const name of ["Me", "Mum", "Dad", "Gran", "Greatgran"]) await addPerson(page, name);
   await parentOf(page, "Mum", "Me");
   await parentOf(page, "Dad", "Me", "adoptive");
   await parentOf(page, "Gran", "Mum");
-  await parentOf(page, "GreatGran", "Gran");
+  await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
 }
 
@@ -64,7 +64,7 @@ test("the selector says Focused person, and all generations are drawn by default
   await expect(page.getByText("Focused person")).toBeVisible();
   await expect(page.getByTestId("tree-generations")).toHaveValue("99");
   await page.getByTestId("tree-root").selectOption({ label: "Me" });
-  await expect(page.getByTestId("tree-node")).toHaveCount(5); // Me, Mum, Dad, Gran, GreatGran
+  await expect(page.getByTestId("tree-node")).toHaveCount(5); // Me, Mum, Dad, Gran, Greatgran
 });
 
 test("the panel counts ancestors and descendants of the focused person", async ({ page }) => {
@@ -72,7 +72,7 @@ test("the panel counts ancestors and descendants of the focused person", async (
   await page.getByTestId("tree-root").selectOption({ label: "Me" });
   expect(await chips(page)).toEqual(["2 parents", "1 grandparent", "1 great-grandparent"]);
 
-  await page.getByTestId("tree-root").selectOption({ label: "GreatGran" });
+  await page.getByTestId("tree-root").selectOption({ label: "Greatgran" });
   expect(await chips(page)).toEqual(["1 child", "1 grandchild", "1 great-grandchild"]);
 
   await page.getByTestId("tree-root").selectOption({ label: "Dad" });

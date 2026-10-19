@@ -52,6 +52,9 @@ test("add controls are disabled until two people exist", async ({ page }) => {
   await expect(page.getByTestId("relationships-hint")).toBeVisible();
   await expect(page.getByTestId("rel-add")).toBeDisabled();
   await addPerson(page, "Byron");
+  await expect(page.getByTestId("rel-add")).toBeDisabled(); // still nobody selected
+  await page.getByTestId("rel-first").selectOption({ label: "Ada" });
+  await page.getByTestId("rel-second").selectOption({ label: "Byron" });
   await expect(page.getByTestId("rel-add")).toBeEnabled();
   await expect(page.getByTestId("relationships-empty")).toBeVisible();
 });

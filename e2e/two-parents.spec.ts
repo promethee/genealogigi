@@ -39,18 +39,29 @@ async function familyWith(page: Page, ...names: string[]): Promise<void> {
 }
 
 async function pick(page: Page, child: string, a: string, b: string) {
-  await page.getByTestId("rel-child").selectOption({ label: child });
-  await page.getByTestId("rel-parent-a").selectOption({ label: a });
+  await page.getByTestId("rel-second").selectOption({ label: child });
+  await page.getByTestId("rel-first").selectOption({ label: a });
   await page.getByTestId("rel-parent-b").selectOption({ label: b });
 }
 
-test("'Parents of' is the default type and shows child and two parents", async ({ page }) => {
+test("'Parent of' is the one parent type: parent, optional other parent, child", async ({
+  page,
+}) => {
   await familyWith(page, "Ada", "Cleo", "Byron");
-  await expect(page.getByTestId("rel-kind")).toHaveValue("parents");
-  for (const id of ["rel-child", "rel-parent-a", "rel-parent-b", "rel-nature"]) {
+  await expect(page.getByTestId("rel-kind")).toHaveValue("parent");
+  await expect(page.getByTestId("rel-kind").locator("option")).toHaveCount(2);
+  for (const id of ["rel-first", "rel-parent-b", "rel-second", "rel-nature"]) {
     await expect(page.getByTestId(id)).toBeVisible();
   }
-  await expect(page.getByTestId("rel-first")).toHaveCount(0);
+  await expect(page.getByTestId("rel-parent-b")).toHaveValue(""); // optional: None
+});
+
+test("with no other parent, a single parent link is added", async ({ page }) => {
+  await familyWith(page, "Ada", "Cleo", "Byron");
+  await page.getByTestId("rel-first").selectOption({ label: "Ada" });
+  await page.getByTestId("rel-second").selectOption({ label: "Byron" });
+  await page.getByTestId("rel-add").click();
+  await expect(page.getByTestId("relationship-text")).toHaveText(["Ada is parent of Byron"]);
 });
 
 test("adds both parents of a child in one step and survives a restart", async ({ page }) => {
@@ -62,7 +73,7 @@ test("adds both parents of a child in one step and survives a restart", async ({
     "Cleo is parent of Byron",
   ]);
   // The form is reset for the next family.
-  await expect(page.getByTestId("rel-child")).toHaveValue("");
+  await expect(page.getByTestId("rel-second")).toHaveValue("");
 
   await page.reload();
   await page.getByTestId("resume").click();
@@ -86,10 +97,10 @@ test("the same person twice, missing choices and an existing link add nothing", 
   page,
 }) => {
   await familyWith(page, "Ada", "Cleo", "Byron");
-  await page.getByTestId("rel-add").click();
-  await expect(page.getByTestId("error")).toContainText("Choose a child and two parents.");
+  await expect(page.getByTestId("rel-add")).toBeDisabled(); // nothing chosen yet
 
   await pick(page, "Byron", "Ada", "Ada");
+  await expect(page.getByTestId("rel-add")).toBeEnabled();
   await page.getByTestId("rel-add").click();
   await expect(page.getByTestId("error")).toContainText("must be different people");
   await expect(page.getByTestId("relationship-row")).toHaveCount(0);
@@ -113,8 +124,9 @@ test("a parent equal to the child is refused", async ({ page }) => {
 
 test("optionally records the parents as partners, once", async ({ page }) => {
   await familyWith(page, "Ada", "Cleo", "Byron", "Dan");
-  await expect(page.getByTestId("rel-partners")).not.toBeChecked();
+  await expect(page.getByTestId("rel-partners")).toHaveCount(0); // needs an other parent
   await pick(page, "Byron", "Ada", "Cleo");
+  await expect(page.getByTestId("rel-partners")).not.toBeChecked();
   await page.getByTestId("rel-partners").check();
   await page.getByTestId("rel-add").click();
   await expect(page.getByTestId("relationship-text")).toHaveText([
@@ -133,7 +145,7 @@ test("optionally records the parents as partners, once", async ({ page }) => {
 test("French labels", async ({ page }) => {
   await familyWith(page, "Ada", "Cleo", "Byron");
   await page.getByTestId("lang-fr").click();
-  await expect(page.getByTestId("rel-kind")).toContainText("Parents de");
+  await expect(page.getByTestId("rel-kind")).toContainText("Parent de");
   await pick(page, "Byron", "Ada", "Cleo");
   await page.getByTestId("rel-add").click();
   await expect(page.getByTestId("relationship-text")).toHaveText([

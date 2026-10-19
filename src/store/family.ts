@@ -98,6 +98,29 @@ export function defineFamilyStore(
     const gitStatus = ref<GitStatus | "unavailable">("unavailable");
     const syncing = ref(false);
 
+    /**
+     * Writes go through these two helpers so a failure always reads the same, simple way
+     * ("could not write to family.gigi, check the file is present and writable") instead of
+     * the operating system's wording; the technical detail goes to the console.
+     */
+    async function writeFamily(path: string, family: FamilyData): Promise<void> {
+      try {
+        await platform.data.save(path, family);
+      } catch (err) {
+        console.error(err);
+        throw new Error(t("store.writeFailed", { file: fileNameOf(path) }), { cause: err });
+      }
+    }
+
+    async function writeText(path: string, text: string): Promise<void> {
+      try {
+        await platform.data.writeRaw(path, text);
+      } catch (err) {
+        console.error(err);
+        throw new Error(t("store.writeFailed", { file: fileNameOf(path) }), { cause: err });
+      }
+    }
+
     const resumeFileName = computed(() => (resumePath.value ? fileNameOf(resumePath.value) : null));
     /** The remembered family's name, read from its file at startup (null when it has none). */
     const resumeFamilyName = ref<string | null>(null);
@@ -198,7 +221,7 @@ export function defineFamilyStore(
         });
         if (!path) return;
         const empty = emptyFamily(name);
-        await platform.data.save(path, empty);
+        await writeFamily(path, empty);
         await enter(path, empty);
       });
     }
@@ -219,7 +242,7 @@ export function defineFamilyStore(
         warnings.value = [];
         try {
           const next = change(current);
-          await platform.data.save(path, next);
+          await writeFamily(path, next);
           data.value = next;
           error.value = null;
           return true;
@@ -263,7 +286,7 @@ export function defineFamilyStore(
           }
           // Read after the dialog so the copy matches the file as it is now.
           if (!data.value) return false;
-          await platform.data.save(target, data.value);
+          await writeFamily(target, data.value);
           error.value = null;
           notice.value = t("export.done", {
             path: target,
@@ -342,7 +365,7 @@ export function defineFamilyStore(
           );
           if (!confirmed) return false;
           try {
-            await platform.data.writeRaw(backup, previous);
+            await writeText(backup, previous);
           } catch (err) {
             error.value = t("import.error.backup", { detail: describe(err) });
             return false;
@@ -357,7 +380,7 @@ export function defineFamilyStore(
             error.value = t("import.error.backupVerify");
             return false;
           }
-          await platform.data.save(openPath, parsed.data);
+          await writeFamily(openPath, parsed.data);
           data.value = parsed.data;
           error.value = null;
           warnings.value = list;
@@ -409,7 +432,7 @@ export function defineFamilyStore(
               today: new Date(),
             }),
           );
-          await platform.data.writeRaw(target, html);
+          await writeText(target, html);
           error.value = null;
           notice.value = t("share.done", { path: target });
           return true;

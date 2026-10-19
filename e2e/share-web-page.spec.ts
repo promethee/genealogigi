@@ -160,7 +160,7 @@ test("hostile text in a name is shown as text and never runs", async ({ page, br
   const url = await buildAndShare(page);
   const viewer = await browser.newPage();
   await viewer.goto(url);
-  await expect(viewer.locator("#list")).toContainText('<img src=x onerror="window.__pwned=1">');
+  await expect(viewer.locator("#list")).toContainText('<img Src=x Onerror="window.__pwned=1">'); // shown as text (name case applied)
   await viewer.locator("#list button", { hasText: "Evil" }).click();
   await expect(viewer.locator("#card h2")).toContainText("<img");
   expect(

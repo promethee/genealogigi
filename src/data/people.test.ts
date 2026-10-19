@@ -67,7 +67,7 @@ describe("addPerson", () => {
   it("trims names and stores them as birth names with an unknown date", () => {
     const person = onlyPerson(addPerson(EMPTY, { firstName: "  Ada ", lastName: "" }));
     expect(person.names?.firstNames?.[0]).toEqual({
-      value: "Ada",
+      value: "ada",
       kind: "birth",
       date: UNKNOWN_DATE,
       primary: true,
@@ -362,8 +362,8 @@ describe("several names per person", () => {
       }),
     );
     expect(person.names?.firstNames?.map((n) => [n.value, n.kind])).toEqual([
-      ["Ada", "birth"],
-      ["Addie", "nickname"],
+      ["ada", "birth"],
+      ["addie", "nickname"],
     ]);
     expect(person.names?.lastNames?.map((n) => n.kind)).toEqual(["birth", "married"]);
   });
@@ -397,7 +397,7 @@ describe("several names per person", () => {
       }),
     );
     expect(person.names?.firstNames?.filter((n) => n.primary).map((n) => n.value)).toEqual([
-      "Addie",
+      "addie",
     ]);
     expect(displayName(person)).toBe("Addie Byron");
   });
@@ -442,7 +442,7 @@ describe("several names per person", () => {
         lastNames: [last(" ")],
       }),
     );
-    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["Ada", "Addie"]);
+    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["ada", "addie"]);
     expect(person.names?.firstNames?.[0]?.primary).toBe(true);
     expect(person.names?.lastNames).toEqual([]);
   });
@@ -457,7 +457,7 @@ describe("several names per person", () => {
     const person = one(
       addPerson(base, { firstNames: [first("B"), first("A", "birth", true)], lastNames: [] }),
     );
-    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["B", "A"]);
+    expect(person.names?.firstNames?.map((n) => n.value)).toEqual(["b", "a"]);
   });
 
   it("edits a person who has several names without losing any", () => {
@@ -473,8 +473,8 @@ describe("several names per person", () => {
     });
     const person = one(edited);
     expect(person.names?.firstNames?.map((n) => [n.value, n.kind])).toEqual([
-      ["Ada", "birth"],
-      ["Addie", "nickname"],
+      ["ada", "birth"],
+      ["addie", "nickname"],
     ]);
     expect(person.born?.birthDate.yearKnown).toBe(true);
   });

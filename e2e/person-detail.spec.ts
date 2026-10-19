@@ -70,8 +70,8 @@ async function sample(page: Page): Promise<void> {
   await person(page, { first: "Byron", last: "King", born: "1840" });
   await person(page, { first: "Sis", last: "King", born: "1842" });
   const parents = async (child: string, a: string, b: string) => {
-    await page.getByTestId("rel-child").selectOption({ label: child });
-    await page.getByTestId("rel-parent-a").selectOption({ label: a });
+    await page.getByTestId("rel-second").selectOption({ label: child });
+    await page.getByTestId("rel-first").selectOption({ label: a });
     await page.getByTestId("rel-parent-b").selectOption({ label: b });
     await page.getByTestId("rel-add").click();
   };

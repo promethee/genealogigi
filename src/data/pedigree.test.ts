@@ -1,3 +1,4 @@
+import { toDisplayName } from "./nameCase.ts";
 import { describe, expect, it } from "vitest";
 import {
   buildPedigree,
@@ -41,7 +42,11 @@ function build(
 function personsAt(p: Pedigree, generation: number, data: FamilyData): string[] {
   return p.nodes
     .filter((n) => n.generation === generation)
-    .map((n) => data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value ?? "?")
+    .map((n) =>
+      toDisplayName(
+        data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value ?? "?",
+      ),
+    )
     .sort();
 }
 
@@ -110,7 +115,7 @@ describe("buildPedigree", () => {
     const p = buildPedigree(data, id("Me"), 2);
     expect(p.levels).toBe(3);
     expect(personsAt(p, 3, data)).toEqual([]);
-    expect(personsAt(buildPedigree(data, id("Me"), 3), 3, data)).toEqual(["GreatGran"]);
+    expect(personsAt(buildPedigree(data, id("Me"), 3), 3, data)).toEqual(["Greatgran"]);
   });
 
   it("draws a shared ancestor once per path", () => {
@@ -346,7 +351,9 @@ describe("vertical levels", () => {
   const family = () => build(["Gran", "Mum", "Dad", "Me", "Kid"], links);
   const levelOf = (p: Pedigree, data: FamilyData, name: string) =>
     p.nodes.find(
-      (n) => data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value === name,
+      (n) =>
+        data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value ===
+        name.toLowerCase(),
     )?.level;
 
   it("puts ancestors above the root: the root is on the deepest level", () => {

@@ -10,7 +10,7 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 ### Before going public (owner)
 
-- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; re-check its rows 1 and 4 after the family-name change, then sections 2–5.
+- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and row 20 passed on 2026-10-19; re-check row 21 after the share-page tree).
 - [ ] Fix anything that run finds (tell the agent what failed).
 - [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
 - [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
@@ -260,3 +260,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (family name)** — Creating a family asks for its name first (in-app prompt, required; stored in the file as optional `name`, no schema bump). The name titles the open family (with a Rename button), labels Resume on the welcome screen (read from the file), suggests `<Name>.gigi` in the save dialog (made file-system safe), titles a shared page, and survives an import of a nameless file. Default export/share names are fixed English constants: `family-export.gigi` and `family.html`. Shells without `promptText` behave as before. 396 unit, 249 browser e2e, 54 real-app (53 as root). Archived `family-name`. `scripts/e2e-catalog.py` regenerates the test lists in E2E_TESTS.md.
 
 - **2026-10-19 (tagline)** — Welcome tagline is now "Your family tree, your data." / "Votre arbre généalogique, vos données." (matches the project page pitch).
+
+- **2026-10-19 (write errors, name case, relationship form)** — Relationship form: one "Parent of" type with an optional other parent; Add is disabled until people are selected. File-name suggestions normalized (NFC, capped). Write failures show a plain message naming the file instead of the OS error. Names are saved in lowercase and displayed capitalized. Archived `friendly-write-error-and-name-case`.

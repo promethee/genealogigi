@@ -416,9 +416,10 @@ The lists below are generated from the test files; the counts drift, the files a
 - French label, and the card has an explicit Close button
 - the card's siblings title is singular for one sibling, plural for several (English and French)
 
-### `e2e/two-parents.spec.ts` (7)
+### `e2e/two-parents.spec.ts` (8)
 
-- 'Parents of' is the default type and shows child and two parents
+- 'Parent of' is the one parent type: parent, optional other parent, child
+- with no other parent, a single parent link is added
 - adds both parents of a child in one step and survives a restart
 - the nature and dates apply to both links
 - the same person twice, missing choices and an existing link add nothing

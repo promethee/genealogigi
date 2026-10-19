@@ -43,23 +43,23 @@ async function parentOf(page: Page, parent: string, child: string, nature?: stri
   await page.getByTestId("rel-add").click();
 }
 
-/** GreatGran -> Gran -> Mum -> Me, plus Dad (adoptive) as a second parent of Me. */
+/** Greatgran -> Gran -> Mum -> Me, plus Dad (adoptive) as a second parent of Me. */
 async function buildFamily(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByTestId("create").click();
-  for (const name of ["Me", "Mum", "Dad", "Gran", "GreatGran"]) await addPerson(page, name);
+  for (const name of ["Me", "Mum", "Dad", "Gran", "Greatgran"]) await addPerson(page, name);
   await parentOf(page, "Mum", "Me");
   await parentOf(page, "Dad", "Me", "adoptive");
   await parentOf(page, "Gran", "Mum");
-  await parentOf(page, "GreatGran", "Gran");
+  await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
   await page.getByTestId("tree-direction").selectOption("descendants");
 }
 
 test("shows descendants of the chosen root, limited by generations", async ({ page }) => {
   await buildFamily(page);
-  await page.getByTestId("tree-root").selectOption({ label: "GreatGran" });
-  // GreatGran, Gran, Mum, Me.
+  await page.getByTestId("tree-root").selectOption({ label: "Greatgran" });
+  // Greatgran, Gran, Mum, Me.
   await expect(page.getByTestId("tree-node")).toHaveCount(4);
   await page.getByTestId("tree-generations").selectOption("2");
   await expect(page.getByTestId("tree-node")).toHaveCount(3);
@@ -83,10 +83,10 @@ test("clicking re-roots and stays in descendants mode; switching back shows ance
   page,
 }) => {
   await buildFamily(page);
-  await page.getByTestId("tree-root").selectOption({ label: "GreatGran" });
+  await page.getByTestId("tree-root").selectOption({ label: "Greatgran" });
   await page.getByTestId("tree-node").filter({ hasText: "Mum" }).dblclick();
   await expect(page.locator('[data-testid="tree-node"][data-root="true"]')).toContainText("Mum");
   await expect(page.getByTestId("tree-node")).toHaveCount(2); // Mum, Me
   await page.getByTestId("tree-direction").selectOption("ancestors");
-  await expect(page.getByTestId("tree-node")).toHaveCount(3); // Mum, Gran, GreatGran
+  await expect(page.getByTestId("tree-node")).toHaveCount(3); // Mum, Gran, Greatgran
 });

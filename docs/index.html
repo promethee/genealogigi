@@ -112,6 +112,9 @@
           display: none;
         }
       }
+      html {
+        overflow-x: clip;
+      }
       .hero {
         position: relative;
         text-align: center;
@@ -120,7 +123,10 @@
       .hero::before {
         content: "";
         position: absolute;
-        inset: -6rem 0 auto;
+        top: -6rem;
+        left: 50%;
+        width: 100vw; /* full window width, not the 72rem column, so the glow is not cut off */
+        transform: translateX(-50%);
         height: 36rem;
         background:
           radial-gradient(40rem 22rem at 50% 20%, var(--glow), transparent 70%),

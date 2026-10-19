@@ -179,16 +179,6 @@ test("names with dates, children and partnerships appear on the timeline", async
   await page.getByTestId("submit-person").click();
   // Marie is a parent of Kid; Marie and Paul have a partnership starting in 1972.
   await page.getByTestId("detail-close").click();
-  await page.getByTestId("rel-child").selectOption({ label: "Kid" });
-  await page.getByTestId("rel-parent-a").selectOption({ label: "Marie Girard (née Martin)" });
-  await page
-    .getByTestId("rel-add")
-    .click()
-    .catch(() => {});
-  await page
-    .getByTestId("error")
-    .waitFor({ state: "visible" })
-    .catch(() => {});
   await page.getByTestId("rel-kind").selectOption("parent");
   await page.getByTestId("rel-first").selectOption({ label: "Marie Girard (née Martin)" });
   await page.getByTestId("rel-second").selectOption({ label: "Kid" });

@@ -43,15 +43,15 @@ async function parentOf(page: Page, parent: string, child: string, nature?: stri
   await page.getByTestId("rel-add").click();
 }
 
-/** GreatGran -> Gran -> Mum -> Me, plus Dad (adoptive) as a second parent of Me. */
+/** Greatgran -> Gran -> Mum -> Me, plus Dad (adoptive) as a second parent of Me. */
 async function buildFamily(page: Page): Promise<void> {
   await page.goto("/");
   await page.getByTestId("create").click();
-  for (const name of ["Me", "Mum", "Dad", "Gran", "GreatGran"]) await addPerson(page, name);
+  for (const name of ["Me", "Mum", "Dad", "Gran", "Greatgran"]) await addPerson(page, name);
   await parentOf(page, "Mum", "Me");
   await parentOf(page, "Dad", "Me", "adoptive");
   await parentOf(page, "Gran", "Mum");
-  await parentOf(page, "GreatGran", "Gran");
+  await parentOf(page, "Greatgran", "Gran");
   await page.getByTestId("tab-tree").click();
 }
 
@@ -65,7 +65,7 @@ const box = async (page: Page, name: string) =>
 test("ancestors are drawn above the root, generation by generation", async ({ page }) => {
   await buildFamily(page);
   const [me, mum, dad, gran, great] = await Promise.all(
-    ["Me", "Mum", "Dad", "Gran", "GreatGran"].map((n) => box(page, n)),
+    ["Me", "Mum", "Dad", "Gran", "Greatgran"].map((n) => box(page, n)),
   );
   // Root at the bottom, each older generation higher up.
   expect(mum!.y).toBeLessThan(me!.y);
@@ -92,9 +92,9 @@ test("links join the bottom of a parent to the top of the child", async ({ page 
 test("descendants hang below the root", async ({ page }) => {
   await buildFamily(page);
   await page.getByTestId("tree-direction").selectOption("descendants");
-  await page.getByTestId("tree-root").selectOption({ label: "GreatGran" });
+  await page.getByTestId("tree-root").selectOption({ label: "Greatgran" });
   const [great, gran, mum, me] = await Promise.all(
-    ["GreatGran", "Gran", "Mum", "Me"].map((n) => box(page, n)),
+    ["Greatgran", "Gran", "Mum", "Me"].map((n) => box(page, n)),
   );
   expect(great!.y).toBeLessThan(gran!.y);
   expect(gran!.y).toBeLessThan(mum!.y);

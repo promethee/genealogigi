@@ -227,7 +227,9 @@ describe("family store: people", () => {
     failSavesFromNowOn();
     expect(await store.addPerson({ firstName: "Ada", lastName: "" })).toBe(false);
     expect(store.data?.people).toHaveLength(0);
-    expect(store.error).toBe("disk full");
+    expect(store.error).toBe(
+      "Could not write to family.json. Check that the file is present and writable.",
+    );
   });
 
   it("renames a person, keeping the id", async () => {
@@ -237,7 +239,7 @@ describe("family store: people", () => {
     if (!id) throw new Error("no person");
     expect(await store.editPerson(id, { firstName: "Ada", lastName: "Lovelace" })).toBe(true);
     expect(store.data?.people[0]?.id).toBe(id);
-    expect(store.data?.people[0]?.names?.lastNames?.[0]?.value).toBe("Lovelace");
+    expect(store.data?.people[0]?.names?.lastNames?.[0]?.value).toBe("lovelace");
   });
 
   it("deletes after confirmation", async () => {
@@ -466,7 +468,9 @@ describe("family store: export", () => {
       throw new Error("disk full");
     };
     expect(await store.exportFamily()).toBe(false);
-    expect(store.error).toBe("disk full");
+    expect(store.error).toBe(
+      "Could not write to copy.json. Check that the file is present and writable.",
+    );
     expect(store.notice).toBeNull();
     expect(store.data?.people).toHaveLength(1);
   });
@@ -556,7 +560,7 @@ describe("family store: import and close", () => {
       throw new Error("read-only disk");
     };
     expect(await store.importFamily()).toBe(false);
-    expect(store.error).toContain("read-only disk");
+    expect(store.error).toContain("Could not write to family.backup-");
     expect(firstName(store)).toBe("Ada");
   });
 

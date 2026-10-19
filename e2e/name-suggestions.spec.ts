@@ -71,7 +71,7 @@ test("the married-name field gets the suggestions too, and any other value is ac
   );
   await page.getByTestId("last-name").nth(1).fill("Brand-new");
   await page.getByTestId("submit-person").click();
-  await expect(page.getByTestId("person-name").last()).toHaveText("Marie Brand-new (née Moreau)");
+  await expect(page.getByTestId("person-name").last()).toHaveText("Marie Brand-New (née Moreau)");
 });
 
 test("no suggestions list when nothing is saved yet", async ({ page }) => {

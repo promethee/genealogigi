@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { formatDate } from "../data/dates.ts";
+import { toDisplayName } from "../data/nameCase.ts";
 import { displayName, lifeSummary } from "../data/people.ts";
 import { relativesOf } from "../data/relatives.ts";
 import { natureLabel, partnerNote } from "../data/relationships.ts";
@@ -48,7 +49,7 @@ function lines<K extends string>(
     | undefined,
 ): NameLine[] {
   return (entries ?? []).map((e) => ({
-    value: e.value,
+    value: toDisplayName(e.value),
     // "Birth" is the default kind, so it is not spelled out.
     kind: e.kind === "birth" ? "" : t(`kind.${e.kind}` as MessageKey),
     since: e.date.yearKnown || e.date.monthKnown || e.date.dayKnown ? formatDate(e.date) : "",

@@ -26,10 +26,9 @@ import { useFamilyStore } from "../store/index.ts";
 const family = useFamilyStore();
 
 // "parents" (two parents of a child) is the most common case, so it comes first.
-const kind = ref<"parents" | "parent" | "partner">("parents");
-const childId = ref<PersonId | "">("");
-const parentAId = ref<PersonId | "">("");
-const parentBId = ref<PersonId | "">("");
+const kind = ref<"parent" | "partner">("parent");
+/** Optional second parent: with one chosen, both parent links are added in one step. */
+const otherParentId = ref<PersonId | "">("");
 const recordPartners = ref(false);
 const firstId = ref<PersonId | "">("");
 const secondId = ref<PersonId | "">("");
@@ -52,11 +51,13 @@ const alreadyPartners = computed(() =>
   relationships.value.some(
     (r) =>
       !isParentChild(r) &&
-      ((r.personAId === parentAId.value && r.personBId === parentBId.value) ||
-        (r.personAId === parentBId.value && r.personBId === parentAId.value)),
+      ((r.personAId === firstId.value && r.personBId === otherParentId.value) ||
+        (r.personAId === otherParentId.value && r.personBId === firstId.value)),
   ),
 );
 const canAdd = computed(() => people.value.length >= 2);
+/** The button stays disabled until both people of the link are selected. */
+const canSubmit = computed(() => Boolean(firstId.value && secondId.value));
 
 function nameOf(id: PersonId): string {
   const person = people.value.find((p) => p.id === id);
@@ -82,21 +83,19 @@ function natureInput():
 }
 
 async function addParents(): Promise<void> {
-  if (!childId.value || !parentAId.value || !parentBId.value) {
-    family.error = t("rel.chooseParents");
-    return;
-  }
+  if (!firstId.value || !secondId.value || !otherParentId.value) return;
   const ok = await family.addParents({
-    childId: childId.value,
-    parentAId: parentAId.value,
-    parentBId: parentBId.value,
+    childId: secondId.value,
+    parentAId: firstId.value,
+    parentBId: otherParentId.value,
     recordPartners: recordPartners.value && !alreadyPartners.value,
     ...natureInput(),
   });
   if (ok) {
-    childId.value = "";
-    parentAId.value = "";
-    parentBId.value = "";
+    firstId.value = "";
+    secondId.value = "";
+    otherParentId.value = "";
+    otherParentId.value = "";
     recordPartners.value = false;
     start.value = emptyDateInput();
     end.value = emptyDateInput();
@@ -104,7 +103,7 @@ async function addParents(): Promise<void> {
 }
 
 async function add(): Promise<void> {
-  if (kind.value === "parents") return addParents();
+  if (kind.value === "parent" && otherParentId.value) return addParents();
   if (!firstId.value || !secondId.value) {
     family.error = t("rel.chooseTwo");
     return;
@@ -133,6 +132,7 @@ async function add(): Promise<void> {
   if (ok) {
     firstId.value = "";
     secondId.value = "";
+    otherParentId.value = "";
     start.value = emptyDateInput();
     end.value = emptyDateInput();
   }
@@ -147,7 +147,7 @@ async function add(): Promise<void> {
         type="submit"
         form="rel-form"
         data-testid="rel-add"
-        :disabled="!canAdd"
+        :disabled="!canAdd || !canSubmit"
         class="btn btn-primary"
       >
         <AppIcon name="plus" />
@@ -171,42 +171,30 @@ async function add(): Promise<void> {
       <label class="label">
         {{ t("rel.type") }}
         <select v-model="kind" data-testid="rel-kind" :disabled="!canAdd" class="input">
-          <option value="parents">{{ t("rel.parentsOf") }}</option>
           <option value="parent">{{ t("rel.parentOf") }}</option>
           <option value="partner">{{ t("rel.partnerOf") }}</option>
         </select>
       </label>
-      <template v-if="kind === 'parents'">
-        <label class="label">
-          {{ t("rel.child") }}
-          <select v-model="childId" data-testid="rel-child" :disabled="!canAdd" class="input">
-            <option value="" disabled>{{ t("rel.choose") }}</option>
-            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
-          </select>
-        </label>
-        <label class="label">
-          {{ t("rel.parent1") }}
-          <select v-model="parentAId" data-testid="rel-parent-a" :disabled="!canAdd" class="input">
-            <option value="" disabled>{{ t("rel.choose") }}</option>
-            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
-          </select>
-        </label>
-        <label class="label">
-          {{ t("rel.parent2") }}
-          <select v-model="parentBId" data-testid="rel-parent-b" :disabled="!canAdd" class="input">
-            <option value="" disabled>{{ t("rel.choose") }}</option>
-            <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
-          </select>
-        </label>
-      </template>
-      <label v-if="kind !== 'parents'" class="label">
+      <label class="label">
         {{ kind === "parent" ? t("rel.parent") : t("rel.person") }}
         <select v-model="firstId" data-testid="rel-first" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
           <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
         </select>
       </label>
-      <label v-if="kind !== 'parents'" class="label">
+      <label v-if="kind === 'parent'" class="label">
+        {{ t("rel.otherParent") }}
+        <select
+          v-model="otherParentId"
+          data-testid="rel-parent-b"
+          :disabled="!canAdd"
+          class="input"
+        >
+          <option value="">{{ t("rel.noOtherParent") }}</option>
+          <option v-for="p in people" :key="p.id" :value="p.id">{{ displayName(p) }}</option>
+        </select>
+      </label>
+      <label class="label">
         {{ kind === "parent" ? t("rel.child") : t("rel.partner") }}
         <select v-model="secondId" data-testid="rel-second" :disabled="!canAdd" class="input">
           <option value="" disabled>{{ t("rel.choose") }}</option>
@@ -254,7 +242,7 @@ async function add(): Promise<void> {
         />
       </template>
       <label
-        v-if="kind === 'parents' && !alreadyPartners"
+        v-if="kind === 'parent' && otherParentId && !alreadyPartners"
         class="flex items-center gap-2 pb-2 text-sm text-slate-600"
       >
         <input

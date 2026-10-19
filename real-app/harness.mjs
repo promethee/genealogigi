@@ -183,6 +183,8 @@ class Session {
 
   async click(testId) {
     const el = await this.wait(testId);
+    // The page scrolls inside the window: bring the target to the middle so the click lands on it.
+    await this.eval("arguments[0].scrollIntoView({ block: 'center' });", { [ELEMENT]: el });
     try {
       await this.cmd("POST", `/element/${el}/click`, {});
     } catch (err) {

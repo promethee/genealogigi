@@ -1,3 +1,4 @@
+import { toDisplayName } from "./nameCase.ts";
 import { t, type MessageKey } from "../i18n/index.ts";
 import { eventsOf } from "./events.ts";
 import { displayName } from "./people.ts";
@@ -79,7 +80,7 @@ export function timelineOf(data: FamilyData, personId: PersonId): TimelineEntry[
         kind: "name",
         date: known(entry.date) ? entry.date : null,
         text: t("timeline.name", {
-          value: entry.value,
+          value: toDisplayName(entry.value),
           kind: t(`kind.${entry.kind}` as MessageKey).toLowerCase(),
         }),
         people: [],

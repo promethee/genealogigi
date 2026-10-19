@@ -1,0 +1,4 @@
+- [x] 1. Write helpers and `store.writeFailed` en/fr
+- [x] 2. `nameCase.ts` + unit tests; apply at save and display sites
+- [x] 3. Update unit/e2e tests, real-app failing-save test
+- [x] 4. TODO, DECISIONS, E2E_TESTS

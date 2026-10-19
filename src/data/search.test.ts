@@ -1,3 +1,4 @@
+import { toDisplayName } from "./nameCase.ts";
 import { describe, expect, it } from "vitest";
 import { addPerson } from "./people.ts";
 import { normalizeText, searchPeople } from "./search.ts";
@@ -38,7 +39,8 @@ describe("normalizeText", () => {
 
 describe("searchPeople", () => {
   const people = family().people;
-  const names = (q: string) => searchPeople(people, q).map((p) => p.names?.firstNames?.[0]?.value);
+  const names = (q: string) =>
+    searchPeople(people, q).map((p) => toDisplayName(p.names?.firstNames?.[0]?.value ?? ""));
 
   it("finds by first name ignoring accents and case", () => {
     expect(names("LEA")).toEqual(["Léa"]);
