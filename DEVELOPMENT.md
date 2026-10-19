@@ -92,6 +92,12 @@ weekly workflow `.github/workflows/real-app.yml`.
 | `e2e/`                          | Playwright tests, one file per feature                                                   |
 | `openspec/`                     | Archived feature specs (`specs/`) and in-flight changes (`changes/`)                     |
 
+## Retaking the screenshots
+
+The README and the project page use `docs/screenshots/` (fictional family, light and dark). With the
+dev server running (`npm run dev`), `node scripts/screenshots/take.mjs` rebuilds the family with the
+app's own data layer and retakes all six images (set `PW_CHROMIUM_PATH` to reuse a Chromium).
+
 ## Working on a feature (OpenSpec)
 
 Each feature starts as a change: `openspec new change <name>`, write the

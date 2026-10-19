@@ -25,7 +25,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/tree-dark.jpg" />
-  <img alt="Genealogigi showing a family tree in hourglass layout, centred on one person, with family counts and filters above the chart." src="docs/screenshots/tree-light.jpg" />
+  <img alt="Genealogigi showing the whole family tree, every person once, with couples joined by a violet line and filters above the chart." src="docs/screenshots/tree-light.jpg" />
 </picture>
 
 ## Overview
@@ -44,7 +44,7 @@ is a read-only check of the public GitHub releases API, and it sends no family d
 | --- | --- |
 | **People** | Several names per person (birth, married, nickname) with dates; partial birth/death dates; birth and death places; living/deceased status; free-text notes; portrait photos. |
 | **Relationships** | Parent-child links (biological confirmed/presumed, adoptive, step, foster, guardian, with status and dates) and partnerships. Duplicate links and cycles are rejected. |
-| **Trees** | Ancestors, descendants and hourglass layouts, with siblings; scaled to the window; a focused person with generation counts; soft, cumulative filters (status, places, months, last name) that fade rather than hide. |
+| **Trees** | The whole family at once, or ancestors, descendants and hourglass layouts around one person, with siblings; scaled to the window; a focused person with generation counts; soft, cumulative filters (status, places, months, last name) that fade rather than hide. |
 | **Person card** | Derived timeline (births, name changes, partnerships, children, user events), immediate-family mini tree, photo gallery. |
 | **Search** | Accent- and case-insensitive over names, places and notes; filters the list, highlights in the tree. |
 | **Sharing** | Export one self-contained, read-only HTML page that opens offline in any browser, plus export/import of the family file. Import replaces the family only after a confirmation and a verified, hashed backup. |

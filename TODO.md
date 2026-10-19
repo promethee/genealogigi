@@ -270,3 +270,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (tree default)** — Tree tab opens on Everyone. Shared page tree: portraits, centred. Archived `tree-default-everyone`.
 
 - **2026-10-19 (filter title)** — Removed the "Fade people who do not match" line from the tree filters. Archived `remove-filter-title`.
+
+- **2026-10-19 (screenshots)** — Retook the six README/project-page screenshots with the current UI (whole-family tree, violet partner links, new fictional family of 11); `scripts/screenshots/take.mjs` makes them repeatable.
