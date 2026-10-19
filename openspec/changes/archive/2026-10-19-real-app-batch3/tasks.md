@@ -1,0 +1,3 @@
+- [x] Seam, fake endpoint, opener stub
+- [x] updates.test.mjs
+- [x] Docs

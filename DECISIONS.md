@@ -302,3 +302,7 @@ Decision: automate the real-shell manual tests with WebDriver (tauri-driver) on 
 ## Real-app photos seam (2026-10-19)
 
 Decision: the image picker has the same dev-only seam as the file dialogs (`__GENEALOGIGI_TEST_DIALOGS__.images`); the files are then read, decoded and resized for real. Test images are generated PNGs (no image library); JPEG output size is read from its SOF marker.
+
+## Real-app update check (2026-10-19)
+
+Decision: in dev only, the update check can be pointed at a local fake endpoint (`VITE_GENEALOGIGI_RELEASES_URL` on the dev server) and the browser opener is replaced by a PATH stub that logs addresses. The production build has neither: the address stays the public GitHub API and links open in the system browser.

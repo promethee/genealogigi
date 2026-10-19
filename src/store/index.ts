@@ -27,11 +27,18 @@ export const useFamilyStore = defineFamilyStore(platform);
 export const useLanguageStore = defineLanguageStore(platform);
 // With a fake shell (tests) the update check only ever uses the fetch the test provides.
 const testShell = import.meta.env.DEV && window.__GENEALOGIGI_PLATFORM__ !== undefined;
+// Dev-only seam for the real-app tests: ask this address (a local fake) for the latest release
+// instead of GitHub. Set through the dev server's environment; never present in a build.
+const releasesOverride: string | undefined = import.meta.env.DEV
+  ? (import.meta.env as Record<string, string | undefined>).VITE_GENEALOGIGI_RELEASES_URL
+  : undefined;
 export const useAppStore = defineAppStore(
   platform,
   testShell
     ? (window.__GENEALOGIGI_FETCH__ ??
         (() => Promise.reject(new Error("network disabled in tests"))))
-    : undefined,
+    : releasesOverride
+      ? (_url, init) => fetch(releasesOverride, init)
+      : undefined,
 );
 export const useThemeStore = defineThemeStore(platform);

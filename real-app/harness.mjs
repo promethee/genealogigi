@@ -2,7 +2,15 @@
 // real settings store, real restarts. Native file dialogs are answered by a dev-only seam
 // (`window.__GENEALOGIGI_TEST_DIALOGS__`), everything after the dialog is genuine.
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync } from "node:fs";
+import { createServer } from "node:http";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,6 +20,38 @@ const ELEMENT = "element-6066-11e4-a52e-4f735466cecf";
 const DRIVER = "http://127.0.0.1:4444";
 const APP = process.env.GENEALOGIGI_BIN ?? join(root, "src-tauri/target/debug/genealogigi");
 export const dataHome = mkdtempSync(join(tmpdir(), "gigi-real-data-"));
+
+/** Where the stubbed browser opener (xdg-open) records the addresses it was asked to open. */
+export const openLog = join(dataHome, "opened-urls.log");
+
+/**
+ * A fake GitHub "latest release" endpoint. `mode`: "none" (404, no release yet), "release"
+ * (a release tagged `tag`) or "down" (the connection is cut, like no network).
+ */
+export const mock = { mode: "none", tag: "v9.9.9", port: 5174 };
+
+/** The latest-release address the app is pointed to, and the page the release links to. */
+export const releasePage = () =>
+  `https://github.com/promethee/genealogigi/releases/tag/${mock.tag}`;
+
+function startMock() {
+  const server = createServer((req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "*");
+    if (req.method === "OPTIONS") {
+      res.statusCode = 204;
+      return res.end();
+    }
+    if (mock.mode === "down") return req.socket.destroy();
+    if (mock.mode === "none") {
+      res.statusCode = 404;
+      return res.end("{}");
+    }
+    res.setHeader("content-type", "application/json");
+    res.end(JSON.stringify({ tag_name: mock.tag, html_url: releasePage() }));
+  });
+  return new Promise((resolve) => server.listen(mock.port, "127.0.0.1", () => resolve(server)));
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -56,12 +96,23 @@ export async function startStack() {
     XDG_CACHE_HOME: join(dataHome, "cache"),
     WEBKIT_DISABLE_COMPOSITING_MODE: "1",
   };
-  run(join(root, "node_modules/.bin/vite"), ["--port", "5173", "--strictPort"]);
+  const mockServer = await startMock();
+  // A stand-in for the system browser: record what the app asks to open instead of opening it.
+  const binDir = join(dataHome, "bin");
+  mkdirSync(binDir, { recursive: true });
+  const stub = join(binDir, "xdg-open");
+  writeFileSync(stub, `#!/bin/sh\necho "$@" >> "${openLog}"\n`);
+  chmodSync(stub, 0o755);
+  isolated.PATH = `${binDir}:${process.env.PATH}`;
+  run(join(root, "node_modules/.bin/vite"), ["--port", "5173", "--strictPort"], {
+    VITE_GENEALOGIGI_RELEASES_URL: `http://127.0.0.1:${mock.port}/latest`,
+  });
   await waitFor(async () => (await fetch("http://localhost:5173")).ok, "the dev server");
   const nativeDriver = process.env.NATIVE_DRIVER ?? "/usr/bin/WebKitWebDriver";
   run("tauri-driver", ["--native-driver", nativeDriver], isolated);
   await waitFor(async () => (await fetch(`${DRIVER}/status`)).ok, "tauri-driver");
   return async () => {
+    mockServer.close();
     for (const child of children) child.kill("SIGTERM");
     await sleep(500);
   };
@@ -94,6 +145,11 @@ class Session {
       value: this.css(testId),
     });
     return el[ELEMENT];
+  }
+
+  /** What the stubbed browser opener has been asked to open so far. */
+  openedUrls() {
+    return existsSync(openLog) ? readFileSync(openLog, "utf8").split("\n").filter(Boolean) : [];
   }
 
   /** Waits for an element to exist and returns its id. */

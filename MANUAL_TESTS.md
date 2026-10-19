@@ -287,6 +287,8 @@ Start from an open family with at least one person.
 
 ## Version and update check
 
+🤖 Rows 1–9 are automated against a local fake of GitHub's latest-release endpoint (no release, up to date, network cut, newer release, Download, Dismiss across a restart, re-check, a still newer release). The system browser is replaced by a recorder, so that the page really opens in **your** browser is the one thing left to see once.
+
 | #   | Action                                                                                  | Expected                                                                          |
 | --- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | 1   | Launch the app, look at the window title bar and the taskbar                            | "Genealogigi 0.1.0".                                                              |
@@ -417,6 +419,8 @@ Start from an open family with at least one person.
 | 3   | Narrow the window gradually                          | The chart shrinks with it; only below ~45% of its size does a scroll bar appear.                              |
 
 ## Update invitation
+
+🤖 Rows 1 and 2 are automated (the banner shows the version and link; the button and the link both ask the browser to open the release). Row 3 (browser cannot be opened) stays manual; it is covered by the unit and browser e2e tests.
 
 | #   | Action                                                             | Expected                                                             |
 | --- | ------------------------------------------------------------------ | -------------------------------------------------------------------- |
