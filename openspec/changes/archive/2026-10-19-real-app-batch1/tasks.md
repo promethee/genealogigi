@@ -1,0 +1,3 @@
+- [x] Harness helpers
+- [x] data.test.mjs
+- [x] MANUAL_TESTS rows marked

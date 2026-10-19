@@ -154,6 +154,59 @@ class Session {
     );
   }
 
+  /** The nth element (0-based) with this test id. */
+  async nth(testId, index) {
+    const els = await this.cmd("POST", "/elements", {
+      using: "css selector",
+      value: this.css(testId),
+    });
+    if (!els[index]) throw new Error(`No element ${index} for [${testId}]`);
+    return els[index][ELEMENT];
+  }
+
+  async typeNth(testId, index, text) {
+    const el = await this.nth(testId, index);
+    await this.cmd("POST", `/element/${el}/clear`, {});
+    await this.cmd("POST", `/element/${el}/value`, { text });
+  }
+
+  /** Chooses an option of a <select> by value or visible label, like a user would. */
+  async select(testId, valueOrLabel, index = 0) {
+    await this.eval(
+      `const el = document.querySelectorAll(arguments[0])[arguments[2]];
+       const opt = [...el.options].find((o) => o.value === arguments[1] || o.textContent.trim() === arguments[1]);
+       if (!opt) throw new Error("no option " + arguments[1]);
+       el.value = opt.value;
+       el.dispatchEvent(new Event("change", { bubbles: true }));`,
+      this.css(testId),
+      valueOrLabel,
+      index,
+    );
+  }
+
+  /** Texts of every element with this test id. */
+  async all(testId) {
+    return this.eval(
+      "return [...document.querySelectorAll(arguments[0])].map((e) => e.textContent.trim());",
+      this.css(testId),
+    );
+  }
+
+  /** Clicks a button inside the first list row (person or relationship) containing this text. */
+  async clickInRow(rowTestId, rowText, buttonTestId) {
+    const done = await this.eval(
+      `const row = [...document.querySelectorAll(arguments[0])].find((r) => r.textContent.includes(arguments[1]));
+       const button = row && row.querySelector(arguments[2]);
+       if (!button) return false;
+       button.click();
+       return true;`,
+      this.css(rowTestId),
+      rowText,
+      this.css(buttonTestId),
+    );
+    if (!done) throw new Error(`No ${buttonTestId} in a ${rowTestId} containing "${rowText}"`);
+  }
+
   /** Polls a script until it returns something truthy. */
   async until(script, what, timeout = 15_000) {
     return waitFor(() => this.eval(script), what, timeout);

@@ -11,3 +11,10 @@ The project SHALL provide an automated suite that runs the real desktop app and 
 #### Scenario: Restart
 - **WHEN** the suite creates a family and restarts the app
 - **THEN** Resume offers the same file
+
+### Requirement: Saved data is checked on the real disk
+The real-app suite SHALL verify the saved file contents and persistence across restarts for people, relationships and events.
+
+#### Scenario: Restart
+- **WHEN** relationships exist and the app restarts
+- **THEN** the same relationships are listed

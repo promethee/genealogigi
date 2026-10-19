@@ -25,6 +25,8 @@ native dialogs, real files, and the Tauri settings store.
 
 ## Person record
 
+🤖 Rows 1–9 are automated against the real app and disk (empty message, add, last-name-only, no-name error, file contents, restart, delete with cancel/confirm). Row 10 (save failure) is automated for CI only: it needs a non-root user to make a folder read-only; run it by hand if you skip CI.
+
 Start from a created or opened family file.
 
 | #   | Action                                                      | Expected                                                                         |
@@ -41,6 +43,8 @@ Start from a created or opened family file.
 | 10  | Make the file read-only, then add a person                  | An error is shown and the person is not listed. Restore the file after.          |
 
 ## Relationships
+
+🤖 Rows 2, 3, 8, 9, 10 are automated (link saved, cycle refused, restart, delete with cancel/confirm, cascade message and file). Rows 1, 4–7 are covered by the browser e2e tests.
 
 Start from a family with at least two people (for example Ada and Byron).
 
@@ -97,6 +101,8 @@ Start from an open family with at least one person.
 
 ## Person dates and life status
 
+🤖 Rows 1, 3 (partly) and 8 are automated (list text and the file's `raw`/`...Known` fields for a full date and a deceased status). The error rows are covered by the browser e2e tests.
+
 | #   | Action                                                                          | Expected                                                                                                           |
 | --- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | 1   | Add person Ada, birth 10 December 1815, status Deceased, death 27 November 1852 | List shows "born 10 Dec 1815 · died 27 Nov 1852".                                                                  |
@@ -110,6 +116,8 @@ Start from an open family with at least one person.
 | 9   | Tree tab, root Ada                                                              | The box shows "1815–1852" under the name.                                                                          |
 
 ## Several names per person
+
+🤖 Rows 2, 9 and 10 are automated (married name with kind and year in the file; editing only the birth date keeps the names).
 
 | #   | Action                                                                                              | Expected                                                                                         |
 | --- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -126,6 +134,8 @@ Start from an open family with at least one person.
 
 ## Step, foster and guardian parents
 
+🤖 Rows 1 and 8 are automated for a step link with status and dates (the file has them).
+
 | #   | Action                                                                                      | Expected                                                                 |
 | --- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | 1   | Add Ada and Byron. Parent of: Ada -> Byron, nature Step, status Ended, start 1990, end 1995 | Row "Ada is parent of Byron (step, 1990–1995)".                          |
@@ -138,6 +148,8 @@ Start from an open family with at least one person.
 | 8   | Open the file in a text editor                                                              | Temporary links have `status`, `startDate` and (if ended) `endDate`.     |
 
 ## Edit relationships
+
+🤖 Row 2 (restart) is covered by the relationships restart check; the edit form itself is covered by the browser e2e tests.
 
 | #   | Action                                                               | Expected                                            |
 | --- | -------------------------------------------------------------------- | --------------------------------------------------- |
@@ -189,6 +201,8 @@ Start from an open family with at least one person.
 | 7   | Click into a year box in the form                                                            | No stray autofill suggestion (e.g. "1981") appears.                          |
 
 ## Language (English / French)
+
+🤖 Rows 8 and 10 are automated (language kept across restarts; no French text in the file).
 
 | #   | Action                                                                    | Expected                                                                        |
 | --- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -311,6 +325,8 @@ Start from an open family with at least one person.
 | 7   | Open any person card                                                                                    | An explicit **Close** button (text, no "X" icon) closes it.                                   |
 
 ## Timeline and events
+
+🤖 Rows 3 and 11 are automated (an event is saved to the file with its people, and is still on the card after a restart).
 
 | #   | Action                                                                                | Expected                                                                                |
 | --- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
