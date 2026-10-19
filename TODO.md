@@ -196,3 +196,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-19 (buttons by titles)** — "Add person" and "Add relationship" now sit left of their list titles (the relationship submit button uses `form="rel-form"`); the toolbar keeps the search centred and the People/Tree switch on the right. French relationships title is "Lien / filiation".
 
 - **2026-10-19 (real-app-tests)** — The manual list that needs the real shell now runs automatically: `npm run test:real` (15 checks) drives the real Tauri app via tauri-driver under Xvfb: welcome flow, real file contents, atomic writes, restart persistence, export, import with dated and hashed backup, share page, language/theme settings, missing remembered file, window title. Dev-only dialog seam in `tauri.ts`. On-demand/weekly workflow `real-app.yml` (not verified in CI yet). Still manual: OS dialog look, window icon, update check, Windows specifics. Archived `real-app-tests`.
+
+- **2026-10-19 (real-app CI)** — The on-demand `Real app` workflow ran green on GitHub (Ubuntu, Xvfb, tauri-driver): the 15 real-shell checks pass in CI as well as locally.
