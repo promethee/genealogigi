@@ -310,3 +310,7 @@ Decision: in dev only, the update check can be pointed at a local fake endpoint 
 ## Real-app OS settings (2026-10-19)
 
 Decision: the OS dark mode and language are exercised with real settings (GTK_THEME and a real fr_FR locale), one stack per file because the environment is fixed when the driver starts. The window icon stays manual: it cannot be observed on Linux, and Windows is the target.
+
+## Manual tests pruned (2026-10-19)
+
+Decision: keep manual tests only for what automation cannot judge. Rows already covered by a browser e2e test or a real-app check were removed rather than kept as duplicates; they live in git history. The checklist ends with a "Last run" table so each release records a date and result.

@@ -100,8 +100,10 @@ files and newer schema versions are refused, damaged items are dropped and repor
   per feature.
 - **Rust tests** for the native commands.
 - **CI on Windows**: format, lint, type-check, unit, build, e2e and Rust checks on every push.
-- Real file dialogs and real files are covered by the checklist in
-  [MANUAL_TESTS.md](./MANUAL_TESTS.md).
+- **Real-app tests** drive the actual Tauri window (real files, settings, restarts, image decoding,
+  update check, OS theme and language) on Linux under a virtual display: `npm run test:real`.
+- What a machine cannot judge (native OS dialogs, the window icon, how it looks) is a short
+  22-row checklist in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
 
 ## Getting started
 
