@@ -27,11 +27,11 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## 2. The window and the installer
 
-| #   | Action                                                   | Expected                                                                                         |
-| --- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 7   | Rebuild (`cargo clean -p genealogigi` if needed), launch | Title bar and taskbar say "Genealogigi 0.1.0" with the **tree icon** (one trunk, four branches). |
-| 8   | Alt-Tab, pin to the taskbar                              | The same tree icon everywhere.                                                                   |
-| 9   | Installer (once published): install, launch, uninstall   | Installs without warnings you cannot explain, starts, removes cleanly. Icon in Explorer.         |
+| #   | Action                                                   | Expected                                                                                                                         |
+| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | Rebuild (`cargo clean -p genealogigi` if needed), launch | Title bar and taskbar say "Genealogigi 0.1.0" with the **tree icon** (one trunk, four branches). The window opens **maximized**. |
+| 8   | Alt-Tab, pin to the taskbar                              | The same tree icon everywhere.                                                                                                   |
+| 9   | Installer (once published): install, launch, uninstall   | Installs without warnings you cannot explain, starts, removes cleanly. Icon in Explorer.                                         |
 
 ## 3. Windows settings and the real browser
 
@@ -55,11 +55,11 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## 5. Wording and the outside world
 
-| #   | Action                                                                                  | Expected                                                                                                           |
-| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Personne centrale". |
-| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, print preview is clean.                                   |
-| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone.                                      |
+| #   | Action                                                                                  | Expected                                                                                                                        |
+| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Personne centrale".              |
+| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, **Tree** view shows everyone and fits a phone, print preview is clean. |
+| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone.                                                   |
 
 ## Last run
 

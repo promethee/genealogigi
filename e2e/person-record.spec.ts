@@ -76,7 +76,7 @@ test("deleting asks for confirmation and respects cancel", async ({ page }) => {
   await addPerson(page, "Ada", "");
 
   await page.evaluate(() => localStorage.setItem("fake:confirm", "no"));
-  await page.getByTestId("person-name").click(); // Delete lives on the person card
+  await page.getByTestId("view-person").click(); // Delete lives on the person card
   await page.getByTestId("detail-delete").click();
   await expect(page.getByTestId("person-row")).toHaveCount(1);
   await expect(page.getByTestId("person-card")).toBeVisible();

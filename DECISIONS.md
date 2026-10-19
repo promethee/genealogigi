@@ -325,4 +325,8 @@ Decision: the family name is asked at creation and lives in the file (`FamilyDat
 
 ## Friendly write errors and name case (2026-10-19)
 
-A failed write reads "Could not write to {file}. Check that the file is present and writable." (detail in the console). Names are stored lowercase and shown capitalized per word/hyphen/apostrophe; existing files are not migrated. Known limit: "McDonald" displays "Mcdonald". See `openspec/changes/friendly-write-error-and-name-case`.
+A failed write reads "Could not write to {file}. Check that the file is present and writable." (detail in the console). Names are stored exactly as typed (trimmed) and displayed with the first letter of each part in uppercase ("mcDonald" shows "McDonald"); nothing is lowercased, so no migration is needed. See `openspec/changes/friendly-write-error-and-name-case`.
+
+## Whole-family tree, UI polish (2026-10-19)
+
+A pure `buildFamilyTree` lays out everyone once (rows by generation, couples together) for both the Tree tab ("Everyone") and the shared page's Tree view (layout computed at export, drawn with SVG). Share confirmation is a "safe" tone (green Confirm). Partner segments use their own colour. The window starts maximized. See `openspec/changes/whole-family-tree` and `ui-polish-3`.

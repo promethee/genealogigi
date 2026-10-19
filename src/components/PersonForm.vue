@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { monthNames } from "../data/dates.ts";
 import { t } from "../i18n/index.ts";
 import type { NewPersonParents } from "../data/createPerson.ts";
@@ -18,6 +18,12 @@ import {
 import type { PersonId } from "../data/types.ts";
 import AppIcon from "./AppIcon.vue";
 import NameEntriesEditor from "./NameEntriesEditor.vue";
+
+const formEl = ref<HTMLFormElement | null>(null);
+// The first thing to type is the first name: the cursor is already there.
+onMounted(() =>
+  formEl.value?.querySelector<HTMLInputElement>('[data-testid="first-name"]')?.focus(),
+);
 
 const props = defineProps<{
   initial: PersonFormValues;
@@ -93,7 +99,7 @@ const birthYearExample = computed(() =>
 </script>
 
 <template>
-  <form class="flex flex-col gap-4" @submit.prevent="submit">
+  <form ref="formEl" class="flex flex-col gap-4" @submit.prevent="submit">
     <NameEntriesEditor
       v-model="form.firstNames"
       :title="t('form.firstNames')"

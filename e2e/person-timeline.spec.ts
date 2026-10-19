@@ -46,7 +46,12 @@ async function person(
 }
 
 async function open(page: Page, name: string): Promise<void> {
-  await page.getByTestId("person-name").filter({ hasText: name }).first().click();
+  await page
+    .getByTestId("person-row")
+    .filter({ hasText: name })
+    .first()
+    .getByTestId("view-person")
+    .click();
 }
 
 async function start(page: Page): Promise<void> {

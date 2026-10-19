@@ -4,12 +4,13 @@ import { answerConfirm, pendingConfirm } from "../lib/confirmDialog.ts";
 import { t } from "../i18n/index.ts";
 
 const cancelButton = ref<HTMLButtonElement | null>(null);
+const okButton = ref<HTMLButtonElement | null>(null);
 
-// Cancel is focused first: the safe answer for destructive questions.
+// Cancel is focused first: the safe answer for destructive questions; Confirm for harmless ones.
 watch(pendingConfirm, async (value) => {
   if (!value) return;
   await nextTick();
-  cancelButton.value?.focus();
+  (value.safe ? okButton : cancelButton).value?.focus();
 });
 </script>
 
@@ -39,12 +40,17 @@ watch(pendingConfirm, async (value) => {
         <button
           ref="cancelButton"
           data-testid="confirm-cancel"
-          class="btn btn-danger"
+          :class="pendingConfirm.safe ? 'btn btn-secondary' : 'btn btn-danger'"
           @click="answerConfirm(false)"
         >
           {{ t("common.cancel") }}
         </button>
-        <button data-testid="confirm-ok" class="btn btn-secondary" @click="answerConfirm(true)">
+        <button
+          ref="okButton"
+          data-testid="confirm-ok"
+          :class="pendingConfirm.safe ? 'btn btn-primary' : 'btn btn-secondary'"
+          @click="answerConfirm(true)"
+        >
           {{ t("confirm.ok") }}
         </button>
       </div>

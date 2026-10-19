@@ -91,7 +91,7 @@ test("the search is in French too", async ({ page }) => {
   await expect(page.getByTestId("search-none")).toHaveText("Aucune personne trouvée.");
 });
 
-test("toolbar: search in the centre, People/Tree switch on the right", async ({ page }) => {
+test("toolbar: search in the centre, People/Tree switch on the left", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await build(page);
   await page.getByTestId("tab-list").click();
@@ -99,7 +99,7 @@ test("toolbar: search in the centre, People/Tree switch on the right", async ({ 
   const tab = (await page.getByTestId("tab-list").boundingBox())!;
   const middle = (b: { y: number; height: number }) => b.y + b.height / 2;
   expect(Math.abs(middle(tab) - middle(search))).toBeLessThan(20);
-  expect(search.x + search.width).toBeLessThan(tab.x);
+  expect(tab.x + tab.width).toBeLessThan(search.x);
   expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30); // centred in the window
 });
 
@@ -123,7 +123,7 @@ test("Add person sits left of the People title; Add relationship left of the Rel
   expect(Math.abs(middle(add) - middle(rel))).toBeLessThan(4);
 });
 
-test("the Tree tab keeps the search centred and the switch on the right", async ({ page }) => {
+test("the Tree tab keeps the search centred and the switch on the left", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await build(page);
   await page.getByTestId("tab-tree").click();
@@ -131,7 +131,7 @@ test("the Tree tab keeps the search centred and the switch on the right", async 
   const search = (await page.getByTestId("search").boundingBox())!;
   const tab = (await page.getByTestId("tab-tree").boundingBox())!;
   expect(Math.abs(search.x + search.width / 2 - 700)).toBeLessThan(30);
-  expect(tab.x).toBeGreaterThan(search.x + search.width);
+  expect(tab.x + tab.width).toBeLessThanOrEqual(search.x);
 });
 
 test("there is no Sync with Git button (parked for v2)", async ({ page }) => {

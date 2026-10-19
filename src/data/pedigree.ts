@@ -33,6 +33,8 @@ export interface PedigreeEdge {
 export interface Pedigree {
   nodes: PedigreeNode[];
   edges: PedigreeEdge[];
+  /** Couples to join with a horizontal segment (the whole-family chart only). */
+  partners?: { aKey: string; bKey: string }[];
   /** Number of levels (rows of boxes) used. */
   levels: number;
   /** Number of leaf slots used (width of the chart in boxes). */

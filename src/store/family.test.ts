@@ -239,7 +239,7 @@ describe("family store: people", () => {
     if (!id) throw new Error("no person");
     expect(await store.editPerson(id, { firstName: "Ada", lastName: "Lovelace" })).toBe(true);
     expect(store.data?.people[0]?.id).toBe(id);
-    expect(store.data?.people[0]?.names?.lastNames?.[0]?.value).toBe("lovelace");
+    expect(store.data?.people[0]?.names?.lastNames?.[0]?.value).toBe("Lovelace");
   });
 
   it("deletes after confirmation", async () => {

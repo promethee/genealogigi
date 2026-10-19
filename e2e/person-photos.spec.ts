@@ -71,8 +71,9 @@ async function start(page: Page, ...names: string[]): Promise<void> {
 
 const open = (page: Page, name: string) =>
   page
-    .getByTestId("person-name")
-    .filter({ hasText: new RegExp(`^${name}$`) })
+    .getByTestId("person-row")
+    .filter({ has: page.getByTestId("person-name").filter({ hasText: new RegExp(`^${name}$`) }) })
+    .getByTestId("view-person")
     .click();
 
 const saved = (page: Page) =>

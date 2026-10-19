@@ -169,7 +169,34 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
         class="grid items-center gap-3 sm:grid-cols-[1fr_minmax(14rem,28rem)_1fr]"
         data-testid="toolbar"
       >
-        <div aria-hidden="true"></div>
+        <nav
+          class="inline-flex justify-self-start rounded-xl bg-slate-200/70 p-1 text-sm font-medium"
+        >
+          <button
+            data-testid="tab-list"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'list'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'list'"
+          >
+            {{ t("tab.people") }}
+          </button>
+          <button
+            data-testid="tab-tree"
+            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
+            :class="
+              tab === 'tree'
+                ? 'bg-surface text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            "
+            @click="tab = 'tree'"
+          >
+            {{ t("tab.tree") }}
+          </button>
+        </nav>
         <div
           class="relative w-full min-w-0"
           data-testid="search-box"
@@ -219,34 +246,7 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             {{ t("search.none") }}
           </p>
         </div>
-        <nav
-          class="inline-flex justify-self-end rounded-xl bg-slate-200/70 p-1 text-sm font-medium"
-        >
-          <button
-            data-testid="tab-list"
-            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-            :class="
-              tab === 'list'
-                ? 'bg-surface text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            "
-            @click="tab = 'list'"
-          >
-            {{ t("tab.people") }}
-          </button>
-          <button
-            data-testid="tab-tree"
-            class="cursor-pointer rounded-lg px-4 py-1.5 transition"
-            :class="
-              tab === 'tree'
-                ? 'bg-surface text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            "
-            @click="tab = 'tree'"
-          >
-            {{ t("tab.tree") }}
-          </button>
-        </nav>
+        <div aria-hidden="true"></div>
       </div>
 
       <div v-if="tab === 'tree'" class="card p-5">
@@ -320,14 +320,11 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
                 <span class="flex min-w-0 items-center gap-3">
                   <PersonAvatar :person="person" size="md" />
                   <span class="min-w-0">
-                    <button
+                    <span
                       data-testid="person-name"
-                      class="block max-w-full cursor-pointer truncate text-left font-medium text-slate-900 hover:text-link hover:underline"
-                      :title="t('detail.open', { name: displayName(person) })"
-                      @click="viewing = person.id"
+                      class="block max-w-full truncate font-medium text-slate-900"
+                      >{{ displayName(person) }}</span
                     >
-                      {{ displayName(person) }}
-                    </button>
                     <span
                       v-if="lifeSummary(person)"
                       data-testid="person-life"

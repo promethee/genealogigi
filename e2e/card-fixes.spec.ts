@@ -60,8 +60,9 @@ async function family(page: Page): Promise<void> {
 
 const open = (page: Page, name: string) =>
   page
-    .getByTestId("person-name")
-    .filter({ hasText: new RegExp(`^${name}$`) })
+    .getByTestId("person-row")
+    .filter({ has: page.getByTestId("person-name").filter({ hasText: new RegExp(`^${name}$`) }) })
+    .getByTestId("view-person")
     .click();
 
 test("'Child born' says 'with' the child's other parent, never the child", async ({ page }) => {

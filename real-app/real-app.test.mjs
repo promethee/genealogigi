@@ -110,7 +110,7 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
     await app.wait("person-row");
     const data = readJson(fam);
     assert.equal(data.people.length, 1);
-    assert.equal(data.people[0].names.firstNames[0].value, "ada");
+    assert.equal(data.people[0].names.firstNames[0].value, "Ada");
     assert.deepEqual(tmpFiles(), []);
   });
 
@@ -266,6 +266,7 @@ describe("export, import with backup, share (real files)", () => {
       html.match(/<script type="application\/json" id="data">(.*?)<\/script>/s)[1],
     );
     assert.equal(data.people.length, 2);
+    assert.equal(data.tree.nodes.length, 2); // the Tree view of the page is part of the file
   });
 });
 

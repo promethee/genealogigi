@@ -13,7 +13,7 @@ A failed write SHALL show "Could not write to {file}. Check that the file is pre
 - **THEN** the error names the file in plain words and the family in memory is unchanged
 
 ### Requirement: Name case
-Names SHALL be saved in lowercase and displayed capitalized (first letter of each word, hyphen and apostrophe part).
+Names SHALL be saved as typed and displayed with the first letter of each word, hyphen and apostrophe part in uppercase.
 
 #### Scenario: Typed in capitals
 - **WHEN** "JEAN-PIERRE" is saved as a first name

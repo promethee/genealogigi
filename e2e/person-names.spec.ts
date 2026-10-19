@@ -68,7 +68,7 @@ test("adds a nickname and a married name with a year", async ({ page }) => {
   const file = await page.evaluate(() => localStorage.getItem("fake:file:C:/families/names.json"));
   const names = JSON.parse(file ?? "null").people[0].names;
   expect(names.firstNames.map((n: { kind: string }) => n.kind)).toEqual(["birth", "nickname"]);
-  expect(names.lastNames[1]).toMatchObject({ value: "king", kind: "married" });
+  expect(names.lastNames[1]).toMatchObject({ value: "King", kind: "married" });
   expect(names.lastNames[1].date.yearKnown).toBe(true);
 });
 

@@ -1,0 +1,3 @@
+- [x] familyTree.ts + unit tests
+- [x] Tree tab "Everyone" + e2e/whole-family-tree.spec.ts
+- [x] Share model tree + page viewer + e2e in share-web-page.spec.ts

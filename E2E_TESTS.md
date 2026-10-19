@@ -252,9 +252,9 @@ The lists below are generated from the test files; the counts drift, the files a
 - list view: Enter or a result opens the card
 - tree view: matches are highlighted and a result focuses the tree on them
 - the search is in French too
-- toolbar: search in the centre, People/Tree switch on the right
+- toolbar: search in the centre, People/Tree switch on the left
 - Add person sits left of the People title; Add relationship left of the Relationships title
-- the Tree tab keeps the search centred and the switch on the right
+- the Tree tab keeps the search centred and the switch on the left
 - there is no Sync with Git button (parked for v2)
 - the people list has a title with an icon, like the relationships
 - Enter closes the suggestions, and typing opens them again
@@ -374,7 +374,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - deleting a relationship respects cancel and confirm
 - deleting a person also removes their relationships
 
-### `e2e/share-web-page.spec.ts` (7)
+### `e2e/share-web-page.spec.ts` (9)
 
 - Share is disabled until there are two people and one relationship
 - French explains why Share is disabled
@@ -383,6 +383,8 @@ The lists below are generated from the test files; the counts drift, the files a
 - hostile text in a name is shown as text and never runs
 - on a phone the list and the card alternate, with a Back button
 - the page is written in the app's language
+- the exported page has a Tree view with everyone; a box opens that person
+- the Tree view shows partners in their own colour and fits the window
 
 ### `e2e/temporary-parents.spec.ts` (4)
 
@@ -427,6 +429,15 @@ The lists below are generated from the test files; the counts drift, the files a
 - optionally records the parents as partners, once
 - French labels
 
+### `e2e/ui-polish-3.spec.ts` (6)
+
+- opening the person form puts the cursor in the first name
+- the People / Tree switch sits on the left, before the search box
+- a person's name in the list is plain text, not a clickable control
+- the share confirmation is green and neutral; a delete confirmation keeps its warning look
+- in the small family tree the partner segment has its own colour
+- a name is saved as typed and shown with its first letter in uppercase
+
 ### `e2e/ui-polish.spec.ts` (12)
 
 - the language switch shows a flag and the language's own name
@@ -455,6 +466,13 @@ The lists below are generated from the test files; the counts drift, the files a
 - fresh start shows welcome with Resume disabled
 - create new, then resume after restart
 - opening a corrupt file shows an error and stays on welcome
+
+### `e2e/whole-family-tree.spec.ts` (4)
+
+- Everyone shows every person exactly once, linked, with the controls it does not need hidden
+- Everyone joins partners with a segment in the partner colour
+- clicking a box in Everyone opens that person's card
+- switching back to a focused view restores the controls
 
 ### `e2e/wide-layout.spec.ts` (2)
 

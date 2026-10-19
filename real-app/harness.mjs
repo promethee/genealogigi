@@ -184,9 +184,31 @@ class Session {
   async click(testId) {
     const el = await this.wait(testId);
     // The page scrolls inside the window: bring the target to the middle so the click lands on it.
-    await this.eval("arguments[0].scrollIntoView({ block: 'center' });", { [ELEMENT]: el });
+    // Instant (no smooth scrolling), then wait until the element has stopped moving.
+    await this.eval("arguments[0].scrollIntoView({ block: 'center', behavior: 'instant' });", {
+      [ELEMENT]: el,
+    });
+    let last = "";
+    for (let still = 0; still < 3;) {
+      const rect = await this.eval(
+        "const r = arguments[0].getBoundingClientRect(); return r.x + ',' + r.y;",
+        { [ELEMENT]: el },
+      );
+      still = rect === last ? still + 1 : 0;
+      last = rect;
+      await new Promise((r) => setTimeout(r, 40));
+    }
+    // The page can shift under the pointer between mouse-down and mouse-up (focus scrolling in the
+    // small test window), so the click never reaches the button: detect that and click directly.
+    await this.eval(
+      "const e = arguments[0]; window.__gigiClicked = false; e.addEventListener('click', () => { window.__gigiClicked = true; }, { once: true });",
+      { [ELEMENT]: el },
+    );
     try {
       await this.cmd("POST", `/element/${el}/click`, {});
+      if (!(await this.eval("return window.__gigiClicked;"))) {
+        await this.eval("arguments[0].click();", { [ELEMENT]: el });
+      }
     } catch (err) {
       // A tooltip or an animating overlay can briefly cover the target: click it directly.
       if (!/intercepted/.test(String(err.message))) throw err;

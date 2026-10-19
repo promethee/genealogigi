@@ -6,11 +6,11 @@
 ## What changes
 
 - Every write (save, export, import backup, import, share) reports "Could not write to {file}. Check that the file is present and writable."; the technical detail goes to the console.
-- Names are stored in lowercase and displayed with each part capitalized (after a space, hyphen or apostrophe).
+- Names are stored as typed and displayed with the first letter of each part capitalized (after a space, hyphen or apostrophe).
 
 ## Impact
 
-Name values in `.gigi` files are lowercase from now on. Existing files keep their stored case until a person is edited; display capitalizes either way.
+Name values are saved exactly as typed; display capitalizes the first letter of each part.
 
 ## Also in this change
 

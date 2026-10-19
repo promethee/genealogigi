@@ -29,6 +29,7 @@ import {
 } from "../data/people.ts";
 import type { PersonId } from "../data/types.ts";
 import { useFamilyStore } from "../store/index.ts";
+import { buildFamilyTree } from "../data/familyTree.ts";
 import AppIcon from "./AppIcon.vue";
 import PersonDetail from "./PersonDetail.vue";
 import TreeAvatar from "./TreeAvatar.vue";
@@ -57,7 +58,8 @@ const editing = ref(false);
 // Everything is shown by default; the focused person only decides who the chart is centred on.
 const generations = ref(ALL_GENERATIONS);
 // Both directions and the root's siblings by default: the fullest picture of the family.
-const direction = ref<PedigreeDirection>("hourglass");
+// "everyone" draws the whole family, every person once (not centred on anyone).
+const direction = ref<PedigreeDirection | "everyone">("hourglass");
 const showSiblings = ref(true);
 
 const people = computed(() => family.data?.people ?? []);
@@ -124,18 +126,17 @@ const rootId = computed<PersonId | null>(() => {
   return chosen?.id ?? people.value[0]?.id ?? null;
 });
 
-const pedigree = computed(() =>
-  family.data && rootId.value
-    ? buildPedigree(
-        family.data,
-        rootId.value,
-        clampGenerations(generations.value),
-        direction.value,
-        // The parents are not drawn in the descendants view, so siblings would float unlinked.
-        { siblings: showSiblings.value && direction.value !== "descendants" },
-      )
-    : null,
-);
+const pedigree = computed(() => {
+  const data = family.data;
+  const mode = direction.value;
+  if (!data) return null;
+  if (mode === "everyone") return buildFamilyTree(data);
+  if (!rootId.value) return null;
+  return buildPedigree(data, rootId.value, clampGenerations(generations.value), mode, {
+    // The parents are not drawn in the descendants view, so siblings would float unlinked.
+    siblings: showSiblings.value && mode !== "descendants",
+  });
+});
 
 const selected = computed(() => people.value.find((p) => p.id === selectedId.value));
 
@@ -205,6 +206,24 @@ const edgePaths = computed(() =>
   }),
 );
 
+/** Horizontal segments between partners (whole-family chart), from the left box's right side. */
+const partnerLines = computed(() =>
+  (pedigree.value?.partners ?? []).flatMap((c) => {
+    const a = positions.value.get(c.aKey);
+    const b = positions.value.get(c.bKey);
+    if (!a || !b) return [];
+    const [left, right] = a.x <= b.x ? [a, b] : [b, a];
+    return [
+      {
+        key: `${c.aKey}&${c.bKey}`,
+        x1: left.x + BOX_WIDTH,
+        x2: right.x,
+        y: left.y + BOX_HEIGHT / 2,
+      },
+    ];
+  }),
+);
+
 // Second line of a box: "née Martin · 1950–" (either part may be missing).
 const lifespans = computed(
   () =>
@@ -237,7 +256,7 @@ function fullName(id: PersonId): string {
 
     <template v-else>
       <div class="mb-4 flex flex-wrap items-end gap-4">
-        <label class="label">
+        <label v-if="direction !== 'everyone'" class="label">
           {{ t("tree.root") }}
           <select
             :value="rootId ?? ''"
@@ -256,9 +275,10 @@ function fullName(id: PersonId): string {
             <option value="ancestors">{{ t("tree.ancestors") }}</option>
             <option value="descendants">{{ t("tree.descendants") }}</option>
             <option value="hourglass">{{ t("tree.hourglass") }}</option>
+            <option value="everyone">{{ t("tree.everyone") }}</option>
           </select>
         </label>
-        <label class="label">
+        <label v-if="direction !== 'everyone'" class="label">
           {{ t("tree.generations") }}
           <select v-model.number="generations" data-testid="tree-generations" class="input">
             <option :value="ALL_GENERATIONS">{{ t("tree.generations.all") }}</option>
@@ -266,7 +286,7 @@ function fullName(id: PersonId): string {
           </select>
         </label>
         <label
-          v-if="direction !== 'descendants'"
+          v-if="direction !== 'descendants' && direction !== 'everyone'"
           class="flex items-center gap-2 pb-2 text-sm text-slate-600"
         >
           <input
@@ -278,6 +298,12 @@ function fullName(id: PersonId): string {
           {{ t("tree.siblings") }}
         </label>
         <p class="flex items-center gap-4 text-xs text-slate-500" data-testid="tree-legend">
+          <span v-if="direction === 'everyone'" class="flex items-center gap-1">
+            <svg width="28" height="6">
+              <line x1="0" y1="3" x2="28" y2="3" stroke="var(--tree-partner)" stroke-width="3" />
+            </svg>
+            {{ t("tree.legend.partners") }}
+          </span>
           <span class="flex items-center gap-1">
             <svg width="28" height="6">
               <line x1="0" y1="3" x2="28" y2="3" stroke="var(--tree-edge)" stroke-width="2" />
@@ -382,6 +408,7 @@ function fullName(id: PersonId): string {
       </div>
 
       <div
+        v-if="direction !== 'everyone'"
         class="mb-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600"
         data-testid="focus-stats"
       >
@@ -435,6 +462,18 @@ function fullName(id: PersonId): string {
             stroke-width="2"
             stroke-linejoin="round"
             :stroke-dasharray="edge.dashed ? '5 4' : undefined"
+          />
+          <line
+            v-for="couple in partnerLines"
+            :key="couple.key"
+            data-testid="tree-partner"
+            :x1="couple.x1"
+            :x2="couple.x2"
+            :y1="couple.y"
+            :y2="couple.y"
+            stroke="var(--tree-partner)"
+            stroke-width="3"
+            stroke-linecap="round"
           />
           <g
             v-for="node in pedigree.nodes"

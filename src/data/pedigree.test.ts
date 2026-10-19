@@ -115,7 +115,7 @@ describe("buildPedigree", () => {
     const p = buildPedigree(data, id("Me"), 2);
     expect(p.levels).toBe(3);
     expect(personsAt(p, 3, data)).toEqual([]);
-    expect(personsAt(buildPedigree(data, id("Me"), 3), 3, data)).toEqual(["Greatgran"]);
+    expect(personsAt(buildPedigree(data, id("Me"), 3), 3, data)).toEqual(["GreatGran"]);
   });
 
   it("draws a shared ancestor once per path", () => {
@@ -351,9 +351,7 @@ describe("vertical levels", () => {
   const family = () => build(["Gran", "Mum", "Dad", "Me", "Kid"], links);
   const levelOf = (p: Pedigree, data: FamilyData, name: string) =>
     p.nodes.find(
-      (n) =>
-        data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value ===
-        name.toLowerCase(),
+      (n) => data.people.find((x) => x.id === n.personId)?.names?.firstNames?.[0]?.value === name,
     )?.level;
 
   it("puts ancestors above the root: the root is on the deepest level", () => {

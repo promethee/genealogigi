@@ -1,5 +1,6 @@
 import { avatarColors, initialsOf } from "./avatar.ts";
 import { formatDate } from "./dates.ts";
+import { buildFamilyTree } from "./familyTree.ts";
 import { displayName, lifeSummary } from "./people.ts";
 import { natureLabel } from "./relationships.ts";
 import { relativesOf } from "./relatives.ts";
@@ -40,6 +41,28 @@ export interface SharePerson {
   timeline: ShareTimelineEntry[];
 }
 
+export interface ShareTreeNode {
+  id: PersonId;
+  name: string;
+  life: string;
+  initials: string;
+  tint: string;
+  ink: string;
+  /** Horizontal slot and row (generation) on the whole-family chart; the page scales them. */
+  slot: number;
+  level: number;
+}
+
+/** The whole-family chart, laid out here so the page only has to draw it. */
+export interface ShareTree {
+  nodes: ShareTreeNode[];
+  /** Parent-child links, from the child up to the parent; dashed unless biological and confirmed. */
+  edges: { from: PersonId; to: PersonId; dashed: boolean }[];
+  partners: { a: PersonId; b: PersonId }[];
+  levels: number;
+  slots: number;
+}
+
 export interface ShareModel {
   title: string;
   lang: string;
@@ -53,8 +76,15 @@ export interface ShareModel {
     back: string;
     footer: string;
     count: string;
+    tree: string;
+    fit: string;
+    actualSize: string;
+    legendConfirmed: string;
+    legendOther: string;
+    legendPartners: string;
   };
   people: SharePerson[];
+  tree: ShareTree;
 }
 
 /** A page is only worth sharing when there are at least two people and one link between them. */
@@ -119,6 +149,32 @@ export function buildShareModel(
     };
   });
 
+  const chart = buildFamilyTree(data);
+  const tree: ShareTree = {
+    nodes: chart.nodes.map((n) => {
+      const person = byId.get(n.personId);
+      const colors = person ? avatarColors(person) : { tint: "#94a3b8", ink: "#0f172a" };
+      return {
+        id: n.personId,
+        name: nameOf(n.personId),
+        life: person ? lifeSummary(person) : "",
+        initials: person ? initialsOf(person) : "?",
+        tint: colors.tint,
+        ink: colors.ink,
+        slot: n.slot,
+        level: n.level,
+      };
+    }),
+    edges: chart.edges.map((e) => ({
+      from: e.fromKey as PersonId, // keys are person ids on this chart
+      to: e.toKey as PersonId,
+      dashed: e.nature !== "biological-confirmed",
+    })),
+    partners: (chart.partners ?? []).map((c) => ({ a: c.aKey as PersonId, b: c.bKey as PersonId })),
+    levels: chart.levels,
+    slots: chart.slots,
+  };
+
   return {
     title: options.title,
     lang: options.lang,
@@ -132,7 +188,14 @@ export function buildShareModel(
       back: t("share.back"),
       footer: t("share.footer"),
       count: tn("summary.people", data.people.length),
+      tree: t("tab.tree"),
+      fit: t("share.fit"),
+      actualSize: t("share.actualSize"),
+      legendConfirmed: t("tree.legend.confirmed"),
+      legendOther: t("tree.legend.other"),
+      legendPartners: t("tree.legend.partners"),
     },
     people,
+    tree,
   };
 }

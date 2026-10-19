@@ -61,7 +61,12 @@ const lines = computed(() => {
     if (e.kind === "partner") {
       const y = a.y + BOX_H / 2;
       return [
-        { key: `${e.fromKey}>${e.toKey}`, d: `M ${a.x + BOX_W} ${y} H ${b.x}`, dashed: e.dashed },
+        {
+          key: `${e.fromKey}>${e.toKey}`,
+          d: `M ${a.x + BOX_W} ${y} H ${b.x}`,
+          dashed: e.dashed,
+          partner: true,
+        },
       ];
     }
     const down = b.y > a.y;
@@ -75,6 +80,7 @@ const lines = computed(() => {
         key: `${e.fromKey}>${e.toKey}`,
         d: `M ${x1} ${y1} V ${mid} H ${x2} V ${y2}`,
         dashed: e.dashed,
+        partner: false,
       },
     ];
   });
@@ -106,9 +112,10 @@ const lines = computed(() => {
           :key="line.key"
           data-testid="mini-edge"
           :data-dashed="line.dashed"
+          :data-partner="line.partner"
           :d="line.d"
           fill="none"
-          stroke="var(--tree-edge)"
+          :stroke="line.partner ? 'var(--tree-partner)' : 'var(--tree-edge)'"
           stroke-width="1.5"
           :stroke-dasharray="line.dashed ? '4 3' : undefined"
         />

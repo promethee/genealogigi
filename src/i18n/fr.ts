@@ -243,6 +243,8 @@ export const fr: Record<MessageKey, string> = {
   "family.namePlaceholder": "ex. Famille Laurent",
   "family.rename": "Renommer",
   "prompt.ok": "OK",
+  "share.fit": "Ajuster à la fenêtre",
+  "share.actualSize": "Taille réelle",
   "share.back": "Retour à la liste",
   "share.footer": "Partagé depuis Genealogigi",
   "share.confirm":
@@ -276,6 +278,8 @@ export const fr: Record<MessageKey, string> = {
   "tree.ancestors": "Ascendants",
   "tree.descendants": "Descendants",
   "tree.hourglass": "Sablier (les deux)",
+  "tree.everyone": "Tout le monde (toute la famille)",
+  "tree.legend.partners": "partenaires",
   "tree.generations": "Générations",
   "tree.siblings": "Afficher la fratrie / sororité",
   "tree.legend.confirmed": "biologique, confirmé",

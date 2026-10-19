@@ -239,6 +239,8 @@ export const en = {
   "family.namePlaceholder": "e.g. Laurent family",
   "family.rename": "Rename",
   "prompt.ok": "OK",
+  "share.fit": "Fit to window",
+  "share.actualSize": "Actual size",
   "share.back": "Back to the list",
   "share.footer": "Shared from Genealogigi",
   "share.confirm":
@@ -272,6 +274,8 @@ export const en = {
   "tree.ancestors": "Ancestors",
   "tree.descendants": "Descendants",
   "tree.hourglass": "Hourglass (both)",
+  "tree.everyone": "Everyone (whole family)",
+  "tree.legend.partners": "partners",
   "tree.generations": "Generations",
   "tree.siblings": "Show siblings",
   "tree.legend.confirmed": "biological, confirmed",

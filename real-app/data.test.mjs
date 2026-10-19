@@ -95,7 +95,7 @@ describe("people: saved file, restart, delete", () => {
     assert.match(await app.text("loaded-summary"), /1 person/);
 
     const ada = readJson(file).people[0];
-    assert.equal(ada.names.firstNames[0].value, "ada");
+    assert.equal(ada.names.firstNames[0].value, "Ada");
     assert.equal(ada.names.firstNames[0].kind, "birth");
     assert.equal(ada.born.birthDate.raw.slice(0, 10), "1815-12-10");
     assert.deepEqual(

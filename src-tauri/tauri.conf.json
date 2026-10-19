@@ -10,7 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [{ "title": "Genealogigi", "width": 1100, "height": 750 }],
+    "windows": [{ "title": "Genealogigi", "width": 1100, "height": 750, "maximized": true }],
     "security": { "csp": null }
   },
   "bundle": {

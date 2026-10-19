@@ -416,7 +416,11 @@ export function defineFamilyStore(
         }
         try {
           const base = baseName(openPath).replace(/\.[^.]+$/, "");
-          if (!(await platform.confirm(t("share.confirm", { file: baseName(openPath) })))) {
+          if (
+            !(await platform.confirm(t("share.confirm", { file: baseName(openPath) }), {
+              tone: "safe",
+            }))
+          ) {
             return false;
           }
           const target = await platform.saveFileDialog({

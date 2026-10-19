@@ -1,0 +1,2 @@
+- [x] Focus, tab switch, plain name, confirm tone, partner colour, maximized
+- [x] e2e/ui-polish-3.spec.ts

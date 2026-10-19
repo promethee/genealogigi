@@ -59,8 +59,9 @@ async function family(page: Page): Promise<void> {
 
 const open = (page: Page, name: string) =>
   page
-    .getByTestId("person-name")
-    .filter({ hasText: new RegExp(`^${name}$`) })
+    .getByTestId("person-row")
+    .filter({ has: page.getByTestId("person-name").filter({ hasText: new RegExp(`^${name}$`) }) })
+    .getByTestId("view-person")
     .click();
 const node = (page: Page, text: string) =>
   page.getByTestId("mini-node").filter({ hasText: new RegExp(`^${text}`) });

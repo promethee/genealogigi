@@ -18,7 +18,8 @@ export type GitStatus = "no-git" | "not-repo" | "no-remote" | "ready";
 export interface PlatformAPI {
   openFileDialog(options?: { extensions?: string[] }): Promise<string | null>;
   saveFileDialog(options?: { defaultName?: string; extensions?: string[] }): Promise<string | null>;
-  confirm(message: string): Promise<boolean>;
+  /** `tone: "safe"` is for harmless actions (green Confirm, neutral Cancel); the default is for risky ones. */
+  confirm(message: string, options?: { tone?: "safe" }): Promise<boolean>;
   /**
    * Asks for a line of text (null = cancelled). Optional: a shell without it simply does not ask,
    * and the app behaves as it did before the question existed.

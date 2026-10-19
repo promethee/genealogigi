@@ -206,3 +206,66 @@ test("the page is written in the app's language", async ({ page, browser }) => {
   await expect(viewer.locator("#count")).toHaveText("2 personnes");
   await viewer.close();
 });
+
+test("the exported page has a Tree view with everyone; a box opens that person", async ({
+  page,
+  browser,
+}) => {
+  const url = await buildAndShare(page);
+  const viewer = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+  await viewer.goto(url);
+  await expect(viewer.locator("#views")).toContainText("Tree");
+  await viewer.locator("#v-tree").click();
+  expect(viewer.url()).toContain("#tree");
+  await expect(viewer.locator("#treeview")).toBeVisible();
+  await expect(viewer.locator("main")).toBeHidden();
+  await expect(viewer.locator("#treesvg .tn")).toHaveCount(3); // everyone, once
+  await expect(viewer.locator("#treesvg .te")).toHaveCount(1); // Paul is Odile's parent
+  await viewer.locator("#treesvg .tn", { hasText: "Odile" }).click();
+  await expect(viewer.locator("#card h2")).toHaveText("Odile Laurent");
+  await expect(viewer.locator("#treeview")).toBeHidden();
+  await viewer.locator("#v-tree").click();
+  await expect(viewer.locator("#treesvg .tn.cur")).toContainText("Odile"); // the open person is marked
+  await viewer.close();
+});
+
+test("the Tree view shows partners in their own colour and fits the window", async ({
+  page,
+  browser,
+}) => {
+  await page.goto("/");
+  await page.getByTestId("create").click();
+  await addPerson(page, "Paul", "Laurent");
+  await addPerson(page, "Odile", "Laurent");
+  await page.getByTestId("rel-kind").selectOption("partner");
+  await page.getByTestId("rel-first").selectOption({ label: "Paul Laurent" });
+  await page.getByTestId("rel-second").selectOption({ label: "Odile Laurent" });
+  await page.getByTestId("rel-add").click();
+  await page.getByTestId("share").click();
+  const html = await page.evaluate(() => localStorage.getItem("fake:file:C:/share/page.html"));
+  const dir = mkdtempSync(join(tmpdir(), "gigi-share-"));
+  writeFileSync(join(dir, "page.html"), html!);
+  const viewer = await browser.newPage({ viewport: { width: 300, height: 800 } });
+  await viewer.goto(`file://${join(dir, "page.html")}#tree`);
+  await expect(viewer.locator("#treesvg .tp")).toHaveCount(1);
+  const stroke = (sel: string) =>
+    viewer
+      .locator(sel)
+      .first()
+      .evaluate((el) => getComputedStyle(el).stroke);
+  expect(await stroke("#treesvg .tp")).not.toBe(await stroke("#treesvg .tn rect"));
+  const fitted = await viewer
+    .locator("#treesvg")
+    .evaluate((el) => Number(el.getAttribute("width")));
+  expect(fitted).toBeLessThanOrEqual(300);
+  await viewer.locator("#actual").click();
+  const actual = await viewer
+    .locator("#treesvg")
+    .evaluate((el) => Number(el.getAttribute("width")));
+  expect(actual).toBeGreaterThan(fitted);
+  await viewer.locator("#fit").click();
+  expect(await viewer.locator("#treesvg").evaluate((el) => Number(el.getAttribute("width")))).toBe(
+    fitted,
+  );
+  await viewer.close();
+});

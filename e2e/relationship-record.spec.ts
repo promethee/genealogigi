@@ -111,7 +111,7 @@ test("deleting a relationship respects cancel and confirm", async ({ page }) => 
 test("deleting a person also removes their relationships", async ({ page }) => {
   await familyWith(page, "Ada", "Byron");
   await link(page, "parent", "Ada", "Byron");
-  await page.getByTestId("person-name").first().click();
+  await page.getByTestId("person-row").first().getByTestId("view-person").click();
   await page.getByTestId("detail-delete").click();
   await expect(page.getByTestId("person-row")).toHaveCount(1);
   await expect(page.getByTestId("relationships-empty")).toBeVisible();

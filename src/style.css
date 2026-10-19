@@ -18,6 +18,8 @@
   --tree-root: #ecfdf5;
   --tree-root-stroke: #059669;
   --tree-edge: #94a3b8;
+  /* The link between partners, apart from the parent/child lines. */
+  --tree-partner: #e11d48;
   --tree-text: #0f172a;
   --tree-muted: #64748b;
 }
@@ -49,6 +51,7 @@
   --tree-root: #06392c;
   --tree-root-stroke: #34d399;
   --tree-edge: #64748b;
+  --tree-partner: #fb7185;
   --tree-text: #f1f5f9;
   --tree-muted: #98a6bd;
 }

@@ -89,7 +89,7 @@ test("clicking a name opens a read-only card with names, birth and death places"
   page,
 }) => {
   await sample(page);
-  await page.getByTestId("person-name").first().click();
+  await page.getByTestId("person-row").first().getByTestId("view-person").click();
   await expect(page.getByTestId("person-card")).toBeVisible();
   await expect(page.getByTestId("detail-name")).toHaveText("Ada Byron");
   await expect(page.getByTestId("detail-born")).toHaveText("born 1815 in London");
@@ -103,7 +103,11 @@ test("clicking a name opens a read-only card with names, birth and death places"
 
 test("relatives are listed and open that person's card", async ({ page }) => {
   await sample(page);
-  await page.getByTestId("person-name").filter({ hasText: "Byron King" }).click();
+  await page
+    .getByTestId("person-row")
+    .filter({ hasText: "Byron King" })
+    .getByTestId("view-person")
+    .click();
   await expect(page.getByTestId("detail-parents")).toContainText("Ada Byron");
   await expect(page.getByTestId("detail-parents")).toContainText("Cleo King");
   await expect(page.getByTestId("detail-siblings")).toContainText("Sis King");
@@ -118,7 +122,7 @@ test("relatives are listed and open that person's card", async ({ page }) => {
 test("a person without data shows a quiet card with no empty sections", async ({ page }) => {
   await newFamily(page);
   await person(page, { first: "Solo" });
-  await page.getByTestId("person-name").click();
+  await page.getByTestId("view-person").click();
   await expect(page.getByTestId("detail-parents")).toHaveCount(0);
   await expect(page.getByTestId("detail-children")).toHaveCount(0);
   await expect(page.getByTestId("detail-siblings")).toHaveCount(0);
@@ -127,7 +131,7 @@ test("a person without data shows a quiet card with no empty sections", async ({
 
 test("Edit opens the form, saving returns to the card", async ({ page }) => {
   await sample(page);
-  await page.getByTestId("person-name").first().click();
+  await page.getByTestId("person-row").first().getByTestId("view-person").click();
   await page.getByTestId("detail-edit").click();
   await expect(page.getByTestId("birth-place")).toHaveValue("London");
   await expect(page.getByTestId("death-place")).toHaveValue("Paris");
@@ -141,7 +145,11 @@ test("Edit opens the form, saving returns to the card", async ({ page }) => {
 test("Delete exists only on the card and asks for confirmation", async ({ page }) => {
   await sample(page);
   await expect(page.getByTestId("delete-person")).toHaveCount(0);
-  await page.getByTestId("person-name").filter({ hasText: "Sis King" }).click();
+  await page
+    .getByTestId("person-row")
+    .filter({ hasText: "Sis King" })
+    .getByTestId("view-person")
+    .click();
   await page.evaluate(() => localStorage.setItem("fake:confirm", "no"));
   await page.getByTestId("detail-delete").click();
   await expect(page.getByTestId("person-row")).toHaveCount(4);
@@ -160,7 +168,7 @@ test("a birth place without a date is saved, a living person has no death place"
   await page.getByTestId("birth-place").fill("Lyon");
   await expect(page.getByTestId("death-place")).toHaveCount(0);
   await page.getByTestId("submit-person").click();
-  await page.getByTestId("person-name").click();
+  await page.getByTestId("view-person").click();
   await expect(page.getByTestId("detail-born")).toHaveText("born in Lyon");
   const file = await page.evaluate(() => localStorage.getItem("fake:file:C:/families/names.json"));
   expect(JSON.parse(file ?? "null").people[0].born).toMatchObject({ birthPlace: "Lyon" });
@@ -178,7 +186,7 @@ test("saved places are suggested", async ({ page }) => {
 
 test("the card is French in French", async ({ page }) => {
   await sample(page);
-  await page.getByTestId("person-name").first().click();
+  await page.getByTestId("person-row").first().getByTestId("view-person").click();
   await page.getByTestId("lang-fr").click();
   await expect(page.getByTestId("detail-born")).toHaveText("né(e) 1815 à London");
   await expect(page.getByTestId("detail-status")).toHaveText("décédé(e) 1852 à Paris");

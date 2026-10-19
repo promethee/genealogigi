@@ -67,8 +67,8 @@ test("marriage: the married name becomes main and the list shows the birth name 
 
   const file = await page.evaluate(() => localStorage.getItem("fake:file:C:/families/names.json"));
   const last = JSON.parse(file ?? "null").people[0].names.lastNames;
-  expect(last[0]).toMatchObject({ value: "martin", kind: "birth" });
-  expect(last[1]).toMatchObject({ value: "dubois", kind: "married", primary: true });
+  expect(last[0]).toMatchObject({ value: "Martin", kind: "birth" });
+  expect(last[1]).toMatchObject({ value: "Dubois", kind: "married", primary: true });
 });
 
 test("a first-name change does not become the main name by itself", async ({ page }) => {
