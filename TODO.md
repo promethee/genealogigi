@@ -254,3 +254,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (what's left)** — TODO.md now starts with "What's left": before going public (manual run, fixes, switch visibility), the 1.0.0 release (waits for the owner's go), the v2 backlog and what was decided against. Stale `[~]` statuses closed. The owner confirmed: author email stays, LICENSE name stays, old session links stay.
 
 - **2026-10-19 (E2E_TESTS.md)** — The automated checks are now catalogued in `E2E_TESTS.md` (generated lists of the 51 real-app and 239 browser tests, plus the former manual steps by feature with the test files that check them). `MANUAL_TESTS.md` keeps only the 22 human rows and points to it.
+
+- **2026-10-19 (share needs a family)** — Share as web page is disabled (with an explanation) until the family has at least two people and one relationship; the store refuses too (`canShareFamily`). Archived `share-needs-family`.

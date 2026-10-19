@@ -236,6 +236,8 @@ export const fr: Record<MessageKey, string> = {
   "form.notesHint": "Souvenirs, anecdotes, tout ce qui mérite d'être gardé…",
   "detail.notes": "Notes",
   "header.share": "Partager en page web…",
+  "share.needFamily":
+    "Ajoutez au moins deux personnes et un lien de parenté pour partager la famille.",
   "share.back": "Retour à la liste",
   "share.footer": "Partagé depuis Genealogigi",
   "share.confirm":

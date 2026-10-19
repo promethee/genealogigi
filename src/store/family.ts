@@ -17,7 +17,7 @@ import {
   type ImportWarning,
 } from "../data/importFamily.ts";
 import { renderShareHtml } from "../data/shareHtml.ts";
-import { buildShareModel } from "../data/shareModel.ts";
+import { buildShareModel, canShareFamily } from "../data/shareModel.ts";
 import { locale } from "../i18n/index.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
@@ -332,6 +332,10 @@ export function defineFamilyStore(
         if (!openPath || !data.value) return false;
         notice.value = null;
         warnings.value = [];
+        if (!canShareFamily(data.value)) {
+          error.value = t("share.needFamily");
+          return false;
+        }
         try {
           const base = baseName(openPath).replace(/\.[^.]+$/, "");
           if (!(await platform.confirm(t("share.confirm", { file: baseName(openPath) })))) {

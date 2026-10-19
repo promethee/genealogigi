@@ -595,6 +595,22 @@ describe("family store: import and close", () => {
   });
 });
 
+describe("family store: share as web page", () => {
+  it("refuses a family without two people and a relationship, and writes nothing", async () => {
+    const { store, platform, raw } = makeStore({
+      saveResult: "/s/family.gigi",
+      confirmResult: true,
+    });
+    const writeRaw = vi.spyOn(platform.data, "writeRaw");
+    await store.createNew();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    expect(await store.shareWebPage()).toBe(false);
+    expect(store.error).toBe("Add at least two people and one relationship to share the family.");
+    expect(writeRaw).not.toHaveBeenCalled();
+    expect([...raw.keys()].some((k) => k.endsWith(".html"))).toBe(false);
+  });
+});
+
 describe("family store: person dates", () => {
   it("saves dates through add and edit, and reports invalid dates without saving", async () => {
     const made = makeStore({ saveResult: "/d/family.json" });

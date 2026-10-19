@@ -233,6 +233,7 @@ export const en = {
   "form.notesHint": "Memories, stories, anything worth keeping…",
   "detail.notes": "Notes",
   "header.share": "Share as web page…",
+  "share.needFamily": "Add at least two people and one relationship to share the family.",
   "share.back": "Back to the list",
   "share.footer": "Shared from Genealogigi",
   "share.confirm":

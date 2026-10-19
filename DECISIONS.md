@@ -314,3 +314,7 @@ Decision: the OS dark mode and language are exercised with real settings (GTK_TH
 ## Manual tests pruned (2026-10-19)
 
 Decision: keep manual tests only for what automation cannot judge. Rows already covered by a browser e2e test or a real-app check were removed rather than kept as duplicates; they live in git history. The checklist ends with a "Last run" table so each release records a date and result.
+
+## Share needs a family (2026-10-19)
+
+Decision: one pure rule, `canShareFamily` (>= 2 people and >= 1 relationship), drives both the disabled button (with a tooltip) and the store guard. The button stays visible so the feature is discoverable.

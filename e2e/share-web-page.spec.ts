@@ -69,12 +69,51 @@ async function buildAndShare(page: Page): Promise<string> {
   return `file://${file}`;
 }
 
+test("Share is disabled until there are two people and one relationship", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("create").click();
+  const share = page.getByTestId("share");
+  await expect(share).toBeDisabled(); // nobody yet
+  await expect(share).toHaveAttribute("title", /at least two people and one relationship/);
+
+  await addPerson(page, "Paul", "Laurent");
+  await expect(share).toBeDisabled(); // one person
+  await addPerson(page, "Odile", "Laurent");
+  await expect(share).toBeDisabled(); // two people, no relationship
+
+  await page.getByTestId("rel-kind").selectOption("parent");
+  await page.getByTestId("rel-first").selectOption({ label: "Paul Laurent" });
+  await page.getByTestId("rel-second").selectOption({ label: "Odile Laurent" });
+  await page.getByTestId("rel-add").click();
+  await expect(share).toBeEnabled();
+  await expect(share).not.toHaveAttribute("title", /./);
+
+  // Deleting the only relationship disables it again.
+  await page.getByTestId("delete-relationship").click();
+  await expect(share).toBeDisabled();
+});
+
+test("French explains why Share is disabled", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("create").click();
+  await page.getByTestId("lang-fr").click();
+  await expect(page.getByTestId("share")).toHaveAttribute(
+    "title",
+    "Ajoutez au moins deux personnes et un lien de parenté pour partager la famille.",
+  );
+});
+
 test("declining the warning writes nothing; the warning says everyone is included", async ({
   page,
 }) => {
   await page.goto("/");
   await page.getByTestId("create").click();
   await addPerson(page, "Paul", "Laurent");
+  await addPerson(page, "Odile", "Laurent");
+  await page.getByTestId("rel-kind").selectOption("parent");
+  await page.getByTestId("rel-first").selectOption({ label: "Paul Laurent" });
+  await page.getByTestId("rel-second").selectOption({ label: "Odile Laurent" });
+  await page.getByTestId("rel-add").click();
   await page.evaluate(() => localStorage.setItem("fake:confirm", "no"));
   await page.getByTestId("share").click();
   const message = await page.evaluate(() => localStorage.getItem("fake:lastConfirm"));
@@ -151,6 +190,11 @@ test("the page is written in the app's language", async ({ page, browser }) => {
   await page.getByTestId("lang-fr").click();
   await page.getByTestId("create").click();
   await addPerson(page, "Paul", "Laurent");
+  await addPerson(page, "Odile", "Laurent");
+  await page.getByTestId("rel-kind").selectOption("parent");
+  await page.getByTestId("rel-first").selectOption({ label: "Paul Laurent" });
+  await page.getByTestId("rel-second").selectOption({ label: "Odile Laurent" });
+  await page.getByTestId("rel-add").click();
   await page.getByTestId("share").click();
   const html = await page.evaluate(() => localStorage.getItem("fake:file:C:/share/page.html"));
   expect(html).toContain('<html lang="fr">');
@@ -159,6 +203,6 @@ test("the page is written in the app's language", async ({ page, browser }) => {
   writeFileSync(join(dir, "p.html"), html!);
   const viewer = await browser.newPage();
   await viewer.goto(`file://${join(dir, "p.html")}`);
-  await expect(viewer.locator("#count")).toHaveText("1 personne");
+  await expect(viewer.locator("#count")).toHaveText("2 personnes");
   await viewer.close();
 });

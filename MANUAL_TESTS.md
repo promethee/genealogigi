@@ -2,7 +2,7 @@
 
 What a machine cannot judge. Everything else runs by itself:
 
-- **Browser end-to-end tests** (`npm run e2e`, 239 tests): every screen and rule, against a fake shell.
+- **Browser end-to-end tests** (`npm run e2e`, 241 tests): every screen and rule, against a fake shell.
 - **Real-app tests** (`npm run test:real`, 51 checks): the real Tauri window, real files, real settings,
   real restarts, real image decoding, the update check against a fake release endpoint, OS dark mode
   and language. Native file dialogs are answered by a scripted seam there.
@@ -16,14 +16,14 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## 1. Native dialogs (the real OS windows)
 
-| #   | Action                                                                         | Expected                                                                                        |
-| --- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| 1   | **Create new family…**                                                         | Windows Save dialog, default name `family.gigi`, filter shows `.gigi`. Cancel does nothing.     |
-| 2   | Create a family, then **Create new family…** again and pick that existing file | Windows asks to replace it; both answers behave sensibly (No keeps the file untouched).         |
-| 3   | **Open family file…**                                                          | Windows Open dialog lists `.gigi` and `.json` files.                                            |
-| 4   | **Export…** and **Share as web page…**                                         | Save dialogs suggest `family-export.gigi` and `family-page.html` (French: `page-famille.html`). |
-| 5   | **Import…**                                                                    | Open dialog; after choosing a file the in-app confirmation (not a Windows box) appears.         |
-| 6   | Person card → **Add photos**                                                   | Windows picker filtered to images, several files selectable; a large phone/camera photo works.  |
+| #   | Action                                                                                                | Expected                                                                                        |
+| --- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 1   | **Create new family…**                                                                                | Windows Save dialog, default name `family.gigi`, filter shows `.gigi`. Cancel does nothing.     |
+| 2   | Create a family, then **Create new family…** again and pick that existing file                        | Windows asks to replace it; both answers behave sensibly (No keeps the file untouched).         |
+| 3   | **Open family file…**                                                                                 | Windows Open dialog lists `.gigi` and `.json` files.                                            |
+| 4   | **Export…** and **Share as web page…** (the latter needs a family with two people and a relationship) | Save dialogs suggest `family-export.gigi` and `family-page.html` (French: `page-famille.html`). |
+| 5   | **Import…**                                                                                           | Open dialog; after choosing a file the in-app confirmation (not a Windows box) appears.         |
+| 6   | Person card → **Add photos**                                                                          | Windows picker filtered to images, several files selectable; a large phone/camera photo works.  |
 
 ## 2. The window and the installer
 

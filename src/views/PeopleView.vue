@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { searchPeople } from "../data/search.ts";
+import { canShareFamily } from "../data/shareModel.ts";
 import type { NewPersonParents } from "../data/createPerson.ts";
 import { isParentChild } from "../data/relationships.ts";
 import AppIcon from "../components/AppIcon.vue";
@@ -34,6 +35,8 @@ const formTarget = ref<"new" | PersonId | null>(null);
 
 /** The person whose detail card is open (read-only), or null. */
 const viewing = ref<PersonId | null>(null);
+
+const canShare = computed(() => (family.data ? canShareFamily(family.data) : false));
 
 const search = ref("");
 const tree = ref<InstanceType<typeof PedigreeTree> | null>(null);
@@ -104,7 +107,14 @@ async function submit(input: PersonFormInput, parents?: NewPersonParents): Promi
             <AppIcon name="download" />
             {{ t("header.export") }}
           </button>
-          <button data-testid="share" class="btn btn-secondary" @click="family.shareWebPage()">
+          <button
+            data-testid="share"
+            class="btn btn-secondary"
+            :disabled="!canShare"
+            :title="canShare ? undefined : t('share.needFamily')"
+            :aria-description="canShare ? undefined : t('share.needFamily')"
+            @click="family.shareWebPage()"
+          >
             <AppIcon name="globe" />
             {{ t("header.share") }}
           </button>

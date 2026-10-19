@@ -57,6 +57,11 @@ export interface ShareModel {
   people: SharePerson[];
 }
 
+/** A page is only worth sharing when there are at least two people and one link between them. */
+export function canShareFamily(data: FamilyData): boolean {
+  return data.people.length >= 2 && data.relationships.length >= 1;
+}
+
 export function buildShareModel(
   data: FamilyData,
   options: { title: string; lang: string; today: Date },

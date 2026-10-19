@@ -6,7 +6,7 @@ is in [MANUAL_TESTS.md](./MANUAL_TESTS.md).
 | Suite                           | Command             | Checks          | What it drives                                                                                             |
 | ------------------------------- | ------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
 | Unit (Vitest)                   | `npm test`          | 379             | The data layer, i18n parity, contrast, version consistency                                                 |
-| Browser end-to-end (Playwright) | `npm run e2e`       | 239             | The real UI and store in a browser against a fake shell, one spec per feature                              |
+| Browser end-to-end (Playwright) | `npm run e2e`       | 241             | The real UI and store in a browser against a fake shell, one spec per feature                              |
 | Real app (WebDriver)            | `npm run test:real` | 51 (50 as root) | The real Tauri window: real files, settings, restarts, image decoding, update check, OS theme and language |
 | Rust                            | `cargo test --lib`  | 7               | Native commands                                                                                            |
 
@@ -360,8 +360,10 @@ The lists below are generated from the test files; the counts drift, the files a
 - deleting a relationship respects cancel and confirm
 - deleting a person also removes their relationships
 
-### `e2e/share-web-page.spec.ts` (5)
+### `e2e/share-web-page.spec.ts` (7)
 
+- Share is disabled until there are two people and one relationship
+- French explains why Share is disabled
 - declining the warning writes nothing; the warning says everyone is included
 - the exported page lists people, searches, and follows relatives
 - hostile text in a name is shown as text and never runs

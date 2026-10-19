@@ -196,7 +196,23 @@ describe("export, import with backup, share (real files)", () => {
             },
           },
         ],
-        relationships: [],
+        relationships: [
+          {
+            id: uuid(9),
+            type: "partner",
+            personAId: uuid(1),
+            personBId: uuid(2),
+            status: "ongoing",
+            startDate: {
+              raw: "0001-01-01T00:00",
+              yearKnown: false,
+              monthKnown: false,
+              dayKnown: false,
+              hourKnown: false,
+              minuteKnown: false,
+            },
+          },
+        ],
       }),
     );
     await app.answerDialogs({ open: [incoming] });

@@ -1,0 +1,3 @@
+- [x] canShareFamily + store guard
+- [x] Disabled button with explanation, i18n en/fr
+- [x] Tests (unit, e2e, real-app)

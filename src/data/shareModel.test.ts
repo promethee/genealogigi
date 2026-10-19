@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { addPerson } from "./people.ts";
 import { addParentChild, addPartners } from "./relationships.ts";
 import { addEvent } from "./events.ts";
-import { buildShareModel } from "./shareModel.ts";
+import { buildShareModel, canShareFamily } from "./shareModel.ts";
 import type { FamilyData } from "./types.ts";
 
 const d = (year: string, month = "", day = "") => ({ year, month, day });
@@ -80,5 +80,19 @@ describe("buildShareModel", () => {
   it("does not repeat a person that has nothing to say", () => {
     expect(person("claire").notes).toBe("");
     expect(person("claire").photos).toEqual([]);
+  });
+});
+
+describe("canShareFamily", () => {
+  const { f } = family();
+  const empty: FamilyData = { schemaVersion: 1, people: [], relationships: [] };
+
+  it("needs at least two people and one relationship", () => {
+    expect(canShareFamily(empty)).toBe(false);
+    expect(canShareFamily({ ...f, relationships: [] })).toBe(false); // people, but no link
+    expect(canShareFamily({ ...f, people: f.people.slice(0, 1) })).toBe(false); // one person
+    expect(canShareFamily(f)).toBe(true);
+    const two = { ...f, people: f.people.slice(0, 2), relationships: f.relationships.slice(0, 1) };
+    expect(canShareFamily(two)).toBe(true); // exactly the minimum
   });
 });
