@@ -338,3 +338,7 @@ Choosing a person already picked in another field empties that field (relationsh
 ## Tree opens on Everyone (2026-10-19)
 
 The Tree tab defaults to the whole-family view; the shared page tree shows portraits and is centred. See `openspec/changes/tree-default-everyone`.
+
+## App version in the family file (2026-10-19)
+
+Every write adds `savedWith` (informational, no schema bump). See `openspec/changes/saved-with-version`.

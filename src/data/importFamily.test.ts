@@ -48,6 +48,13 @@ describe("a file the app wrote", () => {
     expect(result.summary).toEqual({ people: 2, relationships: 1, events: 1, photos: 1 });
   });
 
+  it("does not carry over the app version of the file it came from", () => {
+    const text = JSON.stringify({ ...real(), savedWith: "9.9.9" });
+    const result = parse(text);
+    expect(result.warnings).toEqual([]);
+    expect(result.data.savedWith).toBeUndefined(); // the next save stamps the current version
+  });
+
   it("accepts an empty family, and an old file without events or photos, without warnings", () => {
     expect(parse(empty).warnings).toEqual([]);
     expect(parse(empty).summary).toEqual({ people: 0, relationships: 0, events: 0, photos: 0 });

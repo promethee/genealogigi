@@ -1,5 +1,6 @@
 import { createPinia, setActivePinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { APP_VERSION } from "../appInfo.ts";
 import { addPerson, displayName } from "../data/people.ts";
 import { addPartners } from "../data/relationships.ts";
 import type { FamilyData } from "../data/types.ts";
@@ -174,7 +175,7 @@ describe("family store: welcome screen", () => {
       const path = "/new/family.json";
       const { store, files, getLastPath } = makeStore({ saveResult: path });
       await store.createNew();
-      expect(files.get(path)).toEqual(EMPTY);
+      expect(files.get(path)).toEqual({ ...EMPTY, savedWith: APP_VERSION });
       expect(store.filePath).toBe(path);
       expect(getLastPath()).toBe(path);
     });
@@ -201,6 +202,19 @@ describe("family store: people", () => {
     expect(await store.addPerson({ firstName: "Ada", lastName: "Lovelace" })).toBe(true);
     expect(store.data?.people).toHaveLength(1);
     expect(files.get(path)?.people).toHaveLength(1);
+  });
+
+  it("records the app version that wrote the file, replacing an older one", async () => {
+    const { store, files, path } = await loadedStore();
+    await store.addPerson({ firstName: "Ada", lastName: "" });
+    expect(files.get(path)?.savedWith).toBe(APP_VERSION);
+    const stale = files.get(path) as FamilyData;
+    files.set(path, { ...stale, savedWith: "0.0.1" });
+    await store.closeFamily();
+    await store.resume(); // reopens the file with the older stamp
+    expect(store.data?.savedWith).toBe("0.0.1");
+    await store.addPerson({ firstName: "Byron", lastName: "" });
+    expect(files.get(path)?.savedWith).toBe(APP_VERSION);
   });
 
   it("survives a restart: a fresh store resumes and sees the person", async () => {

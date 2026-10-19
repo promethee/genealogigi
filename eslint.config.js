@@ -29,4 +29,17 @@ export default tseslint.config(
       globals: { process: "readonly", fetch: "readonly", setTimeout: "readonly" },
     },
   },
+  {
+    // The screenshot script: Node, plus code that runs inside the page (localStorage, window).
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        URL: "readonly",
+        console: "readonly",
+        localStorage: "readonly",
+        window: "readonly",
+      },
+    },
+  },
 );

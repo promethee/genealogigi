@@ -1,0 +1,1 @@
+- [x] Type, store stamp, import drops it, tests (unit, e2e, real-app), README format snippet

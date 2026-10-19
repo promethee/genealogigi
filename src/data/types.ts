@@ -225,6 +225,8 @@ export interface FamilyEvent {
 
 export interface FamilyData {
   schemaVersion: 1;
+  /** The app version that last wrote this file (information only; set on every save). */
+  savedWith?: string;
   /** What this family is called, to tell several files apart. Optional: older files have none. */
   name?: string;
   people: Person[];

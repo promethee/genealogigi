@@ -99,6 +99,7 @@ describe("welcome screen (real file dialogs seam, real files and settings)", () 
     assert.equal(await app.text("loaded-path"), fam);
     assert.match(await app.text("loaded-summary"), /0 people · 0 relationships/);
     assert.equal(readJson(fam).schemaVersion, 1);
+    assert.equal(readJson(fam).savedWith, version); // the app version that wrote the file
     assert.deepEqual(tmpFiles(), []);
   });
 

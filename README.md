@@ -82,6 +82,7 @@ be migrated:
 ```jsonc
 {
   "schemaVersion": 1,
+  "savedWith": "1.0.0", // the app version that last wrote the file (information only)
   "people": [ /* names, born, lifeStatus, notes, photos */ ],
   "relationships": [ /* parent-child (nature, status, dates) and partnerships */ ],
   "events": [ /* marriage, residence, ... linked to one or more people */ ]

@@ -380,6 +380,11 @@ The lists below are generated from the test files; the counts drift, the files a
 - a search that finds nobody says so; clearing it brings every line back
 - filtering the lines never narrows the choices of the relationship form
 
+### `e2e/saved-with.spec.ts` (2)
+
+- the family file records the app version that wrote it
+- an older stamp is replaced by the next save
+
 ### `e2e/share-web-page.spec.ts` (11)
 
 - Share is disabled until there are two people and one relationship

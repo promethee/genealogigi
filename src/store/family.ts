@@ -19,6 +19,7 @@ import {
 import { renderShareHtml } from "../data/shareHtml.ts";
 import { buildShareModel, canShareFamily } from "../data/shareModel.ts";
 import { cleanFamilyName, fileNameForFamily } from "../data/familyName.ts";
+import { APP_VERSION } from "../appInfo.ts";
 import { locale } from "../i18n/index.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
 import { t, tn } from "../i18n/index.ts";
@@ -104,8 +105,10 @@ export function defineFamilyStore(
      * the operating system's wording; the technical detail goes to the console.
      */
     async function writeFamily(path: string, family: FamilyData): Promise<void> {
+      // Every write records which app version wrote the file.
+      const stamped: FamilyData = { ...family, savedWith: APP_VERSION };
       try {
-        await platform.data.save(path, family);
+        await platform.data.save(path, stamped);
       } catch (err) {
         console.error(err);
         throw new Error(t("store.writeFailed", { file: fileNameOf(path) }), { cause: err });
