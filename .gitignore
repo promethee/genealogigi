@@ -25,3 +25,9 @@ playwright-report/
 # Stray family files written by tests/dev runs
 src-tauri/*.json
 !src-tauri/tauri.conf.json
+
+# Real family data must never be committed by accident
+*.gigi
+*.backup-*
+.env
+.env.*
