@@ -1,6 +1,8 @@
 mod git;
 
 use std::path::Path;
+use tauri::image::Image;
+use tauri::Manager;
 
 #[tauri::command]
 fn git_status(file_path: String) -> git::GitStatus {
@@ -26,6 +28,16 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .setup(|app| {
+            // Set the window icon from the file itself (include_bytes! makes Cargo rebuild when it
+            // changes), so the title bar and taskbar never keep a stale icon.
+            if let Some(window) = app.get_webview_window("main") {
+                if let Ok(icon) = Image::from_bytes(include_bytes!("../icons/icon.png")) {
+                    let _ = window.set_icon(icon);
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![git_status, git_sync])
         .run(tauri::generate_context!())
         .expect("error while running Genealogigi");

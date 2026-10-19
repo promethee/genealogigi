@@ -190,3 +190,5 @@ Manual tests (`MANUAL_TESTS.md`) are run once at the end, after most features ar
 - **2026-10-18 (brand-icon)** — One mark everywhere: a tree from one trunk to four branches (`src/brand.ts`, `branding/icon.svg`); app header, welcome screen, web favicon, project page logo + favicon and the native Tauri icons (regenerated with `tauri icon`) all match; a test keeps the page equal to the app. Archived `brand-icon`.
 
 - **2026-10-18 (toolbar, git parked)** — Toolbar is now Add person (left), search (centre), People/Tree switch (right). The Sync with Git button and its hints are removed from the UI and parked for v2 (store, platform and Rust code stay; its e2e spec is removed, unit and cargo tests remain).
+
+- **2026-10-19 (window icon)** — The title-bar/taskbar icon stayed stale on a dev machine after the icon change: the icon is compiled into the Rust shell. The window icon is now also set at startup from `icons/icon.png` (`include_bytes!`, so Cargo rebuilds when the file changes; `tauri` gets the `image-png` feature). Not verifiable on Linux without a window manager: confirm in the Windows window (MANUAL_TESTS: window title bar icon).

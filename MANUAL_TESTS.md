@@ -437,3 +437,9 @@ Start from an open family with at least one person.
 | 3   | Double-click the file (any browser, even offline) | People list with search; click a person to read their card; relatives are links; Back works. |
 | 4   | Open it on a phone-sized window                   | List and card alternate with a Back button.                                                  |
 | 5   | Search a word that is only in a note              | The person is found.                                                                         |
+
+## Window icon
+
+| #   | Action                                                        | Expected                                                  |
+| --- | ------------------------------------------------------------- | --------------------------------------------------------- |
+| 1   | Start the app (rebuilt) and look at the title bar and taskbar | The icon is the tree mark: one trunk branching into four. |
