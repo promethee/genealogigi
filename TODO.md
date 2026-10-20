@@ -10,7 +10,7 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 ### Before going public (owner)
 
-- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and rows 16, 18, 20, 21 passed on 2026-10-19; left: rows 9, 22 and row 4 of section 1).
+- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and rows 16, 18, 20, 21 passed on 2026-10-19; left: rows 9 and 22 (and row 21 after the tree-first shared page)).
 - [ ] Fix anything that run finds (tell the agent what failed).
 - [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
 - [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
