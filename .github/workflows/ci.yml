@@ -23,5 +23,13 @@ jobs:
       - run: npm run build
       - run: npx playwright install chromium
       - run: npm run e2e
+      - name: Keep the traces of failed e2e attempts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-traces
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
       - run: cargo check --manifest-path src-tauri/Cargo.toml
       - run: cargo test --manifest-path src-tauri/Cargo.toml --lib

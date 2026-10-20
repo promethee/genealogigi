@@ -354,3 +354,7 @@ Export suggests `<name>-export.gigi`, share `<name>.html` (supersedes the fixed 
 ## French couple wording (2026-10-20)
 
 French says "conjoint(e)" (person) and "union" (link), "couples" in the tree legend; never "partenaire". See `openspec/changes/french-conjoint-wording`.
+
+## CI e2e: one retry and kept traces (2026-10-20)
+
+Twice on the Windows runner a test timed out because the welcome screen never appeared (`wide-layout`, `language`); both pass locally and on a re-run. CI now retries a failed e2e once (`retries: 1` when `CI` is set) and keeps the traces of failed attempts as the `e2e-traces` artifact, so a real regression still fails (twice) and a repeating stall leaves evidence to root-cause. Local runs stay at 0 retries.

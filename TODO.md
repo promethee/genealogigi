@@ -282,3 +282,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (hero screenshot)** — The project page frame no longer crops the hero screenshot (a fixed aspect ratio cut its sides); a test checks the displayed ratio is the image's own.
 
 - **2026-10-20 (French wording)** — "Partenaire/partenariat" replaced by "conjoint(e)/union/couples" in French. Archived `french-conjoint-wording`; French screenshots retaken.
+
+- **2026-10-20 (CI flake)** — Second Windows-runner stall (welcome screen not rendered, 30 s timeout). CI e2e retries once and uploads traces of failed attempts (`e2e-traces`). If the artifact shows a pattern, root-cause it.
