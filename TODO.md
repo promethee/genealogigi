@@ -21,8 +21,8 @@ When the owner says so, the agent will:
 
 - [x] Bump the version to 1.0.0 in `package.json`, `package-lock.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` and `Cargo.lock`; a unit test keeps them equal.
 - [x] Build the Windows installer (CI, `release.yml`, draft release) and check it installs, starts, shows the tree icon and uninstalls (manual row 9 passed 2026-10-20).
-- [~] Tag `v1.0.0` pushed 2026-10-20 (draft release checked); publish it (owner: GitHub → Releases → Publish release) (unsigned: the notes say so; Windows SmartScreen will warn).
-- [ ] Check the app's update banner stays quiet on 1.0.0 and the README/project-page Download buttons land on the release.
+- [x] Tag `v1.0.0` pushed, draft release checked and published 2026-10-20 (installers `Genealogigi_1.0.0_x64-setup.exe` and `_x64_en-US.msi`). (unsigned: the notes say so; Windows SmartScreen will warn).
+- [x] The app's update check sees the published release: 1.0.0 stays quiet, 0.1.0 gets the banner (checked against the real API response); the Download buttons point to `/releases/latest`.
 
 ### v2 backlog (not planned for 1.0.0)
 
@@ -293,3 +293,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (page language switch)** — The project page language switch is in the top bar (Download hidden on phones to make room). Archived `project-page-language-switch-top`.
 
 - **2026-10-20 (version 1.0.0)** — Version bumped to 1.0.0 (five files). New `release.yml`: pushing a `v*` tag builds the Windows installer on CI and attaches it to a draft release for checking before publishing. 279 e2e, 406 unit, 53 real-app.
+
+- **2026-10-20 (1.0.0 released)** — `v1.0.0` published with a Windows `.exe` and `.msi` installer (unsigned). Update check verified against the real release. Archived `release-1-0-0`. Left for the owner: switch the repository to public if not done.

@@ -1,0 +1,2 @@
+- [x] Bump, release workflow
+- [x] Tag v1.0.0, draft release checked (row 9), published 2026-10-20; the update check sees it (1.0.0 current, 0.1.0 gets the banner)
