@@ -1,0 +1,51 @@
+name: Release
+
+# Builds the Windows installer when a version tag (v1.0.0, ...) is pushed and attaches it to a DRAFT
+# GitHub release, so it can be installed and checked (MANUAL_TESTS.md row 9) before being published.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: The tag must match the app version
+        shell: bash
+        run: |
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$version" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package.json ($version)"
+            exit 1
+          fi
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Genealogigi ${{ github.ref_name }}
+          releaseDraft: true
+          prerelease: false
+          releaseBody: |
+            **Genealogigi** is a free family tree for your computer. No account, no cloud, no subscription: your family stays in a `.gigi` file you own.
+
+            **Windows installer.** It is not code-signed yet, so Windows SmartScreen may warn: choose *More info*, then *Run anyway*.
+
+            ---
+
+            **Genealogigi** est un arbre généalogique gratuit pour votre ordinateur. Pas de compte, pas de cloud, pas d'abonnement : votre famille reste dans un fichier `.gigi` qui vous appartient.
+
+            **Installateur Windows.** Il n'est pas encore signé : Windows SmartScreen peut afficher un avertissement. Choisissez *Informations complémentaires*, puis *Exécuter quand même*.

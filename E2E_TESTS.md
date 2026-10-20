@@ -801,9 +801,9 @@ Automated by: `e2e/app-version-update.spec.ts`, `real-app/updates.test.mjs`, `re
 
 | #   | Action                                                                                  | Expected                                                                          |
 | --- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| 1   | Launch the app, look at the window title bar and the taskbar                            | "Genealogigi 0.1.0".                                                              |
+| 1   | Launch the app, look at the window title bar and the taskbar                            | "Genealogigi 1.0.0".                                                              |
 | 2   | Launch with no GitHub release published yet                                             | No banner, no error.                                                              |
-| 3   | Click **Check for updates** (top bar)                                                   | "You are up to date (0.1.0)." for a few seconds.                                  |
+| 3   | Click **Check for updates** (top bar)                                                   | "You are up to date (1.0.0)." for a few seconds.                                  |
 | 4   | Disconnect the network, click **Check for updates**                                     | "Could not check for updates."; the app keeps working.                            |
 | 5   | Publish a GitHub release tagged v0.2.0 (or temporarily lower the app version), relaunch | A banner "Version 0.2.0 is available (you have 0.1.0)" with Download and Dismiss. |
 | 6   | Click **Download**                                                                      | The release page opens in your browser; nothing is installed.                     |

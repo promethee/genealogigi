@@ -1,0 +1,2 @@
+- [x] Bump, release workflow
+- [ ] Tag v1.0.0 after CI is green on the bump commit, check the draft release, install it (row 9), publish

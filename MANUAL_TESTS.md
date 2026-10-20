@@ -29,7 +29,7 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 | #   | Action                                                   | Expected                                                                                                                         |
 | --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 7   | Rebuild (`cargo clean -p genealogigi` if needed), launch | Title bar and taskbar say "Genealogigi 0.1.0" with the **tree icon** (one trunk, four branches). The window opens **maximized**. |
+| 7   | Rebuild (`cargo clean -p genealogigi` if needed), launch | Title bar and taskbar say "Genealogigi 1.0.0" with the **tree icon** (one trunk, four branches). The window opens **maximized**. |
 | 8   | Alt-Tab, pin to the taskbar                              | The same tree icon everywhere.                                                                                                   |
 | 9   | Installer (once published): install, launch, uninstall   | Installs without warnings you cannot explain, starts, removes cleanly. Icon in Explorer.                                         |
 

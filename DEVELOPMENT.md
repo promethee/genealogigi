@@ -5,14 +5,13 @@ For the project overview see [README.md](./README.md).
 
 ## Status
 
-Early development; website: <https://promethee.github.io/genealogigi/>. Everything in the
+Version 1.0.0; website: <https://promethee.github.io/genealogigi/>. Everything in the
 [README](./README.md) feature table works today. Not yet (v2): automatic backups, family
-statistics, git sync (code present, UI parked), signed installers (build from source until the
-first release). Details and history in [TODO.md](./TODO.md).
+statistics, git sync (code present, UI parked), signed installers (the Windows installer of each release is unsigned). Details and history in [TODO.md](./TODO.md).
 
 ## Updates and privacy
 
-The window title shows the version (e.g. "Genealogigi 0.1.0"). On startup the app
+The window title shows the version (e.g. "Genealogigi 1.0.0"). On startup the app
 makes one read-only request to the public GitHub releases API to see whether a newer
 release exists, and shows a banner with a download link if so. Nothing is installed
 automatically, and no family data is sent. **Check for updates** in the top bar runs

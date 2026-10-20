@@ -19,9 +19,9 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 When the owner says so, the agent will:
 
-- [ ] Bump the version to 1.0.0 in `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` (and `Cargo.lock`); a unit test keeps the three equal.
-- [ ] Build the Windows installer (`npm run tauri:build`) and check it installs, starts, shows the tree icon and uninstalls (manual rows 7–9).
-- [ ] Tag `v1.0.0`, publish the GitHub release with the installer (unsigned: say so in the notes, Windows SmartScreen will warn).
+- [x] Bump the version to 1.0.0 in `package.json`, `package-lock.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` and `Cargo.lock`; a unit test keeps them equal.
+- [~] Build the Windows installer: CI builds it when the tag is pushed (`release.yml`, draft release); then check it installs, starts, shows the tree icon and uninstalls (manual row 9).
+- [ ] Tag `v1.0.0` (after CI is green on the bump commit), check the draft release, then publish it (unsigned: the notes say so; Windows SmartScreen will warn).
 - [ ] Check the app's update banner stays quiet on 1.0.0 and the README/project-page Download buttons land on the release.
 
 ### v2 backlog (not planned for 1.0.0)
@@ -290,3 +290,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (shared People view)** — With list and card side by side, the People view of the shared page shows a person by default (seen last, else first); phones still start on the list. Archived `shared-people-default-person`.
 
 - **2026-10-20 (page language switch)** — The project page language switch is in the top bar (Download hidden on phones to make room). Archived `project-page-language-switch-top`.
+
+- **2026-10-20 (version 1.0.0)** — Version bumped to 1.0.0 (five files). New `release.yml`: pushing a `v*` tag builds the Windows installer on CI and attaches it to a draft release for checking before publishing. 279 e2e, 406 unit, 53 real-app.
