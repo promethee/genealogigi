@@ -59,3 +59,18 @@ test.describe("choosing by hand", () => {
     await expect(page.locator(".pill")).toContainText("Free forever");
   });
 });
+
+test.describe("screenshots", () => {
+  test.use({ locale: "en-US", viewport: { width: 1280, height: 900 } });
+  test("the hero screenshot is shown whole, never cropped by its frame", async ({ page }) => {
+    await page.goto(page_url);
+    const img = page.locator(".frame img.light-only");
+    await expect(img).toBeVisible();
+    const box = (await img.boundingBox())!;
+    const natural = await img.evaluate(
+      (el: HTMLImageElement) => el.naturalWidth / el.naturalHeight,
+    );
+    // The displayed ratio is the image's own: nothing is cut off on any side.
+    expect(Math.abs(box.width / box.height - natural)).toBeLessThan(0.02);
+  });
+});

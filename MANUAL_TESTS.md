@@ -2,7 +2,7 @@
 
 What a machine cannot judge. Everything else runs by itself:
 
-- **Browser end-to-end tests** (`npm run e2e`, 275 tests): every screen and rule, against a fake shell.
+- **Browser end-to-end tests** (`npm run e2e`, 276 tests): every screen and rule, against a fake shell.
 - **Real-app tests** (`npm run test:real`, 53 checks): the real Tauri window, real files, real settings,
   real restarts, real image decoding, the update check against a fake release endpoint, OS dark mode
   and language. Native file dialogs are answered by a scripted seam there.

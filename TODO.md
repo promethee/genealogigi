@@ -278,3 +278,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (project page language)** — The project page opens in French or English by itself (browser language; `?lang=` and footer links override), with French screenshots. Archived `project-page-language`.
 
 - **2026-10-20 (file names)** — Export and share suggest `<family name>-export.gigi` and `<family name>.html`. Archived `named-export-and-share`.
+
+- **2026-10-20 (hero screenshot)** — The project page frame no longer crops the hero screenshot (a fixed aspect ratio cut its sides); a test checks the displayed ratio is the image's own.
