@@ -276,3 +276,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-19 (savedWith)** — Family files record the app version that last wrote them (`savedWith`). Archived `saved-with-version`. Also fixed lint for `scripts/**/*.mjs` (the screenshot script had turned CI lint red).
 
 - **2026-10-19 (project page language)** — The project page opens in French or English by itself (browser language; `?lang=` and footer links override), with French screenshots. Archived `project-page-language`.
+
+- **2026-10-20 (file names)** — Export and share suggest `<family name>-export.gigi` and `<family name>.html`. Archived `named-export-and-share`.

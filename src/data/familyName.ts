@@ -9,8 +9,8 @@ export function cleanFamilyName(name: string): string {
 
 const RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
 
-/** A file system safe `<name>.gigi`; "family.gigi" when nothing usable is left. */
-export function fileNameForFamily(name: string): string {
+/** A file system safe name without extension; "family" when nothing usable is left. */
+export function fileStemForFamily(name: string): string {
   // NFC: macOS can hand back decomposed accents (e + combining mark); Windows expects composed.
   let safe = cleanFamilyName(name)
     .normalize("NFC")
@@ -20,5 +20,20 @@ export function fileNameForFamily(name: string): string {
     .replace(/^[-.\s]+|[-.\s]+$/g, "");
   if (safe === "") safe = "family";
   if (RESERVED.test(safe)) safe = `${safe}-family`;
-  return `${safe}.gigi`;
+  return safe;
+}
+
+/** A file system safe `<name>.gigi`; "family.gigi" when nothing usable is left. */
+export function fileNameForFamily(name: string): string {
+  return `${fileStemForFamily(name)}.gigi`;
+}
+
+/** The suggested name of an export: `<name>-export.gigi`. */
+export function exportFileNameForFamily(name: string): string {
+  return `${fileStemForFamily(name)}-export.gigi`;
+}
+
+/** The suggested name of the shared web page: `<name>.html`. */
+export function shareFileNameForFamily(name: string): string {
+  return `${fileStemForFamily(name)}.html`;
 }

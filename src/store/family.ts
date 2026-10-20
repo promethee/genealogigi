@@ -18,7 +18,12 @@ import {
 } from "../data/importFamily.ts";
 import { renderShareHtml } from "../data/shareHtml.ts";
 import { buildShareModel, canShareFamily } from "../data/shareModel.ts";
-import { cleanFamilyName, fileNameForFamily } from "../data/familyName.ts";
+import {
+  cleanFamilyName,
+  exportFileNameForFamily,
+  fileNameForFamily,
+  shareFileNameForFamily,
+} from "../data/familyName.ts";
 import { APP_VERSION } from "../appInfo.ts";
 import { locale } from "../i18n/index.ts";
 import { shrinkToJpeg } from "../lib/image.ts";
@@ -40,9 +45,6 @@ import type { EventId, FamilyData, PersonId, PhotoId, RelationshipId } from "../
 import type { GitStatus, PlatformAPI } from "../platform/PlatformAPI.ts";
 
 const DEFAULT_FILE_NAME = "family.gigi";
-const EXPORT_FILE_NAME = "family-export.gigi";
-// Default names are identifiers, not interface text: never translated.
-const SHARE_FILE_NAME = "family.html";
 
 function emptyFamily(name?: string): FamilyData {
   return { schemaVersion: 1, ...(name ? { name } : {}), people: [], relationships: [] };
@@ -281,7 +283,9 @@ export function defineFamilyStore(
         notice.value = null;
         warnings.value = [];
         try {
-          const target = await platform.saveFileDialog({ defaultName: EXPORT_FILE_NAME });
+          const target = await platform.saveFileDialog({
+            defaultName: exportFileNameForFamily(familyTitle.value),
+          });
           if (!target) return false;
           if (samePath(target, openPath)) {
             error.value = t("store.chooseDifferent");
@@ -427,7 +431,7 @@ export function defineFamilyStore(
             return false;
           }
           const target = await platform.saveFileDialog({
-            defaultName: SHARE_FILE_NAME,
+            defaultName: shareFileNameForFamily(familyTitle.value),
             extensions: ["html"],
           });
           if (!target) return false;

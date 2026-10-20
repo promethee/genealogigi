@@ -704,7 +704,7 @@ describe("family store: family name", () => {
     expect(store.data?.name).toBe("Laurent");
   });
 
-  it("shares and exports under fixed English default names, whatever the language", async () => {
+  it("suggests <name>-export.gigi and <name>.html, whatever the language", async () => {
     const { store, platform, defaults } = named(["Laurent"]);
     await store.createNew();
     await store.addPerson({ firstName: "Ada", lastName: "" });
@@ -717,7 +717,7 @@ describe("family store: family name", () => {
     };
     await store.exportFamily();
     await store.shareWebPage();
-    expect(defaults.slice(-2)).toEqual(["family-export.gigi", "family.html"]);
+    expect(defaults.slice(-2)).toEqual(["Laurent-export.gigi", "Laurent.html"]);
   });
 });
 

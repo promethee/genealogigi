@@ -346,3 +346,7 @@ Every write adds `savedWith` (informational, no schema bump). See `openspec/chan
 ## Project page language (2026-10-19)
 
 One static page, English in the HTML and a French dictionary swapped by a small script from the browser language (`?lang=` and footer links override); French screenshots from `scripts/screenshots/take.mjs`. See `openspec/changes/project-page-language`.
+
+## File names carry the family name (2026-10-20)
+
+Export suggests `<name>-export.gigi`, share `<name>.html` (supersedes the fixed English names). See `openspec/changes/named-export-and-share`.

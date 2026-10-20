@@ -125,7 +125,7 @@ test("a family without a name is titled by its file name", async ({ page }) => {
   await expect(page.getByTestId("family-name")).toHaveText("Grandpa");
 });
 
-test("default export and share names are never translated; a shared page carries the family name", async ({
+test("export and share suggest <name>-export.gigi and <name>.html, in any language; the page carries the name", async ({
   page,
 }) => {
   await create(page, "Laurent");
@@ -142,8 +142,8 @@ test("default export and share names are never translated; a shared page carries
   await page.getByTestId("lang-fr").click();
   await page.getByTestId("export").click();
   await page.getByTestId("share").click();
-  expect((await defaultNames(page)).slice(1)).toEqual(["family-export.gigi", "family.html"]);
-  const html = await page.evaluate(() => localStorage.getItem("fake:file:C:/out/family.html"));
+  expect((await defaultNames(page)).slice(1)).toEqual(["Laurent-export.gigi", "Laurent.html"]);
+  const html = await page.evaluate(() => localStorage.getItem("fake:file:C:/out/Laurent.html"));
   expect(html).toContain("<title>Laurent</title>");
 });
 

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { cleanFamilyName, fileNameForFamily, MAX_FAMILY_NAME } from "./familyName.ts";
+import {
+  cleanFamilyName,
+  exportFileNameForFamily,
+  fileNameForFamily,
+  MAX_FAMILY_NAME,
+  shareFileNameForFamily,
+} from "./familyName.ts";
 
 describe("cleanFamilyName", () => {
   it("trims, collapses spaces and caps the length", () => {
@@ -34,5 +40,13 @@ describe("fileNameForFamily", () => {
 
   it("keeps accents and composes them (NFC)", () => {
     expect(fileNameForFamily("He\u0301rault")).toBe("H\u00e9rault.gigi");
+  });
+
+  it("suggests <name>-export.gigi for an export and <name>.html for the shared page", () => {
+    expect(exportFileNameForFamily("Famille Laurent")).toBe("Famille Laurent-export.gigi");
+    expect(shareFileNameForFamily("Famille Laurent")).toBe("Famille Laurent.html");
+    expect(exportFileNameForFamily("a/b:c")).toBe("a-b-c-export.gigi"); // file system safe
+    expect(shareFileNameForFamily("")).toBe("family.html"); // nothing usable left
+    expect(exportFileNameForFamily("   ")).toBe("family-export.gigi");
   });
 });

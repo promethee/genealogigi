@@ -186,7 +186,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - characters a file name cannot hold are replaced in the suggestion only
 - Rename changes the title and is remembered by Resume after a restart
 - a family without a name is titled by its file name
-- default export and share names are never translated; a shared page carries the family name
+- export and share suggest <name>-export.gigi and <name>.html, in any language; the page carries the name
 - the prompt is in French in French
 
 ### `e2e/focused-person.spec.ts` (4)

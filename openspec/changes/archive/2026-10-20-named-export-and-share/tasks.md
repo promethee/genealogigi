@@ -1,0 +1,1 @@
+- [x] Helpers, store, unit + e2e, MANUAL_TESTS row 4
