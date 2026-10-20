@@ -288,3 +288,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (shared page)** — The shared web page opens on the Tree; the list is `#people`; Back from a person returns to the previous view. Archived `shared-page-opens-on-tree`.
 
 - **2026-10-20 (shared People view)** — With list and card side by side, the People view of the shared page shows a person by default (seen last, else first); phones still start on the list. Archived `shared-people-default-person`.
+
+- **2026-10-20 (page language switch)** — The project page language switch is in the top bar (Download hidden on phones to make room). Archived `project-page-language-switch-top`.

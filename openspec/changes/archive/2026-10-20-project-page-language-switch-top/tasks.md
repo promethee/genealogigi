@@ -1,0 +1,1 @@
+- [x] Move the switch, hide-sm on Download, e2e

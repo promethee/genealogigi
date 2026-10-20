@@ -110,6 +110,9 @@
       .links a {
         text-decoration: none;
       }
+      .links .langs {
+        white-space: nowrap;
+      }
       .links a:hover {
         color: var(--fg);
       }
@@ -488,7 +491,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.8rem 2rem;
-        justify-content: space-between;
+        justify-content: flex-start;
       }
       footer a {
         color: var(--accent);
@@ -537,7 +540,12 @@
           Genealogigi
         </a>
         <div class="links">
+          <span class="langs"
+            ><a href="?lang=en" data-lang="en">English</a> ·
+            <a href="?lang=fr" data-lang="fr">Français</a></span
+          >
           <a
+            class="hide-sm"
             href="https://github.com/promethee/genealogigi/releases/latest"
             data-i18n="nav_download"
             >Download</a
@@ -681,10 +689,6 @@
       </div>
 
       <footer>
-        <span class="langs"
-          ><a href="?lang=en" data-lang="en">English</a> ·
-          <a href="?lang=fr" data-lang="fr">Français</a></span
-        >
         <span>
           <a href="https://github.com/promethee/genealogigi/releases" data-i18n="f_all"
             >All versions</a

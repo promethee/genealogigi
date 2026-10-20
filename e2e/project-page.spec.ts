@@ -74,3 +74,20 @@ test.describe("screenshots", () => {
     expect(Math.abs(box.width / box.height - natural)).toBeLessThan(0.02);
   });
 });
+
+test.describe("language switch position", () => {
+  test.use({ locale: "en-US", viewport: { width: 390, height: 800 } });
+  test("the English / Français switch is in the top bar, visible without scrolling, even on a phone", async ({
+    page,
+  }) => {
+    await page.goto(page_url);
+    const nav = page.locator("nav");
+    await expect(nav.locator('[data-lang="fr"]')).toBeVisible();
+    await expect(nav.locator('[data-lang="en"]')).toBeVisible();
+    expect(await page.locator("footer [data-lang]").count()).toBe(0);
+    const box = (await nav.locator('[data-lang="fr"]').boundingBox())!;
+    expect(box.y).toBeLessThan(120); // at the very top of the page
+    await nav.locator('[data-lang="fr"]').click();
+    await expect(page.locator("h1")).toContainText("L’histoire de votre famille");
+  });
+});
