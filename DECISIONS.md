@@ -362,3 +362,7 @@ Twice on the Windows runner a test timed out because the welcome screen never ap
 ## Shared page opens on the tree (2026-10-20)
 
 Empty hash = Tree; `#people` = list; `#p=<id>` = person; Back returns to the previous view. See `openspec/changes/shared-page-opens-on-tree`.
+
+## Shared People view shows a person (2026-10-20)
+
+Side by side, the card shows the person seen last, else the first, without changing the address; phones keep the list first. See `openspec/changes/shared-people-default-person`.

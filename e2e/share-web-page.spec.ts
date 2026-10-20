@@ -339,3 +339,26 @@ test("on a phone the page opens on the tree; a person opened from it goes Back t
   await expect(viewer.locator("#treeview")).toBeVisible();
   await viewer.close();
 });
+
+test("the People view shows one person by default when the list and the card sit side by side", async ({
+  page,
+  browser,
+}) => {
+  const url = await buildAndShare(page);
+  const wide = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+  await wide.goto(`${url}#people`);
+  await expect(wide.locator("#card h2")).toHaveText("Paul Laurent"); // the first person
+  await expect(wide.locator('#list button[aria-current="true"]')).toContainText("Paul Laurent");
+  await wide.locator("#list button", { hasText: "Odile" }).click();
+  await wide.locator("#v-tree").click();
+  await wide.locator("#v-people").click();
+  await expect(wide.locator("#card h2")).toHaveText("Odile Laurent"); // the one seen last
+  await wide.close();
+
+  // On a phone one pane at a time: the list comes first, no person is opened for the visitor.
+  const phone = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await phone.goto(`${url}#people`);
+  await expect(phone.locator("#cardpanel")).toBeHidden();
+  await expect(phone.locator("#listpanel")).toBeVisible();
+  await phone.close();
+});

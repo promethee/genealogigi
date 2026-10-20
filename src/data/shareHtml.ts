@@ -96,7 +96,7 @@ function renderList(){
   var shown=people.filter(function(p){return words.every(function(w){return haystack[p.id].indexOf(w)>=0})});
   var ul=$("list");ul.textContent="";
   if(!shown.length){ul.appendChild(el("li","sub",model.labels.none));return}
-  var current=currentId();
+  var current=shownId();
   shown.forEach(function(p){
     var li=document.createElement("li"),b=document.createElement("button");
     b.appendChild(avatar(p));
@@ -111,10 +111,16 @@ function link(r){
   var a=el("a","rel",r.name);a.href="#p="+encodeURIComponent(r.id);s.appendChild(a);
   if(r.note)s.appendChild(el("span","note",r.note));
   return s}
+var twoPanes=window.matchMedia("(min-width:761px)");
+/** The person on the card: the one in the address, else (list and card side by side) the one seen last, else the first. */
+function shownId(){
+  var c=currentId();if(c)return c;
+  if(!twoPanes.matches||!people.length)return null;
+  return lastId&&byId[lastId]?lastId:people[0].id}
 function currentId(){var m=/^#p=(.+)$/.exec(location.hash);return m?decodeURIComponent(m[1]):null}
 function renderCard(){
-  var id=currentId(),p=id&&byId[id],c=$("card");c.textContent="";
-  document.body.classList.toggle("viewing",!!p);
+  var id=shownId(),p=id&&byId[id],c=$("card");c.textContent="";
+  document.body.classList.toggle("viewing",!!(p&&currentId()));
   if(!p){c.appendChild(el("p","sub",model.labels.people));return}
   var back=el("button","btn",model.labels.back);back.id="back";back.onclick=function(){if(navigated)history.back();else show(null)};c.appendChild(back);
   var top=el("div","top");top.appendChild(avatar(p));
@@ -197,6 +203,7 @@ $("k-partner").textContent=model.labels.legendPartners;
 $("search").oninput=renderList;
 $("big").onclick=function(){this.style.display="none"};
 window.addEventListener("hashchange",function(){navigated=true;sync()});
+if(twoPanes.addEventListener)twoPanes.addEventListener("change",sync);
 document.title=model.title;
 $("count").textContent=model.labels.count;
 sync();

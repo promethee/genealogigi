@@ -286,3 +286,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (CI flake)** — Second Windows-runner stall (welcome screen not rendered, 30 s timeout). CI e2e retries once and uploads traces of failed attempts (`e2e-traces`). If the artifact shows a pattern, root-cause it.
 
 - **2026-10-20 (shared page)** — The shared web page opens on the Tree; the list is `#people`; Back from a person returns to the previous view. Archived `shared-page-opens-on-tree`.
+
+- **2026-10-20 (shared People view)** — With list and card side by side, the People view of the shared page shows a person by default (seen last, else first); phones still start on the list. Archived `shared-people-default-person`.
