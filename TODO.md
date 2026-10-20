@@ -10,7 +10,7 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 ### Before going public (owner)
 
-- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and rows 16, 18, 20, 21 passed on 2026-10-19; left: row 9 (the installer, after the release is built)).
+- [~] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and rows 16, 18, 20, 21 passed on 2026-10-19; nothing left: all 22 rows passed on 2026-10-20).
 - [ ] Fix anything that run finds (tell the agent what failed).
 - [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
 - [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
@@ -20,8 +20,8 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 When the owner says so, the agent will:
 
 - [x] Bump the version to 1.0.0 in `package.json`, `package-lock.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml` and `Cargo.lock`; a unit test keeps them equal.
-- [~] Build the Windows installer: CI builds it when the tag is pushed (`release.yml`, draft release); then check it installs, starts, shows the tree icon and uninstalls (manual row 9).
-- [ ] Tag `v1.0.0` (after CI is green on the bump commit), check the draft release, then publish it (unsigned: the notes say so; Windows SmartScreen will warn).
+- [x] Build the Windows installer (CI, `release.yml`, draft release) and check it installs, starts, shows the tree icon and uninstalls (manual row 9 passed 2026-10-20).
+- [~] Tag `v1.0.0` pushed 2026-10-20 (draft release checked); publish it (owner: GitHub → Releases → Publish release) (unsigned: the notes say so; Windows SmartScreen will warn).
 - [ ] Check the app's update banner stays quiet on 1.0.0 and the README/project-page Download buttons land on the release.
 
 ### v2 backlog (not planned for 1.0.0)
