@@ -12,7 +12,7 @@ and the LICENSE name stay, old `Claude-Session` commit links stay).
 
 - [x] Run the 22 rows of [MANUAL_TESTS.md](./MANUAL_TESTS.md) on Windows and fill in its "Last run" table. Section 1 (native dialogs) passed on 2026-10-19; row 1 re-checked OK after the family-name change, row 4 still to re-check, then sections 2 and 5 (sections 1, 3, 4 and rows 16, 18, 20, 21 passed on 2026-10-19; nothing left: all 22 rows passed on 2026-10-20).
 - [ ] Fix anything that run finds (tell the agent what failed).
-- [ ] Switch the repository to public (GitHub: Settings → General → Danger Zone → Change visibility).
+- [x] Switch the repository to public (done by the owner, 2026-10-20).
 - [x] GitHub Pages enabled (`main`, `/docs`) and the repo "Website" / About fields set.
 
 ### Release 1.0.0 (waiting for the owner's go: "bump to 1.0.0")
@@ -294,4 +294,6 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 
 - **2026-10-20 (version 1.0.0)** — Version bumped to 1.0.0 (five files). New `release.yml`: pushing a `v*` tag builds the Windows installer on CI and attaches it to a draft release for checking before publishing. 279 e2e, 406 unit, 53 real-app.
 
-- **2026-10-20 (1.0.0 released)** — `v1.0.0` published with a Windows `.exe` and `.msi` installer (unsigned). Update check verified against the real release. Archived `release-1-0-0`. Left for the owner: switch the repository to public if not done.
+- **2026-10-20 (1.0.0 released)** — `v1.0.0` published with a Windows `.exe` and `.msi` installer (unsigned). Update check verified against the real release. Archived `release-1-0-0`. The owner switched the repository to public.
+
+- **2026-10-20 (public)** — Repository public, 1.0.0 released. Nothing left on the 1.0.0 list; only the v2 backlog (including a macOS release, waiting for user feedback).
