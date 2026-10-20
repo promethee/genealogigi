@@ -3,6 +3,7 @@ import { dateFromInput, formatDate, monthNames } from "../data/dates.ts";
 import { addPerson, displayName, lifespan, lifeSummary } from "../data/people.ts";
 import { addParentChild, addPartners, describeRelationship } from "../data/relationships.ts";
 import type { FamilyData, PersonId } from "../data/types.ts";
+import { fr } from "./fr.ts";
 import { setLocale } from "./index.ts";
 
 const EMPTY: FamilyData = { schemaVersion: 1, people: [], relationships: [] };
@@ -49,7 +50,7 @@ describe("French output of the data layer", () => {
     );
     const partners = addPartners(data, { personAId: a, personBId: b, status: "ongoing" })
       .relationships[0]!;
-    expect(describeRelationship(partners, () => "X")).toBe("X et X sont partenaires (en cours)");
+    expect(describeRelationship(partners, () => "X")).toBe("X et X sont conjoints (en cours)");
   });
 
   it("translates relationship errors", () => {
@@ -90,5 +91,13 @@ describe("French wording of the life status", () => {
     }).people[0]!;
     // The list does not mark a living person; the card's Life section says vivant(e).
     expect(lifeSummary(person)).toBe("né(e) 1990");
+  });
+});
+
+describe("French wording of couples", () => {
+  it("says conjoint(e), never partenaire or partenariat", () => {
+    const all = Object.values(fr).join("\n");
+    expect(all).not.toMatch(/partenaire|partenariat/i);
+    expect(fr["rel.partner"]).toBe("Conjoint(e)");
   });
 });

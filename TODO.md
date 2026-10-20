@@ -280,3 +280,5 @@ Automated on every feature: unit tests, browser e2e (fake shell), format, lint, 
 - **2026-10-20 (file names)** — Export and share suggest `<family name>-export.gigi` and `<family name>.html`. Archived `named-export-and-share`.
 
 - **2026-10-20 (hero screenshot)** — The project page frame no longer crops the hero screenshot (a fixed aspect ratio cut its sides); a test checks the displayed ratio is the image's own.
+
+- **2026-10-20 (French wording)** — "Partenaire/partenariat" replaced by "conjoint(e)/union/couples" in French. Archived `french-conjoint-wording`; French screenshots retaken.

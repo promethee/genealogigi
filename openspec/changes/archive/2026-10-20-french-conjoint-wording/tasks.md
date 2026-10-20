@@ -1,0 +1,1 @@
+- [x] fr.ts, test, French screenshots, docs

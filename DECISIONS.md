@@ -350,3 +350,7 @@ One static page, English in the HTML and a French dictionary swapped by a small 
 ## File names carry the family name (2026-10-20)
 
 Export suggests `<name>-export.gigi`, share `<name>.html` (supersedes the fixed English names). See `openspec/changes/named-export-and-share`.
+
+## French couple wording (2026-10-20)
+
+French says "conjoint(e)" (person) and "union" (link), "couples" in the tree legend; never "partenaire". See `openspec/changes/french-conjoint-wording`.

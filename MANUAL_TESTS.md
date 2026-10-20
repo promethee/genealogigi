@@ -55,11 +55,11 @@ exists. Takes about 10 minutes. Note the date and result at the bottom.
 
 ## 5. Wording and the outside world
 
-| #   | Action                                                                                  | Expected                                                                                                                                                                                          |
-| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Parent de" with "Autre parent (facultatif)", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Afficher les frères et sœurs", "Personne centrale".  |
-| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, **Tree** view shows everyone (portraits in the boxes, violet partner segment) and fits a phone, print preview is clean.                  |
-| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone. Opens in **French** with a French browser and **English** otherwise; the footer English / Français links switch it. |
+| #   | Action                                                                                  | Expected                                                                                                                                                                                                           |
+| --- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 20  | Use the whole app in French                                                             | Reads naturally: "Lien / filiation", "Parent de" with "Autre parent (facultatif)", "Conjoint(e) de", "Frère / sœur" (one) and "Fratrie / sororité" (several), "Afficher les frères et sœurs", "Personne centrale". |
+| 21  | Open an exported web page (**Share as web page…**) in a real browser, desktop and phone | Looks good, search and relative links work, photos show, **Tree** view shows everyone (portraits in the boxes, violet partner segment) and fits a phone, print preview is clean.                                   |
+| 22  | Open the project page (<https://promethee.github.io/genealogigi/>) once Pages is on     | Loads, screenshots show, Download goes to the Releases page; fine on a phone. Opens in **French** with a French browser and **English** otherwise; the footer English / Français links switch it.                  |
 
 ## Last run
 

@@ -86,3 +86,10 @@ the flags without relying on emoji fonts.
 
 - **WHEN** the switch is shown
 - **THEN** each option has a flag image next to its name, and the active option is highlighted
+
+### Requirement: French couple vocabulary
+The French interface SHALL use "conjoint(e)" for a partner and "union" for the link, and SHALL NOT use "partenaire" or "partenariat".
+
+#### Scenario: Relationship line
+- **WHEN** two people are partners and the language is French
+- **THEN** the line reads "X et Y sont conjoints"
