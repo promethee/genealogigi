@@ -90,7 +90,7 @@ function avatar(p){
   return a}
 var haystack={};
 people.forEach(function(p){haystack[p.id]=norm([p.name,p.life,p.notes].join(" "))});
-function show(id){location.hash=id?"p="+encodeURIComponent(id):""}
+function show(id){location.hash=id?"p="+encodeURIComponent(id):"people"}
 function renderList(){
   var words=norm($("search").value).split(/\\s+/).filter(Boolean);
   var shown=people.filter(function(p){return words.every(function(w){return haystack[p.id].indexOf(w)>=0})});
@@ -116,7 +116,7 @@ function renderCard(){
   var id=currentId(),p=id&&byId[id],c=$("card");c.textContent="";
   document.body.classList.toggle("viewing",!!p);
   if(!p){c.appendChild(el("p","sub",model.labels.people));return}
-  var back=el("button","btn",model.labels.back);back.id="back";back.onclick=function(){show(null)};c.appendChild(back);
+  var back=el("button","btn",model.labels.back);back.id="back";back.onclick=function(){if(navigated)history.back();else show(null)};c.appendChild(back);
   var top=el("div","top");top.appendChild(avatar(p));
   var h=el("div");h.appendChild(el("h2","",p.name));if(p.life)h.appendChild(el("span","sub",p.life));
   top.appendChild(h);c.appendChild(top);
@@ -150,7 +150,7 @@ function svgEl(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var 
 function setScale(s){var svg=$("treesvg");svg.setAttribute("width",Math.round(natW*s));svg.setAttribute("height",Math.round(natH*s))}
 function fit(){setScale(Math.min(1,Math.max(.35,($("treebox").clientWidth-2)/natW)))}
 function clip(s,n){return s.length>n?s.slice(0,n-1)+"\u2026":s}
-var drawn=false,lastId=null;
+var drawn=false,lastId=null,navigated=false;
 function drawTree(){
   var svg=$("treesvg");svg.setAttribute("viewBox","0 0 "+natW+" "+natH);
   var defs=svgEl("defs",{},svg),cp=svgEl("clipPath",{id:"avc",clipPathUnits:"objectBoundingBox"},defs);svgEl("circle",{cx:.5,cy:.5,r:.5},cp);
@@ -175,7 +175,7 @@ function drawTree(){
     if(n.life)svgEl("text",{"class":"s",x:BH+4,y:38},g).textContent=clip(n.life,22);
     g.onclick=function(){show(n.id)}});
   drawn=true}
-function treeView(){return location.hash==="#tree"}
+function treeView(){var h=location.hash;return h===""||h==="#"||h==="#tree"} // the tree is the default view
 function renderViews(){
   var tv=treeView();
   document.body.classList.toggle("tree-view",tv);
@@ -187,7 +187,7 @@ function renderViews(){
 function sync(){renderViews();renderList();renderCard()}
 $("v-people").textContent=model.labels.people;
 $("v-tree").textContent=model.labels.tree;
-$("v-people").onclick=function(){show(null)};
+$("v-people").onclick=function(){location.hash="people"};
 $("v-tree").onclick=function(){location.hash="tree"};
 $("fit").textContent=model.labels.fit;$("fit").onclick=fit;
 $("actual").textContent=model.labels.actualSize;$("actual").onclick=function(){setScale(1)};
@@ -196,7 +196,7 @@ $("k-other").textContent=model.labels.legendOther;
 $("k-partner").textContent=model.labels.legendPartners;
 $("search").oninput=renderList;
 $("big").onclick=function(){this.style.display="none"};
-window.addEventListener("hashchange",sync);
+window.addEventListener("hashchange",function(){navigated=true;sync()});
 document.title=model.title;
 $("count").textContent=model.labels.count;
 sync();

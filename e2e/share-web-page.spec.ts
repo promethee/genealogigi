@@ -132,7 +132,7 @@ test("the exported page lists people, searches, and follows relatives", async ({
   const viewer = await browser.newPage({ viewport: { width: 1200, height: 800 } });
   const requests: string[] = [];
   viewer.on("request", (r) => requests.push(r.url()));
-  await viewer.goto(url);
+  await viewer.goto(`${url}#people`);
 
   await expect(viewer.locator("#count")).toHaveText("3 people");
   await expect(viewer.locator("#list button")).toHaveCount(3);
@@ -159,7 +159,7 @@ test("the exported page lists people, searches, and follows relatives", async ({
 test("hostile text in a name is shown as text and never runs", async ({ page, browser }) => {
   const url = await buildAndShare(page);
   const viewer = await browser.newPage();
-  await viewer.goto(url);
+  await viewer.goto(`${url}#people`);
   await expect(viewer.locator("#list")).toContainText('<img Src=x Onerror="window.__pwned=1">'); // shown as text (name case applied)
   await viewer.locator("#list button", { hasText: "Evil" }).click();
   await expect(viewer.locator("#card h2")).toContainText("<img");
@@ -176,7 +176,7 @@ test("on a phone the list and the card alternate, with a Back button", async ({
 }) => {
   const url = await buildAndShare(page);
   const viewer = await browser.newPage({ viewport: { width: 390, height: 800 } });
-  await viewer.goto(url);
+  await viewer.goto(`${url}#people`);
   await expect(viewer.locator("#cardpanel")).toBeHidden();
   await viewer.locator("#list button").first().click();
   await expect(viewer.locator("#listpanel")).toBeHidden();
@@ -202,7 +202,7 @@ test("the page is written in the app's language", async ({ page, browser }) => {
   const dir = mkdtempSync(join(tmpdir(), "gigi-share-"));
   writeFileSync(join(dir, "p.html"), html!);
   const viewer = await browser.newPage();
-  await viewer.goto(`file://${join(dir, "p.html")}`);
+  await viewer.goto(`file://${join(dir, "p.html")}#people`);
   await expect(viewer.locator("#count")).toHaveText("2 personnes");
   await viewer.close();
 });
@@ -213,12 +213,18 @@ test("the exported page has a Tree view with everyone; a box opens that person",
 }) => {
   const url = await buildAndShare(page);
   const viewer = await browser.newPage({ viewport: { width: 1200, height: 800 } });
-  await viewer.goto(url);
+  await viewer.goto(url); // the tree is what opens first
   await expect(viewer.locator("#views")).toContainText("Tree");
+  await expect(viewer.locator("#treeview")).toBeVisible();
+  await expect(viewer.locator("main")).toBeHidden();
+  await expect(viewer.locator("#v-tree")).toHaveAttribute("aria-pressed", "true");
+  await viewer.locator("#v-people").click();
+  expect(viewer.url()).toContain("#people");
+  await expect(viewer.locator("main")).toBeVisible();
+  await expect(viewer.locator("#treeview")).toBeHidden();
   await viewer.locator("#v-tree").click();
   expect(viewer.url()).toContain("#tree");
   await expect(viewer.locator("#treeview")).toBeVisible();
-  await expect(viewer.locator("main")).toBeHidden();
   await expect(viewer.locator("#treesvg .tn")).toHaveCount(3); // everyone, once
   await expect(viewer.locator("#treesvg .te")).toHaveCount(1); // Paul is Odile's parent
   await viewer.locator("#treesvg .tn", { hasText: "Odile" }).click();
@@ -314,5 +320,22 @@ test("the Tree view is centred in its frame when it is narrower than the window"
   const left = svg.x - box.x;
   const right = box.x + box.width - (svg.x + svg.width);
   expect(Math.abs(left - right)).toBeLessThan(4);
+  await viewer.close();
+});
+
+test("on a phone the page opens on the tree; a person opened from it goes Back to the tree", async ({
+  page,
+  browser,
+}) => {
+  const url = await buildAndShare(page);
+  const viewer = await browser.newPage({ viewport: { width: 390, height: 800 } });
+  await viewer.goto(url);
+  await expect(viewer.locator("#treeview")).toBeVisible();
+  const width = await viewer.locator("#treesvg").evaluate((el) => Number(el.getAttribute("width")));
+  expect(width).toBeLessThanOrEqual(390); // fitted to the phone
+  await viewer.locator("#treesvg .tn", { hasText: "Paul" }).click();
+  await expect(viewer.locator("#card h2")).toHaveText("Paul Laurent");
+  await viewer.locator("#back").click();
+  await expect(viewer.locator("#treeview")).toBeVisible();
   await viewer.close();
 });

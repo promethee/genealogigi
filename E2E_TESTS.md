@@ -393,7 +393,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - the family file records the app version that wrote it
 - an older stamp is replaced by the next save
 
-### `e2e/share-web-page.spec.ts` (11)
+### `e2e/share-web-page.spec.ts` (12)
 
 - Share is disabled until there are two people and one relationship
 - French explains why Share is disabled
@@ -406,6 +406,7 @@ The lists below are generated from the test files; the counts drift, the files a
 - the Tree view shows partners in their own colour and fits the window
 - the Tree view shows a person's portrait in their box, initials otherwise
 - the Tree view is centred in its frame when it is narrower than the window
+- on a phone the page opens on the tree; a person opened from it goes Back to the tree
 
 ### `e2e/temporary-parents.spec.ts` (4)
 

@@ -1,0 +1,1 @@
+- [x] Default view, hashes, Back, e2e in share-web-page.spec.ts
