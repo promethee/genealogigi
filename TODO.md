@@ -32,6 +32,7 @@ When the owner says so, the agent will:
 - [ ] Signed installers and an in-app updater (needs a code-signing certificate).
 - [ ] Photo crop/rotate; add photos from the person form.
 - [ ] Frameless/custom window chrome; confirm `npm run tauri:dev` HMR in the real window.
+- [ ] macOS release (`.dmg`): wait for user feedback first. Needs a `macos-latest` entry in `release.yml`, a Mac to run MANUAL_TESTS, and an Apple Developer account to sign and notarize (unsigned builds trigger Gatekeeper warnings). Decided 2026-10-20: 1.0.0 is Windows-only.
 
 ### Decided against
 
